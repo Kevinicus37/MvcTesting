@@ -1,0 +1,19 @@
+﻿@model TMDbLib.Objects.Movies.Movie
+
+<h1>@Model.Title (@Model.ReleaseDate.Value.ToString("yyyy"))</h1>
+
+<h2>Cast</h2>
+<ul>
+@foreach (var cast in Model.Credits.Cast)
+{
+    <li>@cast.Name : @cast.Character</li>
+}
+</ul>
+<h2>Synopsis</h2>
+@Model.Overview
+<br />
+@if (Model.Videos.Results.Count > 0)
+{
+        <h2>Trailer</h2>
+        <iframe width="560" height="315" src="@("https://www.youtube.com/embed/" + @Model.Videos.Results[Model.Videos.Results.Count - 1].Key)" frameborder="0" allowfullscreen></iframe>
+}

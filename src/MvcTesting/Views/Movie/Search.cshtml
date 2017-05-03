@@ -1,0 +1,42 @@
+﻿
+@model MvcTesting.ViewModels.SearchViewModel
+
+<h1>Search Results</h1>
+
+
+@foreach (var movie in Model.Movies)
+{ 
+    <div class="row">
+        <div class="col-md-1" height =" 100">
+        @if (movie.Images.Posters.Count > 0)
+            {
+                <img src="@($"https://image.tmdb.org/t/p/w300_and_h450_bestv2/{movie.Images.Posters[0].FilePath}")" width="50" height="80"/>
+
+            }
+        </div>
+
+        
+        <div class="col-md-4">
+            <a asp-controller="Movie" asp-action="ViewMovie" asp-route-Id="@movie.Id">
+        
+                @if (movie.ReleaseDate != null)
+                    {
+                        <H4>@movie.Title  (@movie.ReleaseDate.Value.ToString("yyyy"))</H4>
+                    }
+                else
+                    {
+                        @movie.Title 
+                    }
+            </a>
+        
+        
+            @if (movie.Credits.Crew.Count > 0)
+                {
+                    <em>Directed by @movie.Credits.Crew[0].Name</em>
+                }
+
+         </div>
+    </div>
+     
+     <br />
+}
