@@ -1,19 +1,42 @@
 ﻿@model TMDbLib.Objects.Movies.Movie
 
-<h1>@Model.Title (@Model.ReleaseDate.Value.ToString("yyyy"))</h1>
+<div class="page-header">
+    @if (Model.ReleaseDate != null)
+    {
+        <h1>@Model.Title (@Model.ReleaseDate.Value.ToString("yyyy"))</h1>
+    }
+    else
+    {
+        <h1>@Model.Title</h1>
 
-<h2>Cast</h2>
-<ul>
-@foreach (var cast in Model.Credits.Cast)
-{
-    <li>@cast.Name : @cast.Character</li>
-}
-</ul>
-<h2>Synopsis</h2>
-@Model.Overview
-<br />
-@if (Model.Videos.Results.Count > 0)
-{
+    }
+</div>
+
+    @if (Model.Images.Posters.Count > 0)
+    {
+        <div class="center-block">
+            <img src="@($"https://image.tmdb.org/t/p/w300_and_h450_bestv2/{Model.Images.Posters[0].FilePath}")" />
+        </div>
+    }
+
+
+    <h2>Cast</h2>
+
+    <ul>
+        @foreach (var cast in Model.Credits.Cast)
+        {
+            <li>@cast.Name : @cast.Character</li>
+        }
+    </ul>
+
+
+    <h2>Synopsis</h2>
+    @Model.Overview
+    <br />
+
+
+    @if (Model.Videos.Results.Count > 0)
+    {
         <h2>Trailer</h2>
         <iframe width="560" height="315" src="@("https://www.youtube.com/embed/" + @Model.Videos.Results[Model.Videos.Results.Count - 1].Key)" frameborder="0" allowfullscreen></iframe>
-}
+    }

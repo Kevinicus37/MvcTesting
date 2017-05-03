@@ -1,13 +1,24 @@
 ﻿
 @model MvcTesting.ViewModels.SearchViewModel
 
-<h1>Search Results</h1>
-
+<div class="page-header">
+    <h1>Search Results</h1>
+</div>
 
 @foreach (var movie in Model.Movies)
 { 
-    <div class="row">
-        <div class="col-md-1" height =" 100">
+    /*@if (counter == 0)
+    {
+        @Html.Raw("<div class=\"row\">")
+
+    }
+    else if (counter > 0 && counter % 2 == 0)
+    {
+        @Html.Raw("</div><div class=\"row\">")
+
+    }*/
+    <div class="col-md-12">
+        <div class="col-md-1 col-md-offset-3" height =" 120">
         @if (movie.Images.Posters.Count > 0)
             {
                 <img src="@($"https://image.tmdb.org/t/p/w300_and_h450_bestv2/{movie.Images.Posters[0].FilePath}")" width="50" height="80"/>
@@ -34,9 +45,11 @@
                 {
                     <em>Directed by @movie.Credits.Crew[0].Name</em>
                 }
+            
 
          </div>
-    </div>
+
      
-     <br />
+     
+    </div>
 }
