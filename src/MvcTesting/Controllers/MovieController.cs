@@ -48,6 +48,30 @@ namespace MvcTesting.Controllers
             Movie movie = client.GetMovieAsync(Id, MovieMethods.Credits | MovieMethods.Videos | MovieMethods.Images).Result;
             return View(movie);
         }
+
+        
+        [Route("/Movie/Add")]
+        public IActionResult Add(int id = -1)
+        {
+            AddMovieViewModel addMovieViewModel;
+
+            if (id == -1)
+            {
+                addMovieViewModel = new AddMovieViewModel();
+            }
+            else
+            {
+                Movie movie = client.GetMovieAsync(id, MovieMethods.Credits | MovieMethods.Videos | MovieMethods.Images).Result;
+                addMovieViewModel = new AddMovieViewModel(movie);
+            }
+            return View(addMovieViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult Add(AddMovieViewModel addMovieViewModel)
+        {
+            return Redirect("/Account");
+        }
     }
 
     

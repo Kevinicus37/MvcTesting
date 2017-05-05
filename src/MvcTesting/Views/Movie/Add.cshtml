@@ -1,0 +1,43 @@
+﻿@model MvcTesting.ViewModels.AddMovieViewModel
+
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1>Add Movie</h1>
+
+<form class="form-group">
+    <label asp-for="Name"></label>
+    <input class="form-control" type="text" asp-for="Name" />
+
+    <label asp-for="Year"></label>
+    <input class="form-control" type="text" asp-for="Year" />
+
+    <label asp-for="Format"></label>
+    <input class="form-control" type="text" asp-for="Format" />
+
+    <label asp-for="AspectRatio"></label>
+    <input class="form-control" type="text" asp-for="AspectRatio" />
+
+    <label asp-for="Comments"></label>
+    <textarea class="form-control" asp-for="Comments"></textarea>
+
+    <label asp-for="Rating"></label>
+    <select class="form-control" asp-for="Rating" asp-items="Model.Ratings" ></select>
+
+    <label asp-for="AudioFormat"></label>
+    <input class="form-control" type="text" asp-for="AudioFormat" />
+
+    <label asp-for="Overview"></label>
+    <input class="form-control" type="text" asp-for="Overview" />
+
+    <label asp-for="TrailerUrl"></label>
+    <input class="form-control" type="text" asp-for="TrailerUrl" />
+
+    <label asp-for="PosterUrl"></label>
+    <input class="form-control" type="text" asp-for="PosterUrl" />
+
+    <br />
+    <input class="btn-primary b" type="submit" value="Add Movie to Collection" />
+</form>

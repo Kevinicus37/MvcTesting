@@ -48,8 +48,15 @@
             
 
          </div>
+         <div class="col-md-1">
+             <a asp-controller="Movie" asp-action="Add" asp-route-id="@movie.Id">Select</a>
+         </div>
 
      
      
     </div>
+
+    
 }
+<h2>Don't see the movie you're Looking For?</h2>
+<a class="btn-primary" asp-controller="Movie" asp-action="Add">Add Manually</a>
