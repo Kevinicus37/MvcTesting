@@ -1,0 +1,20 @@
+﻿<form class="form-horizontal" asp-antiforgery="true">
+    <fieldset>
+
+        @if (!@ViewData.ModelState.IsValid)
+        {
+            var errors = ViewData.ModelState.Values.Select(item => item.Errors.FirstOrDefault()?.ErrorMessage).Where(item => item != null);
+            <div class="alert alert-danger">
+                <span>There are problems with your input:</span>
+                <ul>
+                    @foreach (var error in errors)
+                    {
+                        <li>@error</li>
+                    }
+                </ul>
+            </div>
+        }
+
+
+    </fieldset>
+</form>

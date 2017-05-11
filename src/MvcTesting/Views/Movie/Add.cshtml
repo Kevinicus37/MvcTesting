@@ -1,43 +1,66 @@
 ﻿@model MvcTesting.ViewModels.AddMovieViewModel
+@using System.Text;
 
-@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
 <h1>Add Movie</h1>
 
-<form class="form-group">
+@Html.Partial("_ValidationSUmmary")
+
+<form class="form-group" asp-controller="Movie" asp-action="Add" method="post">
     <label asp-for="Name"></label>
     <input class="form-control" type="text" asp-for="Name" />
+    <span asp-validation-for="Name"></span>
 
     <label asp-for="Year"></label>
     <input class="form-control" type="text" asp-for="Year" />
+    <span asp-validation-for="Year"></span>
 
-    <label asp-for="Format"></label>
-    <input class="form-control" type="text" asp-for="Format" />
+    <label asp-for="MediaID"></label>
+    <select class="form-control" asp-for="MediaID" asp-items="Model.MediaTypes"></select>
+    <span asp-validation-for="MediaID"></span>
+
+    <label asp-for="AudioID"></label>
+    <select class="form-control"asp-for="AudioID" asp-items="Model.AudioFormats"></select>
+    <span asp-validation-for="AudioID"></span>
 
     <label asp-for="AspectRatio"></label>
     <input class="form-control" type="text" asp-for="AspectRatio" />
+    <span asp-validation-for="AspectRatio"></span>
 
     <label asp-for="Comments"></label>
     <textarea class="form-control" asp-for="Comments"></textarea>
+    <span asp-validation-for="Comments"></span>
 
     <label asp-for="Rating"></label>
-    <select class="form-control" asp-for="Rating" asp-items="Model.Ratings" ></select>
-
-    <label asp-for="AudioFormat"></label>
-    <input class="form-control" type="text" asp-for="AudioFormat" />
+    <select class="form-control" asp-for="Rating" asp-items="Model.Ratings"></select>
+    <span asp-validation-for="Rating"></span>
 
     <label asp-for="Overview"></label>
     <input class="form-control" type="text" asp-for="Overview" />
+    <span asp-validation-for="Overview"></span>
 
     <label asp-for="TrailerUrl"></label>
     <input class="form-control" type="text" asp-for="TrailerUrl" />
+    <span asp-validation-for="TrailerUrl"></span>
 
     <label asp-for="PosterUrl"></label>
     <input class="form-control" type="text" asp-for="PosterUrl" />
+    <span asp-validation-for="PosterUrl"></span>
 
+    <label>Action</label>
+    <input type="checkbox" name="Genres" value="action" />
+    
+    <label>Drama</label>
+    <input type="checkbox" name="Genres" value="drama" />
+    
     <br />
-    <input class="btn-primary b" type="submit" value="Add Movie to Collection" />
+        
+    <label asp-for="Directors"></label>
+    <textarea class="form-control" asp-for="Directors"></textarea>
+    <span asp-validation-for="Directors"></span>
+
+    <label asp-for="Cast"></label>
+    <textarea class="form-control" asp-for="Cast"></textarea>
+    <span asp-validation-for="Cast"></span>
+    <br />
+    <input class="btn btn-primary" type="submit" value="Add Movie to Collection" />
 </form>
