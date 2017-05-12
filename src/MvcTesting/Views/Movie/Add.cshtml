@@ -15,7 +15,7 @@
     <span asp-validation-for="Year"></span>
 
     <label asp-for="MediaID"></label>
-    <select class="form-control" asp-for="MediaID" asp-items="Model.MediaTypes"></select>
+    <select class="form-control" asp-for="MediaID" asp-items="Model.MediaFormats"></select>
     <span asp-validation-for="MediaID"></span>
 
     <label asp-for="AudioID"></label>
@@ -46,12 +46,8 @@
     <input class="form-control" type="text" asp-for="PosterUrl" />
     <span asp-validation-for="PosterUrl"></span>
 
-    <label>Action</label>
-    <input type="checkbox" name="Genres" value="action" />
-    
-    <label>Drama</label>
-    <input type="checkbox" name="Genres" value="drama" />
-    
+    <label asp-for="Has3D"></label>
+    <input type="checkbox" asp-for="Has3D" />
     <br />
         
     <label asp-for="Directors"></label>
@@ -61,6 +57,13 @@
     <label asp-for="Cast"></label>
     <textarea class="form-control" asp-for="Cast"></textarea>
     <span asp-validation-for="Cast"></span>
-    <br />
-    <input class="btn btn-primary" type="submit" value="Add Movie to Collection" />
+
+    <h3>Genres</h3>
+    <label>Action</label>
+    <input type="checkbox" name="Genres" value="action" />
+
+    <label>Drama</label>
+    <input type="checkbox" name="Genres" value="drama" />
+
+    <br />    <input class="btn btn-primary" type="submit" value="Add Movie to Collection" />
 </form>

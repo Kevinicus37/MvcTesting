@@ -18,11 +18,12 @@ namespace MvcTesting.Controllers
 {
     public class MovieController : Controller
     {
-
+        private MovieCollectorContext context;
         TMDbClient client;
 
-        public MovieController()
+        public MovieController(MovieCollectorContext dbContext)
         {
+            context = dbContext;
             client = new TMDbClient("9950b6bfd3eef8b5c9b7343ead080098");
         }
         // GET: /<controller>/
@@ -57,20 +58,17 @@ namespace MvcTesting.Controllers
         public IActionResult Add(int id = -1)
         {
             AddMovieViewModel addMovieViewModel;
-            List<Models.MediaType> mediaTypes = new List<Models.MediaType> { new Models.MediaType {
-                ID= 1, Name ="DVD" }, new Models.MediaType {ID = 2, Name ="Bluray" } };
-
-            List<AudioFormat> audioFormats = new List<AudioFormat> { new AudioFormat { ID = 1, Name = "Atmos" },
-                new AudioFormat {ID=2, Name= "DTS:X" } };
+            List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
+            List<AudioFormat> audioFormats = context.AudioFormats.ToList();
 
             if (id == -1)
             {
-                addMovieViewModel = new AddMovieViewModel(mediaTypes, audioFormats);
+                addMovieViewModel = new AddMovieViewModel(mediaFormats, audioFormats);
             }
             else
             {
                 Movie movie = client.GetMovieAsync(id, MovieMethods.Credits | MovieMethods.Videos | MovieMethods.Images).Result;
-                addMovieViewModel = new AddMovieViewModel(mediaTypes, audioFormats, movie);
+                addMovieViewModel = new AddMovieViewModel(mediaFormats, audioFormats, movie);
             }
             return View(addMovieViewModel);
         }
@@ -84,13 +82,13 @@ namespace MvcTesting.Controllers
                 
                 return View("Test", addMovieViewModel);
             }
-            List<SelectListItem> mediaTypes = new List<SelectListItem> { new SelectListItem {
+            List<SelectListItem> mediaFormats = new List<SelectListItem> { new SelectListItem {
                 Value= 0.ToString(), Text ="DVD" }, new SelectListItem {Value = 1.ToString(), Text ="Bluray" } };
 
             List<SelectListItem> audioFormats = new List<SelectListItem> { new SelectListItem { Value = 0.ToString(), Text = "Atmos" },
                 new SelectListItem {Value=1.ToString(), Text= "DTS:X" } };
 
-            addMovieViewModel.MediaTypes = mediaTypes;
+            addMovieViewModel.MediaFormats = mediaFormats;
             addMovieViewModel.AudioFormats = audioFormats;
             
             return View(addMovieViewModel);

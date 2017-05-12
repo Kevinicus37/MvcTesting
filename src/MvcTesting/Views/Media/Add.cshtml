@@ -1,0 +1,12 @@
+﻿@model MvcTesting.ViewModels.AddMediaFormatViewModel
+
+<form asp-controller="Media" asp-action="Add" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input class="form-control" asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+
+        <button type="submit" class="btn btn-primary">Add Media Format</button>
+    </div>
+
+</form>

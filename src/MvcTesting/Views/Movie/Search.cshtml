@@ -41,8 +41,21 @@
         
                             @if (movie.Credits.Crew.Count > 0)
                             {
-                                    <em>Directed by @movie.Credits.Crew[0].Name</em>
-                            }
+                                List<string> directors = new List<string>();
+
+
+                                            foreach (var member in movie.Credits.Crew)
+                                            {
+                                                if (member.Job == "Director")
+                                                {
+                                                    directors.Add(member.Name);
+                                                }
+                                            }
+
+                                        string Directors = String.Join(", ", directors.ToArray());
+                                    
+                                <em>Directed by @Directors</em>
+                             }
                         </td>
                         <td>
                             

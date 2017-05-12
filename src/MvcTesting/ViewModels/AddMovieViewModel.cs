@@ -75,8 +75,11 @@ namespace MvcTesting.ViewModels
         [Display(Name = "Poster URL:")]
         public string PosterUrl { get; set; }
 
+        [Display(Name="3D Option?")]
+        public bool Has3D { get; set; }
+
         public List<SelectListItem> Ratings { get; set; }
-        public List<SelectListItem> MediaTypes { get; set; }
+        public List<SelectListItem> MediaFormats { get; set; }
         public List<SelectListItem> AudioFormats { get; set; }
 
         public AddMovieViewModel()
@@ -84,21 +87,21 @@ namespace MvcTesting.ViewModels
             SetRatings();
         }
 
-        public AddMovieViewModel(IEnumerable<MvcTesting.Models.MediaType> mediaTypes, IEnumerable<AudioFormat> audioFormats)
+        public AddMovieViewModel(IEnumerable<MediaFormat> mediaFormats, IEnumerable<AudioFormat> audioFormats)
         {
             SetRatings();
             SetAudio(audioFormats);
-            SetMediaTypes(mediaTypes);
+            SetMediaTypes(mediaFormats);
         }
 
-        public AddMovieViewModel(IEnumerable<MvcTesting.Models.MediaType> mediaTypes, IEnumerable<AudioFormat> audioFormats, Movie movie)
+        public AddMovieViewModel(IEnumerable<MediaFormat> mediaFormats, IEnumerable<AudioFormat> audioFormats, Movie movie)
         {
             List<string> directors = new List<string>();
             List<string> cast = new List<string>();
 
             SetRatings();
             SetAudio(audioFormats);
-            SetMediaTypes(mediaTypes);
+            SetMediaTypes(mediaFormats);
             Name = movie.Title;
             TMDbId = movie.Id;
             Overview = movie.Overview;
@@ -155,13 +158,13 @@ namespace MvcTesting.ViewModels
 
         }
 
-        public void SetMediaTypes(IEnumerable<MvcTesting.Models.MediaType> mediaTypes)
+        public void SetMediaTypes(IEnumerable<MediaFormat> mediaTypes)
         {
-            MediaTypes = new List<SelectListItem>();
+            MediaFormats = new List<SelectListItem>();
 
             foreach (var media in mediaTypes)
             {
-                MediaTypes.Add(new SelectListItem
+                MediaFormats.Add(new SelectListItem
                 {
                     Value = media.ID.ToString(),
                     Text = media.Name

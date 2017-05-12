@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MvcTesting.Models
 {
-    public class MediaType
+    public class MediaFormat
     {
         public int ID { get; set; }
         public string Name { get; set; }
