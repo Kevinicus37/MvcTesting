@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MvcTesting.Models
 {
-    public class AudioFormat
+    public class AudioFormat : IItemList
     {
         public int ID { get; set; }
         public string Name { get; set; }

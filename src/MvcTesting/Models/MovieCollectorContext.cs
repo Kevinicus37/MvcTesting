@@ -23,6 +23,7 @@ namespace MvcTesting.Models
         public DbSet<AudioFormat> AudioFormats { get; set; }
         public DbSet<MediaFormat> MediaFormats { get; set; }
         public DbSet<Genre> Genres { get; set; }
+        public DbSet<FilmGenre> FilmGenres { get; set; }
 
     }
 }

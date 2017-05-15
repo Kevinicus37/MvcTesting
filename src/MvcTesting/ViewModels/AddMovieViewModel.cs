@@ -78,6 +78,10 @@ namespace MvcTesting.ViewModels
         [Display(Name="3D Option?")]
         public bool Has3D { get; set; }
 
+        [Display(Name="Private? (If Checked, others will not be able to see this movie in your collection.)")]
+        public bool IsPrivate { get; set; }
+
+
         public List<SelectListItem> Ratings { get; set; }
         public List<SelectListItem> MediaFormats { get; set; }
         public List<SelectListItem> AudioFormats { get; set; }
@@ -90,8 +94,9 @@ namespace MvcTesting.ViewModels
         public AddMovieViewModel(IEnumerable<MediaFormat> mediaFormats, IEnumerable<AudioFormat> audioFormats)
         {
             SetRatings();
-            SetAudio(audioFormats);
-            SetMediaTypes(mediaFormats);
+            AudioFormats=PopulateList<IEnumerable<AudioFormat>>(audioFormats);
+            MediaFormats = PopulateList<IEnumerable<MediaFormat>>(mediaFormats);
+            
         }
 
         public AddMovieViewModel(IEnumerable<MediaFormat> mediaFormats, IEnumerable<AudioFormat> audioFormats, Movie movie)
@@ -100,8 +105,8 @@ namespace MvcTesting.ViewModels
             List<string> cast = new List<string>();
 
             SetRatings();
-            SetAudio(audioFormats);
-            SetMediaTypes(mediaFormats);
+            AudioFormats = PopulateList(audioFormats);
+            MediaFormats = PopulateList(mediaFormats);
             Name = movie.Title;
             TMDbId = movie.Id;
             Overview = movie.Overview;
@@ -158,32 +163,20 @@ namespace MvcTesting.ViewModels
 
         }
 
-        public void SetMediaTypes(IEnumerable<MediaFormat> mediaTypes)
+        public List<SelectListItem> PopulateList<T>(T items) where T : IEnumerable<IItemList>
         {
-            MediaFormats = new List<SelectListItem>();
+            List<SelectListItem> Items = new List<SelectListItem>();
 
-            foreach (var media in mediaTypes)
+            foreach (var item in items)
             {
-                MediaFormats.Add(new SelectListItem
+                Items.Add(new SelectListItem
                 {
-                    Value = media.ID.ToString(),
-                    Text = media.Name
+                    Value = item.ID.ToString(),
+                    Text = item.Name
                 });
             }
-        }
 
-        public void SetAudio(IEnumerable<AudioFormat> audioFormats)
-        {
-            AudioFormats = new List<SelectListItem>();
-
-            foreach (AudioFormat audio in audioFormats)
-            {
-                AudioFormats.Add(new SelectListItem
-                {
-                    Value = audio.ID.ToString(),
-                    Text = audio.Name
-                });
-            }
+            return Items;
         }
     }
 }

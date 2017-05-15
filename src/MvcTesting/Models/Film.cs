@@ -47,10 +47,7 @@ namespace MvcTesting.Models
 
         // A general description of what the movie is about.
         public string Overview { get; set; }
-
-        // Genres the film belongs to - FilmGenre is a database for a many-to-many relationship.
-        public IList<FilmGenre> Genres { get; set; }
-
+     
         // Url for the film's trailer on Youtube.com (or elsewhere)
         public string TrailerUrl { get; set; }
 
@@ -62,5 +59,9 @@ namespace MvcTesting.Models
 
         // Is 3D an option?
         public bool Has3D { get; set; }
+
+        // Genres the film belongs to - FilmGenre is a database for a many-to-many relationship.
+        public IList<FilmGenre> Genres { get; set; }
+
     }
 }

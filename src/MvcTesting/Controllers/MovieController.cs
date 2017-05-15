@@ -77,19 +77,64 @@ namespace MvcTesting.Controllers
         [Route("/Movie/Add")]
         public IActionResult Add(AddMovieViewModel addMovieViewModel)
         {
+            // If the model is valid, create a new film and add it to the database.
             if (ModelState.IsValid)
             {
-                
+
+                MediaFormat newMediaFormat = context.MediaFormats.Single(m => m.ID == addMovieViewModel.MediaID);
+                AudioFormat newAudioFormat = context.AudioFormats.Single(a => a.ID == addMovieViewModel.AudioID);
+                Film newFilm = new Film
+                {
+                    Name = addMovieViewModel.Name,
+                    Year = (int)addMovieViewModel.Year,
+                    AspectRatio = addMovieViewModel.AspectRatio,
+                    TMDbId = addMovieViewModel.TMDbId,
+                    Comments = addMovieViewModel.Comments,
+                    Rating = addMovieViewModel.Rating,
+                    Directors = addMovieViewModel.Directors,
+                    Cast = addMovieViewModel.Cast,
+                    Overview = addMovieViewModel.Overview,
+                    TrailerUrl = addMovieViewModel.TrailerUrl,
+                    PosterUrl = addMovieViewModel.PosterUrl,
+                    IsPrivate = addMovieViewModel.IsPrivate,
+                    Has3D = addMovieViewModel.Has3D,
+                    Audio = newAudioFormat,
+                    Media= newMediaFormat
+
+                };
+
+                context.Films.Add(newFilm);
+                // context.SaveChanges();
+
+                if (addMovieViewModel.Genres != null)
+                {
+                    foreach (string genre in addMovieViewModel.Genres)
+                    {
+
+                        IList<FilmGenre> existingFilmGenres = context.FilmGenres.Where(fg => fg.FilmID == newFilm.ID)
+                            .Where(fg => fg.Genre.Name == genre).ToList();
+
+                        MvcTesting.Models.Genre newGenre = context.Genres.Single(g => g.Name == genre);
+
+                        if (existingFilmGenres.Count == 0)
+                        {
+                            FilmGenre newFilmGenre = new FilmGenre
+                            {
+                                FilmID = newFilm.ID,
+                                GenreID = newGenre.ID
+                            };
+
+                            context.FilmGenres.Add(newFilmGenre);
+                            //context.SaveChanges();
+                        }
+                    }
+                }
+                context.SaveChanges();
                 return View("Test", addMovieViewModel);
             }
-            List<SelectListItem> mediaFormats = new List<SelectListItem> { new SelectListItem {
-                Value= 0.ToString(), Text ="DVD" }, new SelectListItem {Value = 1.ToString(), Text ="Bluray" } };
-
-            List<SelectListItem> audioFormats = new List<SelectListItem> { new SelectListItem { Value = 0.ToString(), Text = "Atmos" },
-                new SelectListItem {Value=1.ToString(), Text= "DTS:X" } };
-
-            addMovieViewModel.MediaFormats = mediaFormats;
-            addMovieViewModel.AudioFormats = audioFormats;
+            
+            addMovieViewModel.MediaFormats = addMovieViewModel.PopulateList(context.MediaFormats.ToList());
+            addMovieViewModel.AudioFormats = addMovieViewModel.PopulateList(context.AudioFormats.ToList());
             
             return View(addMovieViewModel);
         }

@@ -3,13 +3,17 @@
 <div class="page-header">
     @if (Model.ReleaseDate != null)
     {
-        <h1>@Model.Title (@Model.ReleaseDate.Value.ToString("yyyy"))</h1>
+        <h1>@Model.Title (@Model.ReleaseDate.Value.ToString("yyyy"))
+            <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@Model.Id">Add This Movie</a>
+        </h1>
     }
     else
     {
-        <h1>@Model.Title</h1>
-
+        <h1>@Model.Title
+            <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@Model.Id">Add This Movie</a>
+        </h1>
     }
+    
 </div>
 
     @if (Model.Images.Posters.Count > 0)
@@ -40,3 +44,7 @@
         <h2>Trailer</h2>
         <iframe width="560" height="315" src="@("https://www.youtube.com/embed/" + @Model.Videos.Results[Model.Videos.Results.Count - 1].Key)" frameborder="0" allowfullscreen></iframe>
     }
+
+<div class="btn-block">
+    <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@Model.Id">Add This Movie</a>
+</div>
