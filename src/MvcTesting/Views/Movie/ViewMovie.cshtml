@@ -1,50 +1,50 @@
-﻿@model TMDbLib.Objects.Movies.Movie
+﻿@model MvcTesting.ViewModels.ViewMovieViewModel
 
 <div class="page-header">
-    @if (Model.ReleaseDate != null)
+    @if (Model.Film.Year > 0)
     {
-        <h1>@Model.Title (@Model.ReleaseDate.Value.ToString("yyyy"))
-            <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@Model.Id">Add This Movie</a>
+        <h1>
+            @Model.Film.Name (@Model.Film.Year)
         </h1>
     }
     else
     {
-        <h1>@Model.Title
-            <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@Model.Id">Add This Movie</a>
-        </h1>
+        <h1>
+            @Model.Film.Name
+        <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@Model.Film.ID">Add This Movie</a>
+    </h1>
     }
-    
+
 </div>
 
-    @if (Model.Images.Posters.Count > 0)
+@if (!string.IsNullOrEmpty(Model.Film.PosterUrl))
     {
-        <div class="center-block">
-            <img src="@($"https://image.tmdb.org/t/p/w300_and_h450_bestv2/{Model.Images.Posters[0].FilePath}")" />
-        </div>
+    <div class="center-block">
+        <img src="@Model.Film.PosterUrl" />
+    </div>
     }
 
-
+@if (Model.CastMembers.Count > 0)
+{
     <h2>Cast</h2>
-
     <ul>
-        @foreach (var cast in Model.Credits.Cast)
+        @foreach (var cast in Model.CastMembers)
         {
-            <li>@cast.Name : @cast.Character</li>
+            <li>@cast</li>
         }
     </ul>
+}
 
-
+@if (!string.IsNullOrEmpty(Model.Film.Overview))
+{
     <h2>Synopsis</h2>
-    @Model.Overview
+    @Model.Film.Overview
     <br />
+}
 
-
-    @if (Model.Videos.Results.Count > 0)
+@if (!string.IsNullOrEmpty(Model.Film.TrailerUrl))
     {
-        <h2>Trailer</h2>
-        <iframe width="560" height="315" src="@("https://www.youtube.com/embed/" + @Model.Videos.Results[Model.Videos.Results.Count - 1].Key)" frameborder="0" allowfullscreen></iframe>
+    <h2>Trailer</h2>
+    <iframe width="560" height="315" src="@Model.Film.TrailerUrl" frameborder="0" allowfullscreen></iframe>
     }
 
-<div class="btn-block">
-    <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@Model.Id">Add This Movie</a>
-</div>

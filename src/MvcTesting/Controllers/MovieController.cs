@@ -11,6 +11,7 @@ using TMDbLib.Objects.Movies;
 using MvcTesting.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -29,6 +30,12 @@ namespace MvcTesting.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
+            List<Film> films = context.Films.OrderBy(f => f.Name).ToList();
+            return View(films);
+        }
+
+        public IActionResult Search()
+        {
             return View();
         }
 
@@ -43,17 +50,17 @@ namespace MvcTesting.Controllers
                 movies.Add(aMovie);
             }
             SearchViewModel searchViewModel = new SearchViewModel(movies);
-            return View(searchViewModel);
+            return View("Results",searchViewModel);
         }
 
-        public IActionResult ViewMovie(int Id)
+        public IActionResult ViewSearchedMovie(int Id)
         {
 
             Movie movie = client.GetMovieAsync(Id, MovieMethods.Credits | MovieMethods.Videos | MovieMethods.Images).Result;
             return View(movie);
         }
 
-        
+                
         [HttpGet]
         public IActionResult Add(int id = -1)
         {
@@ -130,13 +137,21 @@ namespace MvcTesting.Controllers
                     }
                 }
                 context.SaveChanges();
-                return View("Test", addMovieViewModel);
+                return Redirect($"/Movie/ViewMovie/{newFilm.ID}");
             }
             
             addMovieViewModel.MediaFormats = addMovieViewModel.PopulateList(context.MediaFormats.ToList());
             addMovieViewModel.AudioFormats = addMovieViewModel.PopulateList(context.AudioFormats.ToList());
             
             return View(addMovieViewModel);
+        }
+
+        public IActionResult ViewMovie(int id)
+        {
+            Film film = context.Films.Include(f => f.Media).Include(f=> f.Audio).Single(f=>f.ID==id);
+            List<FilmGenre> genres = context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
+            ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
+            return View(viewMovieViewModel);
         }
     }
 
