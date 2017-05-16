@@ -30,7 +30,7 @@ namespace MvcTesting.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
-            List<Film> films = context.Films.OrderBy(f => f.Name).ToList();
+            List<Film> films = context.Films.OrderBy(f => f.Name).OrderBy(f => f.Year).ToList();
             return View(films);
         }
 
@@ -130,7 +130,7 @@ namespace MvcTesting.Controllers
                                 FilmID = newFilm.ID,
                                 GenreID = newGenre.ID
                             };
-
+                            
                             context.FilmGenres.Add(newFilmGenre);
                             //context.SaveChanges();
                         }
@@ -152,6 +152,28 @@ namespace MvcTesting.Controllers
             List<FilmGenre> genres = context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
             ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
             return View(viewMovieViewModel);
+            
+        }
+
+        public IActionResult Remove()
+        {
+            List<Film> films = context.Films.OrderBy(f => f.Name).OrderBy(f => f.Year).ToList();
+            return View(films);
+        }
+
+        [HttpPost]
+        public IActionResult Remove(int[] filmIds)
+        {
+            foreach (int id in filmIds)
+            {
+                Film oldFilm = context.Films.Single(f => f.ID == id);
+                context.Films.Remove(oldFilm);
+                
+            }
+
+            context.SaveChanges();
+
+            return RedirectToAction("Index");
         }
     }
 

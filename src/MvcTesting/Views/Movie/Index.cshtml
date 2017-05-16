@@ -10,6 +10,6 @@
 
 @foreach (var film in Model)
 {
-    <p><a asp-controller="Movie" asp-action="ViewMovie">@film.Name (@film.Year)</a></p>
+    <p><a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">@film.Name (@film.Year)</a></p>
 
 }

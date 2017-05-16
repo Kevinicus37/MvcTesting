@@ -1,0 +1,28 @@
+﻿@model List<MvcTesting.Models.Film>
+
+<h1>Films</h1>
+<hr />
+
+<h3>Check all movies you wish to remove from your collection.</h3>
+
+@if (Model.Count == 0)
+{
+    <p>No films yet!</p>
+
+}
+
+<form class="form-group" asp-controller="Movie" asp-action="Remove" method="post">
+@foreach (var film in Model)
+{
+    
+    <input type="checkbox" name="filmIds" value="@film.ID" />
+    <label for="@film.Name"><a asp-controller="Movie" 
+                               asp-action="ViewMovie" 
+                               asp-route-id="@film.ID">
+                               @film.Name (@film.Year)</a>
+    </label>
+    <br />
+}
+
+<button class="btn btn-primary" type="submit">Remove Selected Films</button>
+</form>
