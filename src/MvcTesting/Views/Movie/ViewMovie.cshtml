@@ -5,13 +5,14 @@
     {
         <h1>
             @Model.Film.Name (@Model.Film.Year)
+            <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
         </h1>
     }
     else
     {
         <h1>
             @Model.Film.Name
-        <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@Model.Film.ID">Add This Movie</a>
+        <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
     </h1>
     }
 
@@ -48,3 +49,7 @@
     <iframe width="560" height="315" src="@Model.Film.TrailerUrl" frameborder="0" allowfullscreen></iframe>
     }
 
+<form asp-controller="Movie" asp-action="Remove" method="post">
+    <input type="hidden" name="filmIds" value="@Model.Film.ID" />
+    <button type="submit" class="btn btn-danger">Delete this Movie</button>
+</form>
