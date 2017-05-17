@@ -10,6 +10,10 @@ namespace MvcTesting.Models
         // ID for database
         public int ID { get; set; }  
 
+        // Associated User
+        public ApplicationUser User { get; set; }
+        public string UserID { get; set; }
+
         // Title of Movie/Disc
         public string Name { get; set; }
 
@@ -61,7 +65,7 @@ namespace MvcTesting.Models
         public bool Has3D { get; set; }
 
         // Genres the film belongs to - FilmGenre is a database for a many-to-many relationship.
-        public IList<FilmGenre> Genres { get; set; }
+        public IList<FilmGenre> FilmGenres { get; set; }
 
     }
 }

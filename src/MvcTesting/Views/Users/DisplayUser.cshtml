@@ -1,0 +1,13 @@
+﻿@model MvcTesting.ViewModels.DisplayUserViewModel
+
+<h1>@(Model.User.UserName)'s Collection</h1>
+<hr />
+
+<ul>
+
+    @foreach (var film in Model.Films)
+    {
+        <li><a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">@film.Name</a></li>
+    }
+
+</ul>

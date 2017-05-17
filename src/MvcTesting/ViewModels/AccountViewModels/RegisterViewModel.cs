@@ -8,6 +8,9 @@ namespace MvcTesting.Models.AccountViewModels
 {
     public class RegisterViewModel
     {
+        [Display(Name ="Username")]
+        public string Username { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]

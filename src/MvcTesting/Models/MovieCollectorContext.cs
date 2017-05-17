@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MvcTesting.Models
 {
-    public class MovieCollectorContext : DbContext
+    public class MovieCollectorContext : IdentityDbContext<ApplicationUser>
     {
 
         public MovieCollectorContext(DbContextOptions<MovieCollectorContext> options) : base(options)
@@ -16,6 +17,7 @@ namespace MvcTesting.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<FilmGenre>().HasKey(f => new { f.FilmID, f.GenreID });
         }
 

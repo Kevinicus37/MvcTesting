@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace MvcTesting.Data.Migrations
+namespace MvcTesting.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class AddApplicationUser : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -150,6 +148,16 @@ namespace MvcTesting.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.AddColumn<string>(
+                name: "UserID",
+                table: "Films",
+                nullable: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Films_UserID",
+                table: "Films",
+                column: "UserID");
+
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
@@ -190,10 +198,30 @@ namespace MvcTesting.Data.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Films_AspNetUsers_UserID",
+                table: "Films",
+                column: "UserID",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Films_AspNetUsers_UserID",
+                table: "Films");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Films_UserID",
+                table: "Films");
+
+            migrationBuilder.DropColumn(
+                name: "UserID",
+                table: "Films");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 

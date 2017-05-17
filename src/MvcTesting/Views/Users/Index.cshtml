@@ -1,0 +1,13 @@
+﻿@model MvcTesting.ViewModels.UserIndexViewModel
+
+<h1>User Index</h1>
+<hr />
+
+<ul>
+
+    @foreach (var user in Model.Users)
+    {
+        <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-username="@user.UserName">@user.UserName</a></li>
+    }
+
+</ul>

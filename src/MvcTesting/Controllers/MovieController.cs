@@ -12,6 +12,9 @@ using MvcTesting.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+//using MvcTesting.Data;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,17 +22,23 @@ namespace MvcTesting.Controllers
 {
     public class MovieController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private MovieCollectorContext context;
+        
         TMDbClient client;
 
-        public MovieController(MovieCollectorContext dbContext)
+        public MovieController(MovieCollectorContext dbContext,  UserManager<ApplicationUser> userManager)
         {
+            
+            _userManager = userManager;
             context = dbContext;
             client = new TMDbClient("9950b6bfd3eef8b5c9b7343ead080098");
         }
         // GET: /<controller>/
         public IActionResult Index()
         {
+            string username = _userManager.GetUserName(User);
+            string ID = _userManager.GetUserId(User);
             List<Film> films = context.Films.OrderBy(f => f.Name).OrderBy(f => f.Year).ToList();
             return View(films);
         }
@@ -60,7 +69,7 @@ namespace MvcTesting.Controllers
             return View(movie);
         }
 
-
+        [Authorize]
         [HttpGet]
         public IActionResult Add(int id = -1)
         {
@@ -80,15 +89,19 @@ namespace MvcTesting.Controllers
             return View(addMovieViewModel);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("/Movie/Add")]
-        public IActionResult Add(AddMovieViewModel addMovieViewModel)
+        public async Task<IActionResult> Add(AddMovieViewModel addMovieViewModel)
         {
             // If the model is valid, create a new film and add it to the database.
             if (ModelState.IsValid)
             {
+                ApplicationUser user = context.Users.Single(u => u.Id == _userManager.GetUserId(User));
                 Film film = new Film();
-                int id = UpdateMovie(addMovieViewModel, film);
+                film.User = user;
+                int whatID = film.ID;
+                int id = await UpdateMovieAsync(addMovieViewModel, film);
                 return Redirect($"/Movie/ViewMovie/{id}");
             }
 
@@ -107,12 +120,14 @@ namespace MvcTesting.Controllers
 
         }
 
+        [Authorize]
         public IActionResult Remove()
         {
             List<Film> films = context.Films.OrderBy(f => f.Name).OrderBy(f => f.Year).ToList();
             return View(films);
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult Remove(int[] filmIds)
         {
@@ -120,7 +135,7 @@ namespace MvcTesting.Controllers
             {
                 Film oldFilm = context.Films.Single(f => f.ID == id);
                 context.Films.Remove(oldFilm);
-
+                
             }
 
             context.SaveChanges();
@@ -128,24 +143,37 @@ namespace MvcTesting.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize]
         public IActionResult Edit(int id)
         {
+            
             Film editMovie = context.Films.Single(f => f.ID == id);
-            List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
-            List<AudioFormat> audioFormats = context.AudioFormats.ToList();
-            EditMovieViewModel editMovieViewModel = new EditMovieViewModel(mediaFormats, audioFormats, editMovie);
-            editMovieViewModel.ID = id;
-            return View(editMovieViewModel);
+            if (_userManager.GetUserId(User) == editMovie.UserID)
+            {
+                List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
+                List<AudioFormat> audioFormats = context.AudioFormats.ToList();
+                EditMovieViewModel editMovieViewModel = new EditMovieViewModel(mediaFormats, audioFormats, editMovie);
+                editMovieViewModel.ID = id;
+                return View(editMovieViewModel);
+            }
+            return RedirectToAction("Index");
         }
 
+        [Authorize]
         [HttpPost]
-        public IActionResult Edit(EditMovieViewModel editMovieViewModel)
+        public async Task<IActionResult> Edit(EditMovieViewModel editMovieViewModel)
         {
             if (ModelState.IsValid)
             {
+
                 Film film = context.Films.Single(f => f.ID == editMovieViewModel.ID);
-                int id = UpdateMovie(editMovieViewModel, film);
-                return Redirect($"/Movie/ViewMovie/{id}");
+                if (film.UserID == _userManager.GetUserId(User))
+                {
+                    int id = await UpdateMovieAsync(editMovieViewModel, film);
+                    return Redirect($"/Movie/ViewMovie/{id}");
+                }
+
+                return RedirectToAction("Index");
             }
 
             editMovieViewModel.MediaFormats = editMovieViewModel.PopulateList(context.MediaFormats.ToList());
@@ -154,13 +182,14 @@ namespace MvcTesting.Controllers
             return View(editMovieViewModel);
         }
 
-        public int UpdateMovie(AddMovieViewModel viewModel, Film film)
+        public async Task<int> UpdateMovieAsync(AddMovieViewModel viewModel, Film film)
         {   
             // UpdateMovie transfers data from viewModel to the Film object.  The created
             // or edited film's ID is returned as an int.
 
             MediaFormat newMediaFormat = context.MediaFormats.Single(m => m.ID == viewModel.MediaID);
             AudioFormat newAudioFormat = context.AudioFormats.Single(a => a.ID == viewModel.AudioID);
+
             film.Name = viewModel.Name;
             film.Year = (int)viewModel.Year;
             film.AspectRatio = viewModel.AspectRatio;
@@ -176,6 +205,12 @@ namespace MvcTesting.Controllers
             film.Has3D = viewModel.Has3D;
             film.Audio = newAudioFormat;
             film.Media = newMediaFormat;
+
+            Film existingFilm = context.Films.SingleOrDefault(f => f.ID == film.ID);
+            if (existingFilm == null)
+            {
+                context.Films.Add(film);
+            }
             
             if (viewModel.Genres != null)
             {

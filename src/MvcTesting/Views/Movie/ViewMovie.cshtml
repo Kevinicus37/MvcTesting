@@ -1,19 +1,26 @@
 ﻿@model MvcTesting.ViewModels.ViewMovieViewModel
 
+@inject UserManager<ApplicationUser> UserManager
 <div class="page-header">
     @if (Model.Film.Year > 0)
     {
         <h1>
             @Model.Film.Name (@Model.Film.Year)
-            <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
+            @if (Model.Film.UserID == UserManager.GetUserId(User))
+            {
+                <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
+            }
         </h1>
     }
     else
     {
         <h1>
             @Model.Film.Name
-        <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
-    </h1>
+            @if (Model.Film.UserID == UserManager.GetUserId(User))
+            {
+                <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
+            }
+        </h1>
     }
 
 </div>
@@ -49,7 +56,10 @@
     <iframe width="560" height="315" src="@Model.Film.TrailerUrl" frameborder="0" allowfullscreen></iframe>
     }
 
-<form asp-controller="Movie" asp-action="Remove" method="post">
-    <input type="hidden" name="filmIds" value="@Model.Film.ID" />
-    <button type="submit" class="btn btn-danger">Delete this Movie</button>
-</form>
+@if (UserManager.GetUserId(User) == Model.Film.UserID)
+{
+    <form asp-controller="Movie" asp-action="Remove" method="post">
+        <input type="hidden" name="filmIds" value="@Model.Film.ID" />
+        <button type="submit" class="btn btn-danger">Delete this Movie</button>
+    </form>
+}
