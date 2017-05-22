@@ -1,15 +1,63 @@
-﻿@model List<MvcTesting.Models.Film>
+﻿@model MvcTesting.ViewModels.MovieIndexViewModel
 
 <h1>Films</h1>
 <hr />
-@if (Model.Count == 0)
+
+@if (Model.Films.Count == 0)
 {
     <p>No films yet!</p>
 
 }
 
-@foreach (var film in Model)
+@if (Model.PosterUrls.Count > 2)
 {
-    <p><a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">@film.Name (@film.Year)</a></p>
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            @for (int i = 1; i < Model.PosterUrls.Count; i++)
+            {
+                <li data-target="#myCarousel" data-slide-to="@i"></li>
+            }
+        </ol>
 
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner">
+        
+            <div class="item active">
+                <img class="img-responsive center-block" src="@Model.PosterUrls[0]">
+            </div>
+            @for (int i = 1; i < Model.PosterUrls.Count; i++)
+            {
+                <div class="item">
+                    <img class="img-responsive center-block" src="@Model.PosterUrls[i]" >
+                </div>
+            }
+
+        </div>
+
+        <!-- Left and right controls -->
+        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    
 }
+
+<br /><br />
+
+<ul>
+    @foreach (var film in Model.Films)
+    {   
+        <li>
+            <label for="@film.Name">
+                <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">@film.Name @film.Year</a>
+            </label>
+        </li>
+    }
+</ul>

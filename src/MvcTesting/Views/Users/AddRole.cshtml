@@ -1,0 +1,10 @@
+﻿@model MvcTesting.ViewModels.UsersAddRoleViewModel
+
+<h3>Add Role for @Model.Username</h3>
+<div asp-validation-summary="All"></div>
+
+<form asp-controller="Users" asp-action="AddRole" method="post">
+    <input asp-for="@Model.UserID" type="hidden" />
+    <select asp-for="@Model.NewRole" asp-items="@Model.Roles"></select>
+    <button class="btn btn-primary" type="submit">Add Role to User</button>
+</form>

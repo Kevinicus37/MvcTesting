@@ -39,8 +39,9 @@ namespace MvcTesting.Controllers
         {
             string username = _userManager.GetUserName(User);
             string ID = _userManager.GetUserId(User);
-            List<Film> films = context.Films.OrderBy(f => f.Name).OrderBy(f => f.Year).ToList();
-            return View(films);
+            List<Film> films = context.Films.OrderBy(f => f.Name).OrderByDescending(f => f.Updated).ToList();
+            MovieIndexViewModel movieIndexViewModel = new MovieIndexViewModel(films);
+            return View(movieIndexViewModel);
         }
 
         public IActionResult Search()
@@ -123,7 +124,7 @@ namespace MvcTesting.Controllers
         [Authorize]
         public IActionResult Remove()
         {
-            List<Film> films = context.Films.OrderBy(f => f.Name).OrderBy(f => f.Year).ToList();
+            List<Film> films = context.Films.OrderBy(f=>f.Name).OrderBy(f=>f.Year).Where(f => f.UserID== _userManager.GetUserId(User)).ToList();
             return View(films);
         }
 
@@ -144,15 +145,17 @@ namespace MvcTesting.Controllers
         }
 
         [Authorize]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            
+
+            ApplicationUser user = context.Users.Single(u => u.Id == _userManager.GetUserId(User));
             Film editMovie = context.Films.Single(f => f.ID == id);
-            if (_userManager.GetUserId(User) == editMovie.UserID)
+            if (user.Id == editMovie.UserID || await _userManager.IsInRoleAsync(user, "Admin"))
             {
                 List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
                 List<AudioFormat> audioFormats = context.AudioFormats.ToList();
                 EditMovieViewModel editMovieViewModel = new EditMovieViewModel(mediaFormats, audioFormats, editMovie);
+                editMovieViewModel.Genres = GetGenres(id);
                 editMovieViewModel.ID = id;
                 return View(editMovieViewModel);
             }
@@ -172,7 +175,7 @@ namespace MvcTesting.Controllers
                     int id = await UpdateMovieAsync(editMovieViewModel, film);
                     return Redirect($"/Movie/ViewMovie/{id}");
                 }
-
+                
                 return RedirectToAction("Index");
             }
 
@@ -182,7 +185,7 @@ namespace MvcTesting.Controllers
             return View(editMovieViewModel);
         }
 
-        public async Task<int> UpdateMovieAsync(AddMovieViewModel viewModel, Film film)
+        private async Task<int> UpdateMovieAsync(AddMovieViewModel viewModel, Film film)
         {   
             // UpdateMovie transfers data from viewModel to the Film object.  The created
             // or edited film's ID is returned as an int.
@@ -191,7 +194,10 @@ namespace MvcTesting.Controllers
             AudioFormat newAudioFormat = context.AudioFormats.Single(a => a.ID == viewModel.AudioID);
 
             film.Name = viewModel.Name;
-            film.Year = (int)viewModel.Year;
+            if (!string.IsNullOrEmpty(viewModel.Year))
+            {
+                film.Year = "(" + viewModel.Year + ")";
+            }
             film.AspectRatio = viewModel.AspectRatio;
             film.TMDbId = viewModel.TMDbId;
             film.Comments = viewModel.Comments;
@@ -206,12 +212,14 @@ namespace MvcTesting.Controllers
             film.Audio = newAudioFormat;
             film.Media = newMediaFormat;
 
+            // Adds the film to the db if it does not already exist.
             Film existingFilm = context.Films.SingleOrDefault(f => f.ID == film.ID);
             if (existingFilm == null)
             {
                 context.Films.Add(film);
             }
-            
+
+            // Add genres to the film.  Deletes any previously selected genres if they arne't still selected from an edit.
             if (viewModel.Genres != null)
             {
                 List<FilmGenre> thisFilmGenres = context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == film.ID).ToList();
@@ -249,8 +257,25 @@ namespace MvcTesting.Controllers
                 }
             }
 
+            // The time the Film and User are updated are saved, allowing them to be sorted later
+            // by most recent activity.
+            film.Updated = DateTime.Now;
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            user.Updated = DateTime.Now;
             context.SaveChanges();
+
             return film.ID;
+        }
+
+        private List<string> GetGenres(int filmId)
+        {
+            List<string> genres = new List<string>();
+            List<FilmGenre> FilmGenres = context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == filmId).ToList();
+            foreach (var filmGenre in FilmGenres)
+            {
+                genres.Add(filmGenre.Genre.Name);
+            }
+            return genres;
         }
     }  
 

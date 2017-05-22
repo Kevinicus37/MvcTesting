@@ -22,10 +22,9 @@ namespace MvcTesting.ViewModels
         [Display(Name="Disc Format (Required):")]
         public int MediaID { get; set; }
 
-
+        [RegularExpression("^([1][9][0-9]{2}|[2-9][0-9]{3})$", ErrorMessage = "Year must be a number greater than 1900")]
         [Display(Name = "Year:")]
-        //[DisplayFormat(ApplyFormatInEditMode =true, DataFormatString ="{0:#}")]
-        public int? Year { get; set; }
+        public string Year { get; set; }
 
         // Aspect ratio of film (1.33:1, 1.77:1, 1.85:1, 16:9, 2.35:1, 2.39:1, 2.4:1, shifting, etc.)
         [Display(Name = "Aspect Ratio:")]
@@ -113,7 +112,7 @@ namespace MvcTesting.ViewModels
 
             if (movie.ReleaseDate.Value != null)
             {
-                Year = int.Parse(movie.ReleaseDate.Value.ToString("yyyy"));
+                Year = "(" + movie.ReleaseDate.Value.ToString("yyyy") + ")";
             }
 
             
@@ -137,13 +136,13 @@ namespace MvcTesting.ViewModels
                     }
                 }
             }
-            Directors = String.Join(", ", directors.ToArray());
+            Directors = String.Join(", ", directors);
 
             for (int i = 0; i < movie.Credits.Cast.Count && i <= 8; i++)
             {
                 cast.Add(movie.Credits.Cast[i].Name);
             }
-            Cast = String.Join(", ", cast.ToArray());
+            Cast = String.Join(", ", cast);
         }
         
         public void SetRatings()

@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@model MvcTesting.ViewModels.UsersViewRolesViewModel
+@inject UserManager<ApplicationUser> userManager;
+<h1>User Roles</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Roles</th>
+            <th>Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@(string.Join(", ", await userManager.GetRolesAsync(user)))</td>
+                <td><a asp-controller="Users" asp-action="AddRole" asp-route-id="@user.Id">Add Role</a></td>
+            </tr>
+
+        }
+        
+    </tbody>
+</table>

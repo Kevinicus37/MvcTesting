@@ -8,9 +8,10 @@ using MvcTesting.Models;
 namespace MvcTesting.Migrations
 {
     [DbContext(typeof(MovieCollectorContext))]
-    partial class MovieCollectorContextModelSnapshot : ModelSnapshot
+    [Migration("20170518183023_AddUpdatedField")]
+    partial class AddUpdatedField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -215,8 +216,6 @@ namespace MvcTesting.Migrations
 
                     b.Property<int>("Rating");
 
-                    b.Property<string>("Runtime");
-
                     b.Property<int>("TMDbId");
 
                     b.Property<string>("TrailerUrl");
@@ -225,7 +224,7 @@ namespace MvcTesting.Migrations
 
                     b.Property<string>("UserID");
 
-                    b.Property<string>("Year");
+                    b.Property<int>("Year");
 
                     b.HasKey("ID");
 

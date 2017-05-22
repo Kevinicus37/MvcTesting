@@ -7,7 +7,11 @@
 
     @foreach (var user in Model.Users)
     {
-        <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-username="@user.UserName">@user.UserName</a></li>
+        <li>
+            <label for="@user.UserName">
+                <a asp-controller="Users" asp-action="DisplayUser" asp-route-username="@user.UserName">@user.UserName</a>
+            </label>
+        </li>
     }
 
 </ul>

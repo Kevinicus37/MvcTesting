@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MvcTesting.Models
 {
@@ -18,7 +16,7 @@ namespace MvcTesting.Models
         public string Name { get; set; }
 
         // Year of release (theatrical)
-        public int Year { get; set; }
+        public string Year { get; set; }
 
         // Format (DVD, Blu-ray, 4K UHD, Digital, etc.) 
         // This is a one-to many relationship
@@ -66,6 +64,12 @@ namespace MvcTesting.Models
 
         // Genres the film belongs to - FilmGenre is a database for a many-to-many relationship.
         public IList<FilmGenre> FilmGenres { get; set; }
+
+        // When film was created or last updated.  Whichever is most recent.
+        public DateTime Updated { get; set; }
+
+        // Length of the film
+        public string Runtime { get; set; }
 
     }
 }

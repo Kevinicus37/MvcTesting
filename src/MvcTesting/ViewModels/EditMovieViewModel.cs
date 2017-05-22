@@ -24,7 +24,12 @@ namespace MvcTesting.ViewModels
             Name = film.Name;
             TMDbId = film.TMDbId;
             Overview = film.Overview;
-            Year = film.Year;
+
+            if (!string.IsNullOrEmpty(film.Year))
+            {
+                Year = "(" + film.Year + ")";
+            }
+
             TrailerUrl = film.TrailerUrl;
             PosterUrl = film.PosterUrl;
             Directors = film.Directors;

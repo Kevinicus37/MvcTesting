@@ -6,8 +6,18 @@
 <ul>
 
     @foreach (var film in Model.Films)
-    {
-        <li><a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">@film.Name</a></li>
+    { 
+        <li>
+            <label for="@film.Name">
+                <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">@film.Name 
+                    @if (film.Year > 1900)
+                    {
+                        @:(@film.Year)
+                    }
+               
+                </a>
+            </label>
+        </li>
     }
 
 </ul>

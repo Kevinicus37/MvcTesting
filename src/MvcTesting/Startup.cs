@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -46,7 +47,8 @@ namespace MvcTesting
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                options.Cookies.ApplicationCookie.AccessDeniedPath = "/Account/Login")
                 .AddEntityFrameworkStores<MovieCollectorContext>()
                 .AddDefaultTokenProviders();
 
@@ -91,6 +93,8 @@ namespace MvcTesting
                     name: "default",
                     template: "{controller=Movie}/{action=Index}/{id?}");
             });
+
+            new UserRoleSeed(app.ApplicationServices.GetService<RoleManager<IdentityRole>>()).Seed();
         }
     }
 }
