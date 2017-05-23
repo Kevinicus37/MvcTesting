@@ -12,7 +12,9 @@ namespace MvcTesting.ViewModels
 
         public IList<string> CastMembers { get; set; }
 
-        public IList<FilmGenre> Genres { get; set; }
+        public IList<FilmGenre> Genres { get; set; } 
+
+        public string DisplayYear { get; set; }
 
         public ViewMovieViewModel(Film film, IList<FilmGenre> genres)
         {
@@ -20,6 +22,10 @@ namespace MvcTesting.ViewModels
             CastMembers = new List<string>();
             CastMembers = film.Cast.Split(',').ToList();
             Genres = genres;
+            if (!string.IsNullOrEmpty(film.Year))
+            {
+                DisplayYear = "(" + film.Year + ")";
+            }
         }
     }
 

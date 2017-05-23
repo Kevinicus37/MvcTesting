@@ -8,6 +8,7 @@ using MvcTesting.ViewModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using System.Reflection;
 
 namespace MvcTesting.Controllers
 {
@@ -24,10 +25,18 @@ namespace MvcTesting.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string sortBy = "UserName", bool descending = false)
         {
-            
-            List<ApplicationUser> Users = context.Users.OrderBy(u => u.UserName).ToList();
+            List<ApplicationUser> Users;
+            if (!descending)
+            {
+                 Users = context.Users.OrderBy(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
+            }
+            else
+            {
+                Users = context.Users.OrderByDescending(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
+            }
+
             UserIndexViewModel userIndexViewModel = new UserIndexViewModel { Users = Users };
             return View(userIndexViewModel);
         }

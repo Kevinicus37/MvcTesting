@@ -62,9 +62,11 @@ namespace MvcTesting.ViewModels
         public string Overview { get; set; }
 
         // Genres the film belongs to.
-        // Likely need to create a class
         [Display(Name = "Genres:")]
         public List<string> Genres { get; set; }
+
+        // Available Genres a film can belong to.
+        public List<Models.Genre> AvailableGenres { get; set; }
 
         // Url for the film's trailer on Youtube.com
         [Display(Name = "Trailer URL:")]
@@ -79,6 +81,8 @@ namespace MvcTesting.ViewModels
 
         [Display(Name="Private? (If Checked, others will not be able to see this movie in your collection.)")]
         public bool IsPrivate { get; set; }
+
+        public string DisplayYear { get; set; }
 
 
         public List<SelectListItem> Ratings { get; set; }
@@ -112,7 +116,8 @@ namespace MvcTesting.ViewModels
 
             if (movie.ReleaseDate.Value != null)
             {
-                Year = "(" + movie.ReleaseDate.Value.ToString("yyyy") + ")";
+                Year = movie.ReleaseDate.Value.ToString("yyyy");
+                DisplayYear = "(" + Year + ")";
             }
 
             

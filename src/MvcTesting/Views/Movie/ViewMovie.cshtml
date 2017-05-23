@@ -4,7 +4,7 @@
 <div class="page-header">
    
         <h1>
-            @Model.Film.Name @Model.Film.Year
+            @Model.Film.Name @Model.DisplayYear
             @if (Model.Film.UserID == UserManager.GetUserId(User) || User.IsInRole("Admin") )
             {
                 <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>

@@ -77,6 +77,7 @@ namespace MvcTesting.Controllers
             AddMovieViewModel addMovieViewModel;
             List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
             List<AudioFormat> audioFormats = context.AudioFormats.ToList();
+            List<Models.Genre> Genres = context.Genres.ToList();
 
             if (id == -1)
             {
@@ -87,6 +88,8 @@ namespace MvcTesting.Controllers
                 Movie movie = client.GetMovieAsync(id, MovieMethods.Credits | MovieMethods.Videos | MovieMethods.Images).Result;
                 addMovieViewModel = new AddMovieViewModel(mediaFormats, audioFormats, movie);
             }
+
+            addMovieViewModel.AvailableGenres = Genres;
             return View(addMovieViewModel);
         }
 
@@ -114,10 +117,15 @@ namespace MvcTesting.Controllers
 
         public IActionResult ViewMovie(int id)
         {
-            Film film = context.Films.Include(f => f.Media).Include(f => f.Audio).Single(f => f.ID == id);
-            List<FilmGenre> genres = context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
-            ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
-            return View(viewMovieViewModel);
+            Film film = context.Films.Include(f => f.Media).Include(f => f.Audio).SingleOrDefault(f => f.ID == id);
+            if (film != null)
+            {
+                List<FilmGenre> genres = context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
+                ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
+                return View(viewMovieViewModel);
+            }
+            return View("Index");
+            
 
         }
 
@@ -157,8 +165,10 @@ namespace MvcTesting.Controllers
                 EditMovieViewModel editMovieViewModel = new EditMovieViewModel(mediaFormats, audioFormats, editMovie);
                 editMovieViewModel.Genres = GetGenres(id);
                 editMovieViewModel.ID = id;
+                editMovieViewModel.AvailableGenres = context.Genres.ToList();
                 return View(editMovieViewModel);
             }
+            
             return RedirectToAction("Index");
         }
 
@@ -181,7 +191,7 @@ namespace MvcTesting.Controllers
 
             editMovieViewModel.MediaFormats = editMovieViewModel.PopulateList(context.MediaFormats.ToList());
             editMovieViewModel.AudioFormats = editMovieViewModel.PopulateList(context.AudioFormats.ToList());
-
+            editMovieViewModel.AvailableGenres = context.Genres.ToList();
             return View(editMovieViewModel);
         }
 
@@ -194,10 +204,7 @@ namespace MvcTesting.Controllers
             AudioFormat newAudioFormat = context.AudioFormats.Single(a => a.ID == viewModel.AudioID);
 
             film.Name = viewModel.Name;
-            if (!string.IsNullOrEmpty(viewModel.Year))
-            {
-                film.Year = "(" + viewModel.Year + ")";
-            }
+            film.Year = viewModel.Year;
             film.AspectRatio = viewModel.AspectRatio;
             film.TMDbId = viewModel.TMDbId;
             film.Comments = viewModel.Comments;
