@@ -13,14 +13,11 @@ namespace MvcTesting.ViewModels
 
         public EditMovieViewModel() { }
 
-        public EditMovieViewModel(IEnumerable<MediaFormat> mediaFormats, IEnumerable<AudioFormat> audioFormats, Film film) : base(mediaFormats, audioFormats)
+        public EditMovieViewModel(IEnumerable<MediaFormat> mediaFormats, IEnumerable<AudioFormat> audioFormats, Film film) : base(mediaFormats, audioFormats, null)
         {
             List<string> directors = new List<string>();
             List<string> cast = new List<string>();
 
-            SetRatings();
-            AudioFormats = PopulateList(audioFormats);
-            MediaFormats = PopulateList(mediaFormats);
             Name = film.Name;
             TMDbId = film.TMDbId;
             Overview = film.Overview;
@@ -42,6 +39,7 @@ namespace MvcTesting.ViewModels
             MediaID = film.MediaID;
             Comments = film.Comments;
             AspectRatio = film.AspectRatio;
+            Runtime = film.Runtime;
             
         }
     }

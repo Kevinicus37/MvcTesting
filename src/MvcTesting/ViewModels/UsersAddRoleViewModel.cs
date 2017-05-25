@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace MvcTesting.ViewModels
 {
@@ -7,6 +8,7 @@ namespace MvcTesting.ViewModels
 
         public string Username { get; set; }
 
+        [Required]
         public string NewRole { get; set; }
 
         public SelectList Roles { get; set; }

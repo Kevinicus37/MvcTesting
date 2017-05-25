@@ -1,6 +1,6 @@
 ﻿@model MvcTesting.ViewModels.MovieIndexViewModel
 
-<h1>Films</h1>
+<h1>Welcome to MovieLot!</h1>
 <hr />
 
 @if (Model.Films.Count == 0)
@@ -9,9 +9,9 @@
 
 }
 
-@if (Model.PosterUrls.Count > 2)
+@if (Model.PosterUrls.Count > 0)
 {
-    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+    <div id="myCarousel" style="background-color: rgba(10,0,10,.8)" class="carousel slide" data-ride="carousel">
         <!-- Indicators -->
         <ol class="carousel-indicators">
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>

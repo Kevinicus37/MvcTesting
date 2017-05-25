@@ -69,6 +69,7 @@ namespace MvcTesting.Models
         public DateTime Updated { get; set; }
 
         // Length of the film
+        
         public string Runtime { get; set; }
 
     }

@@ -9,12 +9,7 @@
     { 
         <li>
             <label for="@film.Name">
-                <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">@film.Name 
-                    @if (film.Year > 1900)
-                    {
-                        @:(@film.Year)
-                    }
-               
+                <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">@film.Name @(!string.IsNullOrEmpty(film.Year)? "(" + film.Year+ ")": "")            
                 </a>
             </label>
         </li>

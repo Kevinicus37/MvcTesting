@@ -45,16 +45,23 @@
 <br />
 
 <label asp-for="Directors"></label>
-<textarea class="form-control" asp-for="Directors"></textarea>
+<textarea class="form-control" rows="5" asp-for="Directors"></textarea>
 <span asp-validation-for="Directors"></span>
+<br />
 
 <label asp-for="Cast"></label>
-<textarea class="form-control" asp-for="Cast"></textarea>
+<textarea class="form-control" rows="5" asp-for="Cast"></textarea>
 <span asp-validation-for="Cast"></span>
+<br />
 
-<h3>Genres</h3>
- 
-@foreach (var genre in Model.AvailableGenres)
-{
-    <label><input type="checkbox" class="checkbox-inline" name="Genres" value="@genre.Name" @(Model.Genres.Contains(@genre.Name)? "checked='checked'" : "")/>@genre.Name</label>
-}
+<div class="panel panel-default">
+    <div class="panel-heading"><label asp-for="Genres"></label></div>
+    <div class="panel-body">
+        @foreach (var genre in Model.AvailableGenres)
+        {
+            <label class="checkbox-inline"><input type="checkbox" name="Genres" value="@genre.Name"
+                           @(Model.Genres != null? Model.Genres.Contains(@genre.Name)? "checked='checked'" : "" : "")/>@genre.Name</label>
+        }
+    </div>
+</div>
+<p><input type="checkbox" asp-for="IsPrivate" /><label asp-for="IsPrivate"></label></p>

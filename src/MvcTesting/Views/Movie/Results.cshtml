@@ -52,7 +52,7 @@
                                                 }
                                             }
 
-                                        string Directors = String.Join(", ", directors.ToArray());
+                                        string Directors = String.Join(", ", directors);
                                     
                                 <em>Directed by @Directors</em>
                              }
@@ -74,7 +74,13 @@
 <div class="col-md-6 col-md-offset-2">
     <h2>Don't see the movie you're Looking For?</h2>
     <a class=" btn btn-primary" asp-controller="Movie" asp-action="Add">Add Manually</a>
+    Or
+    <form asp-controller="Movie" asp-action="Search" method="post">
+        <input type="text" name="query" />
+        <button class="btn btn-primary" type="submit">Try Another Search</button>
+    </form>
 </div>
+
 
 
 

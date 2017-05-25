@@ -82,10 +82,13 @@ namespace MvcTesting.ViewModels
         [Display(Name="Private? (If Checked, others will not be able to see this movie in your collection.)")]
         public bool IsPrivate { get; set; }
 
+        [Display(Name= "Runtime:")]
+        public string Runtime { get; set; }
+
         public string DisplayYear { get; set; }
 
 
-        public List<SelectListItem> Ratings { get; set; }
+        public SelectList Ratings { get; set; }
         public List<SelectListItem> MediaFormats { get; set; }
         public List<SelectListItem> AudioFormats { get; set; }
 
@@ -94,76 +97,70 @@ namespace MvcTesting.ViewModels
             SetRatings();
         }
 
-        public AddMovieViewModel(IEnumerable<MediaFormat> mediaFormats, IEnumerable<AudioFormat> audioFormats)
-        {
-            SetRatings();
-            AudioFormats=PopulateList<IEnumerable<AudioFormat>>(audioFormats);
-            MediaFormats = PopulateList<IEnumerable<MediaFormat>>(mediaFormats);
-            
-        }
+        //public AddMovieViewModel(IEnumerable<MediaFormat> mediaFormats, IEnumerable<AudioFormat> audioFormats)
+        //{
+        //    SetRatings();
+        //    AudioFormats=PopulateList(audioFormats);
+        //    MediaFormats = PopulateList(mediaFormats);
+        //}
 
         public AddMovieViewModel(IEnumerable<MediaFormat> mediaFormats, IEnumerable<AudioFormat> audioFormats, Movie movie)
         {
-            List<string> directors = new List<string>();
-            List<string> cast = new List<string>();
+            
 
             SetRatings();
             AudioFormats = PopulateList(audioFormats);
             MediaFormats = PopulateList(mediaFormats);
-            Name = movie.Title;
-            TMDbId = movie.Id;
-            Overview = movie.Overview;
 
-            if (movie.ReleaseDate.Value != null)
+            if (movie != null)
             {
-                Year = movie.ReleaseDate.Value.ToString("yyyy");
-                DisplayYear = "(" + Year + ")";
-            }
+                Name = movie.Title;
+                TMDbId = movie.Id;
+                Overview = movie.Overview;
+                Runtime = movie.Runtime.ToString();
+                List<string> directors = new List<string>();
+                List<string> cast = new List<string>();
 
-            
-            if (movie.Videos.Results.Count > 0)
-            {
-                TrailerUrl = "https://www.youtube.com/embed/" + movie.Videos.Results[movie.Videos.Results.Count - 1].Key;
-            }
-            
-            if (movie.Images.Posters.Count > 0)
-            {
-                PosterUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + movie.Images.Posters[0].FilePath;
-            }
-
-            if (movie.Credits.Crew.Count > 0)
-            {
-                foreach (Crew member in movie.Credits.Crew)
+                if (movie.ReleaseDate.Value != null)
                 {
-                    if (member.Job == "Director")
+                    Year = movie.ReleaseDate.Value.ToString("yyyy");
+                    DisplayYear = "(" + Year + ")";
+                }
+
+
+                if (movie.Videos.Results.Count > 0)
+                {
+                    TrailerUrl = "https://www.youtube.com/embed/" + movie.Videos.Results[movie.Videos.Results.Count - 1].Key;
+                }
+
+                if (movie.Images.Posters.Count > 0)
+                {
+                    PosterUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + movie.Images.Posters[0].FilePath;
+                }
+
+                if (movie.Credits.Crew.Count > 0)
+                {
+                    foreach (Crew member in movie.Credits.Crew)
                     {
-                        directors.Add(member.Name);
+                        if (member.Job == "Director")
+                        {
+                            directors.Add(member.Name);
+                        }
                     }
                 }
-            }
-            Directors = String.Join(", ", directors);
+                Directors = String.Join(", ", directors);
 
-            for (int i = 0; i < movie.Credits.Cast.Count && i <= 8; i++)
-            {
-                cast.Add(movie.Credits.Cast[i].Name);
+                for (int i = 0; i < movie.Credits.Cast.Count && i <= 8; i++)
+                {
+                    cast.Add(movie.Credits.Cast[i].Name);
+                }
+                Cast = String.Join(", ", cast);
             }
-            Cast = String.Join(", ", cast);
         }
         
         public void SetRatings()
         {
-            Ratings = new List<SelectListItem>();
-
-            Ratings.Add(new SelectListItem { Value = 0.ToString(), Text = "No Rating." });
-
-            for (int i = 1; i <= 10; i++)
-            {
-                Ratings.Add(new SelectListItem
-                {
-                    Value = i.ToString(),
-                    Text = i.ToString()
-                });
-            }
+            Ratings = new SelectList(Enumerable.Range(1,10));
 
         }
 

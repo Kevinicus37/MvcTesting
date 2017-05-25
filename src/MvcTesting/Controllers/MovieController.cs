@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MvcTesting.Controllers
 {
+    [Authorize]
     public class MovieController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -29,35 +30,56 @@ namespace MvcTesting.Controllers
 
         public MovieController(MovieCollectorContext dbContext,  UserManager<ApplicationUser> userManager)
         {
-            
+            // Initialize items to be used throughout the controller
+
             _userManager = userManager;
             context = dbContext;
+
+            // This is the client that is used to work with the TMDb.org API
             client = new TMDbClient("9950b6bfd3eef8b5c9b7343ead080098");
         }
+
         // GET: /<controller>/
+        [AllowAnonymous]
         public IActionResult Index()
         {
-            string username = _userManager.GetUserName(User);
-            string ID = _userManager.GetUserId(User);
-            List<Film> films = context.Films.OrderBy(f => f.Name).OrderByDescending(f => f.Updated).ToList();
+
+            // Gets a list of all films in order of Name, and then by Year and displays it in the view.
+            List<Film> films = context.Films.OrderBy(f => f.Name).OrderBy(f => f.Year).ToList();
             MovieIndexViewModel movieIndexViewModel = new MovieIndexViewModel(films);
             return View(movieIndexViewModel);
         }
 
         public IActionResult Search()
         {
+            // Displays view allowing a user to search for a movie (using TMDb) to add to their collection.
             return View();
         }
 
         [HttpPost]
         public IActionResult Search(string query)
         {
+            // Accepts a search query and passes it to TMDb.org's API and accepts the search results.
+            
+            
             List<Movie> movies = new List<Movie>();
-            SearchContainer<SearchMovie> results = client.SearchMovieAsync(query, 1).Result;
-            foreach (var result in results.Results)
+
+            // This is the request to the TMDb API.  It returns a container of movies.
+            // Null is returned if the site cannot be reached and there is an exception.
+            SearchContainer<SearchMovie> results = TMDbSearch(client, query);
+            
+            // Credits, Video, and Image information is pulled for each movie in the search results.
+            if (results != null && results.Results != null)
             {
-                Movie aMovie = client.GetMovieAsync(result.Id, MovieMethods.Credits | MovieMethods.Videos | MovieMethods.Images).Result;
-                movies.Add(aMovie);
+
+                foreach (var result in results.Results)
+                {
+                    Movie aMovie = GetTMDbMovieInfo(result.Id);
+                    if (aMovie != null)
+                    {
+                        movies.Add(aMovie);
+                    }
+                }
             }
             SearchViewModel searchViewModel = new SearchViewModel(movies);
             return View("Results", searchViewModel);
@@ -65,40 +87,43 @@ namespace MvcTesting.Controllers
 
         public IActionResult ViewSearchedMovie(int Id)
         {
-
-            Movie movie = client.GetMovieAsync(Id, MovieMethods.Credits | MovieMethods.Videos | MovieMethods.Images).Result;
-            return View(movie);
+            // This displays a closer look at an individual movie when it is selected.
+            Movie movie = GetTMDbMovieInfo(Id);
+            if (movie != null)
+            {
+                return View(movie);
+            }
+            return RedirectToAction("Index");
         }
 
-        [Authorize]
         [HttpGet]
-        public IActionResult Add(int id = -1)
+        public IActionResult Add(int? id)
         {
-            AddMovieViewModel addMovieViewModel;
+            // Get Audio Formats, and Media Formats arguments to pass into ViewModel
+            // to generate selection options.
             List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
             List<AudioFormat> audioFormats = context.AudioFormats.ToList();
-            List<Models.Genre> Genres = context.Genres.ToList();
+            
+            Movie movie = new Movie();
 
-            if (id == -1)
+            // If id has a value, then try to get a movie object from TMDb (Null if not found).
+            if (id.HasValue)
             {
-                addMovieViewModel = new AddMovieViewModel(mediaFormats, audioFormats);
-            }
-            else
-            {
-                Movie movie = client.GetMovieAsync(id, MovieMethods.Credits | MovieMethods.Videos | MovieMethods.Images).Result;
-                addMovieViewModel = new AddMovieViewModel(mediaFormats, audioFormats, movie);
+                movie = GetTMDbMovieInfo((int)id);
             }
 
-            addMovieViewModel.AvailableGenres = Genres;
+            AddMovieViewModel addMovieViewModel = new AddMovieViewModel(mediaFormats, audioFormats, movie);
+            addMovieViewModel.AvailableGenres = context.Genres.ToList();
+
             return View(addMovieViewModel);
         }
 
-        [Authorize]
         [HttpPost]
         [Route("/Movie/Add")]
         public async Task<IActionResult> Add(AddMovieViewModel addMovieViewModel)
         {
-            // If the model is valid, create a new film and add it to the database.
+            // If the model is valid, create a new film and add it to the database. If
+            // it's not valid, return to the view.
             if (ModelState.IsValid)
             {
                 ApplicationUser user = context.Users.Single(u => u.Id == _userManager.GetUserId(User));
@@ -115,8 +140,12 @@ namespace MvcTesting.Controllers
             return View(addMovieViewModel);
         }
 
+        [AllowAnonymous]
         public IActionResult ViewMovie(int id)
         {
+
+            // Finds and displays a Film based on the ID.  If no Film is found with a matching ID,
+            // the User is returned to the Index action.
             Film film = context.Films.Include(f => f.Media).Include(f => f.Audio).SingleOrDefault(f => f.ID == id);
             if (film != null)
             {
@@ -124,27 +153,34 @@ namespace MvcTesting.Controllers
                 ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
                 return View(viewMovieViewModel);
             }
-            return View("Index");
+            return RedirectToAction("Index");
             
 
         }
 
-        [Authorize]
         public IActionResult Remove()
         {
+            // Display a list of films in the current User's collection that can be removed.
+            // I might want to create a ViewModel instead of passing the List directly to the View.
             List<Film> films = context.Films.OrderBy(f=>f.Name).OrderBy(f=>f.Year).Where(f => f.UserID== _userManager.GetUserId(User)).ToList();
             return View(films);
         }
 
-        [Authorize]
         [HttpPost]
         public IActionResult Remove(int[] filmIds)
         {
+
+            // Goes through the list of returned filmIds and if the Film belongs to the active user,
+            // or the active user is an Admin, the Film is deleted.  The user is then returned to the
+            // Index Action.
             foreach (int id in filmIds)
             {
-                Film oldFilm = context.Films.Single(f => f.ID == id);
-                context.Films.Remove(oldFilm);
                 
+                Film oldFilm = context.Films.SingleOrDefault(f => f.ID == id);
+                if (oldFilm.User.UserName == _userManager.GetUserName(User) || User.IsInRole("Admin"))
+                {
+                    context.Films.Remove(oldFilm);
+                }
             }
 
             context.SaveChanges();
@@ -153,20 +189,26 @@ namespace MvcTesting.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {
+            // Allows user to edit Properties of one of the Films in their Collection
 
-            ApplicationUser user = context.Users.Single(u => u.Id == _userManager.GetUserId(User));
-            Film editMovie = context.Films.Single(f => f.ID == id);
-            if (user.Id == editMovie.UserID || await _userManager.IsInRoleAsync(user, "Admin"))
+            Film editFilm = context.Films.SingleOrDefault(f => f.ID == id);
+
+            // If editFilm with the passed in id exists and the User is associated with the Film or Admin,
+            // then the ViewModel is seeded.  Otherwise the User is redirected to the Index Action.
+            if (editFilm != null)
             {
-                List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
-                List<AudioFormat> audioFormats = context.AudioFormats.ToList();
-                EditMovieViewModel editMovieViewModel = new EditMovieViewModel(mediaFormats, audioFormats, editMovie);
-                editMovieViewModel.Genres = GetGenres(id);
-                editMovieViewModel.ID = id;
-                editMovieViewModel.AvailableGenres = context.Genres.ToList();
-                return View(editMovieViewModel);
+                if (editFilm.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+                {
+                    List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
+                    List<AudioFormat> audioFormats = context.AudioFormats.ToList();
+                    EditMovieViewModel editMovieViewModel = new EditMovieViewModel(mediaFormats, audioFormats, editFilm);
+                    editMovieViewModel.Genres = GetGenres(id);
+                    editMovieViewModel.ID = id;
+                    editMovieViewModel.AvailableGenres = context.Genres.ToList();
+                    return View(editMovieViewModel);
+                }
             }
             
             return RedirectToAction("Index");
@@ -176,11 +218,15 @@ namespace MvcTesting.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditMovieViewModel editMovieViewModel)
         {
+            // Verify model data is valid and that the active User is the owner of the Film
+            // or Admin.  If so, the Film is then updated.  The User is Redirected to the page of
+            // the Film.  
+
             if (ModelState.IsValid)
             {
 
                 Film film = context.Films.Single(f => f.ID == editMovieViewModel.ID);
-                if (film.UserID == _userManager.GetUserId(User))
+                if (film.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
                 {
                     int id = await UpdateMovieAsync(editMovieViewModel, film);
                     return Redirect($"/Movie/ViewMovie/{id}");
@@ -189,6 +235,7 @@ namespace MvcTesting.Controllers
                 return RedirectToAction("Index");
             }
 
+            // If the model is not valid, it is re-seeded and returned to the View.
             editMovieViewModel.MediaFormats = editMovieViewModel.PopulateList(context.MediaFormats.ToList());
             editMovieViewModel.AudioFormats = editMovieViewModel.PopulateList(context.AudioFormats.ToList());
             editMovieViewModel.AvailableGenres = context.Genres.ToList();
@@ -276,6 +323,9 @@ namespace MvcTesting.Controllers
 
         private List<string> GetGenres(int filmId)
         {
+            // Retrieves a list of FilmGenres associated with a film and returns a
+            // List of strings containing the names of the Genres.  These are the
+            // Genres that have previously been selected for the Film.
             List<string> genres = new List<string>();
             List<FilmGenre> FilmGenres = context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == filmId).ToList();
             foreach (var filmGenre in FilmGenres)
@@ -283,6 +333,40 @@ namespace MvcTesting.Controllers
                 genres.Add(filmGenre.Genre.Name);
             }
             return genres;
+        }
+
+        private SearchContainer<SearchMovie> TMDbSearch(TMDbClient client, string query)
+        {
+            // Attempts to search TMDb for movies matching the title submitted (query).
+            // If successful, the results are returned.  If there is an exception, Null
+            // is returned.
+
+            try
+            {
+                SearchContainer<SearchMovie> results = client.SearchMovieAsync(query, 1).Result;
+                return results;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private Movie GetTMDbMovieInfo(int Id)
+        {
+            // Attempts to search TMDb for a Movie object matching the Id submitted.
+            // If successful, the results are returned.  If there is an exception, Null
+            // is returned.
+
+            try
+            {
+                Movie movie = client.GetMovieAsync(Id, MovieMethods.Credits | MovieMethods.Videos | MovieMethods.Images).Result;
+                return movie;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }  
 
