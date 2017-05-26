@@ -12,6 +12,9 @@ namespace MvcTesting.ViewModels
     {
         public List<Movie> Movies { get; set; }
         public int Id { get; set; }
+        public int CurrentPage { get; set; }
+        public int LastPage { get; set; }
+        public string Query { get; set; }
 
         public SearchViewModel() { }
 

@@ -88,7 +88,7 @@ namespace MvcTesting.ViewModels
         public string DisplayYear { get; set; }
 
 
-        public SelectList Ratings { get; set; }
+        public List<SelectListItem> Ratings { get; set; }
         public List<SelectListItem> MediaFormats { get; set; }
         public List<SelectListItem> AudioFormats { get; set; }
 
@@ -121,7 +121,7 @@ namespace MvcTesting.ViewModels
                 List<string> directors = new List<string>();
                 List<string> cast = new List<string>();
 
-                if (movie.ReleaseDate.Value != null)
+                if (movie.ReleaseDate != null)
                 {
                     Year = movie.ReleaseDate.Value.ToString("yyyy");
                     DisplayYear = "(" + Year + ")";
@@ -160,7 +160,19 @@ namespace MvcTesting.ViewModels
         
         public void SetRatings()
         {
-            Ratings = new SelectList(Enumerable.Range(1,10));
+
+            Ratings = new List<SelectListItem>();
+
+            Ratings.Add(new SelectListItem { Value = 0.ToString(), Text = "No Rating." });
+
+            for (int i=1; i<=10; i++)
+            {
+                Ratings.Add(new SelectListItem
+                {
+                    Value = i.ToString(),
+                    Text = i.ToString()
+                });
+            }
 
         }
 

@@ -1,55 +1,55 @@
 ﻿@model MvcTesting.ViewModels.AddMovieViewModel
 
-<label asp-for="Name"></label>
+<label class="control-label" asp-for="Name"></label>
 <input class="form-control" type="text" asp-for="Name" />
 <span asp-validation-for="Name"></span>
 
-<label asp-for="Year"></label>
+<label class="control-label" asp-for="Year"></label>
 <input class="form-control" type="text" asp-for="Year" />
 <span asp-validation-for="Year"></span>
 
-<label asp-for="MediaID"></label>
+<label class="control-label" asp-for="MediaID"></label>
 <select class="form-control" asp-for="MediaID" asp-items="Model.MediaFormats"></select>
 <span asp-validation-for="MediaID"></span>
 
-<label asp-for="AudioID"></label>
+<label class="control-label" asp-for="AudioID"></label>
 <select class="form-control" asp-for="AudioID" asp-items="Model.AudioFormats"></select>
 <span asp-validation-for="AudioID"></span>
 
-<label asp-for="AspectRatio"></label>
+<label class="control-label" asp-for="AspectRatio"></label>
 <input class="form-control" type="text" asp-for="AspectRatio" />
 <span asp-validation-for="AspectRatio"></span>
 
-<label asp-for="Comments"></label>
+<label class="control-label" asp-for="Comments"></label>
 <textarea class="form-control" asp-for="Comments"></textarea>
 <span asp-validation-for="Comments"></span>
 
-<label asp-for="Rating"></label>
+<label class="control-label" asp-for="Rating"></label>
 <select class="form-control" asp-for="Rating" asp-items="Model.Ratings"></select>
 <span asp-validation-for="Rating"></span>
 
-<label asp-for="Overview"></label>
+<label class="control-label" asp-for="Overview"></label>
 <input class="form-control" type="text" asp-for="Overview" />
 <span asp-validation-for="Overview"></span>
 
-<label asp-for="TrailerUrl"></label>
+<label class="control-label" asp-for="TrailerUrl"></label>
 <input class="form-control" type="text" asp-for="TrailerUrl" />
 <span asp-validation-for="TrailerUrl"></span>
 
-<label asp-for="PosterUrl"></label>
+<label class="control-label" asp-for="PosterUrl"></label>
 <input class="form-control" type="text" asp-for="PosterUrl" />
 <span asp-validation-for="PosterUrl"></span>
 
-<label asp-for="Has3D"></label>
+<label class="control-label" asp-for="Has3D"></label>
 <input type="checkbox" asp-for="Has3D" />
 <br />
 
-<label asp-for="Directors"></label>
+<label class="control-label" asp-for="Directors"></label>
 <textarea class="form-control" rows="5" asp-for="Directors"></textarea>
 <span asp-validation-for="Directors"></span>
 <br />
 
-<label asp-for="Cast"></label>
+<label class="control-label" asp-for="Cast"></label>
 <textarea class="form-control" rows="5" asp-for="Cast"></textarea>
 <span asp-validation-for="Cast"></span>
 <br />

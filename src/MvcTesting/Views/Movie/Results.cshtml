@@ -68,16 +68,36 @@
                 </table>
 
          </div>
+    <form asp-controller="Movie" asp-action="Search" method="post">
+        <input type="hidden" asp-for="Query" />
+        <ul class="pager">
+
+            @if (Model.CurrentPage > 1)
+            {
+                <li><button class="btn btn-primary" name="page" value="@(Model.CurrentPage -1)">Previous</button></li>
+            }
+            @if (Model.LastPage > Model.CurrentPage)
+            {
+                <li><button class="btn btn-primary" name="page" value="@(Model.CurrentPage+1)">Next</button></li>
+            }
+
+        </ul>
+    </form>
+
     </div>
 <br />
     
-<div class="col-md-6 col-md-offset-2">
+<div class="row">
     <h2>Don't see the movie you're Looking For?</h2>
     <a class=" btn btn-primary" asp-controller="Movie" asp-action="Add">Add Manually</a>
     Or
     <form asp-controller="Movie" asp-action="Search" method="post">
-        <input type="text" name="query" />
-        <button class="btn btn-primary" type="submit">Try Another Search</button>
+        <div class="input-group">
+            <input type="text" class="form-control" name="query" placeholder="Try Another Search" />
+            <div class="input-group-btn">
+                <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+            </div>
+        </div>
     </form>
 </div>
 

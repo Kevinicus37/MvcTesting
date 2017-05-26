@@ -44,8 +44,17 @@ namespace MvcTesting.Controllers
         public IActionResult Index()
         {
 
+            bool userCanSeePrivate = false;
+
+            if (User.IsInRole("Admin"))
+            {
+                userCanSeePrivate = true;
+            }
             // Gets a list of all films in order of Name, and then by Year and displays it in the view.
-            List<Film> films = context.Films.OrderBy(f => f.Name).OrderBy(f => f.Year).ToList();
+            List<Film> films = context.Films.OrderBy(f => f.Name)
+                .Where(f=>f.IsPrivate == false || f.IsPrivate == userCanSeePrivate || f.UserID == _userManager.GetUserId(User))
+                .OrderBy(f => f.Year)
+                .ToList();
             MovieIndexViewModel movieIndexViewModel = new MovieIndexViewModel(films);
             return View(movieIndexViewModel);
         }
@@ -57,20 +66,23 @@ namespace MvcTesting.Controllers
         }
 
         [HttpPost]
-        public IActionResult Search(string query)
+        public IActionResult Search(string query, int page)
         {
             // Accepts a search query and passes it to TMDb.org's API and accepts the search results.
-            
+            int currentPage = 1;
+            int lastPage = 1;
             
             List<Movie> movies = new List<Movie>();
 
             // This is the request to the TMDb API.  It returns a container of movies.
             // Null is returned if the site cannot be reached and there is an exception.
-            SearchContainer<SearchMovie> results = TMDbSearch(client, query);
+            SearchContainer<SearchMovie> results = TMDbSearch(client, query, page);
             
             // Credits, Video, and Image information is pulled for each movie in the search results.
             if (results != null && results.Results != null)
             {
+                lastPage = results.TotalPages;
+                currentPage = page;
 
                 foreach (var result in results.Results)
                 {
@@ -82,6 +94,9 @@ namespace MvcTesting.Controllers
                 }
             }
             SearchViewModel searchViewModel = new SearchViewModel(movies);
+            searchViewModel.CurrentPage = currentPage;
+            searchViewModel.LastPage = lastPage;
+            searchViewModel.Query = query;
             return View("Results", searchViewModel);
         }
 
@@ -104,7 +119,7 @@ namespace MvcTesting.Controllers
             List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
             List<AudioFormat> audioFormats = context.AudioFormats.ToList();
             
-            Movie movie = new Movie();
+            Movie movie = null;
 
             // If id has a value, then try to get a movie object from TMDb (Null if not found).
             if (id.HasValue)
@@ -335,7 +350,7 @@ namespace MvcTesting.Controllers
             return genres;
         }
 
-        private SearchContainer<SearchMovie> TMDbSearch(TMDbClient client, string query)
+        private SearchContainer<SearchMovie> TMDbSearch(TMDbClient client, string query, int page)
         {
             // Attempts to search TMDb for movies matching the title submitted (query).
             // If successful, the results are returned.  If there is an exception, Null
@@ -343,7 +358,7 @@ namespace MvcTesting.Controllers
 
             try
             {
-                SearchContainer<SearchMovie> results = client.SearchMovieAsync(query, 1).Result;
+                SearchContainer<SearchMovie> results = client.SearchMovieAsync(query, page).Result;
                 return results;
             }
             catch (Exception)
