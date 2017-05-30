@@ -107,7 +107,8 @@ namespace MvcTesting.Controllers
             {
                 var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
                 var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+                if (result.Succeeded && roleResult.Succeeded)
                 {
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                     // Send an email with this link
@@ -115,11 +116,18 @@ namespace MvcTesting.Controllers
                     //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                     //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                     //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
+
+                    
+                    
+
+
+
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation(3, "User created a new account with password.");
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);
+                AddErrors(roleResult);
             }
 
             // If we got this far, something failed, redisplay form
