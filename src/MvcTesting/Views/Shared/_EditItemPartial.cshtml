@@ -1,0 +1,9 @@
+﻿<form asp-controller="@Model.Controller" asp-action="@Model.Action" method="post">
+    <div class="form-group">
+        <label for="Name">@Model.Controller Name:</label>
+        <input type="text" class="form-control" name="Name" value="@Model.Name"/>
+        <input type="hidden" name="ID" value="@Model.ID" />
+        <br />
+        <button class="btn btn-primary" type="submit">Save Changes</button>
+    </div>
+</form>
