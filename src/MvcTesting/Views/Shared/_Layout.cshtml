@@ -34,7 +34,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Movies <span class="caret"></span></a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Movies<span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a asp-area="" asp-controller="Movie" asp-action="Index">Index</a></li>
                             @if (SignInManager.IsSignedIn(User))
@@ -46,7 +46,7 @@
                         </ul>
                     </li>
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Users <span class="caret"></span></a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Users<span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a asp-area="" asp-controller="Users" asp-action="Index">Index</a></li>
                             @if (User.IsInRole("Admin"))
@@ -56,6 +56,39 @@
                             }
                          </ul>
                      </li>
+                     @if (User.IsInRole("Admin"))
+                     {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Genres<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-area="" asp-controller="Genre" asp-action="Index">Index</a></li>
+                                <li><a asp-area="" asp-controller="Genre" asp-action="Add">Add</a></li>
+                                <li><a asp-area="" asp-controller="Genre" asp-action="RemoveGenre">Delete</a></li>
+                            </ul>
+                        </li>
+                        @*<li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Media<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-area="" asp-controller="Media" asp-action="Index">Index</a></li>
+                                <li><a asp-area="" asp-controller="Media" asp-action="Add">Add</a></li>
+                                <li><a asp-area="" asp-controller="Media" asp-action="Remove">Delete</a></li>
+                                <li><a asp-area="" asp-controller="Media" asp-action="Edit">Edit</a></li>
+                                }
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Audio<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-area="" asp-controller="AudioFormat" asp-action="Index">Index</a></li>
+                                <li><a asp-area="" asp-controller="AudioFormat" asp-action="Add">Add</a></li>
+                                <li><a asp-area="" asp-controller="AudioFormat" asp-action="Remove">Delete</a></li>
+                                <li><a asp-area="" asp-controller="AudioFormat" asp-action="Edit">Edit</a></li>
+                                
+                            </ul>
+                        </li>*@
+
+                     }
+
                      <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                      <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
                 </ul>
