@@ -120,6 +120,69 @@ namespace MvcTesting.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> RemoveRole(string id)
+        {
+            // Find the User by id and seed the ViewModel
+            ApplicationUser user = await GetUserById(id);
+            if (user != null)
+            {
+                IList<string> roles = await _userManager.GetRolesAsync(user);
+
+                var vm = new UsersRemoveRoleViewModel
+                {
+                    Username = user.UserName,
+                    UserID = user.Id,
+                    Roles = roles
+                };
+                
+
+                return View(vm);
+
+            }
+            return RedirectToAction("ViewRoles");
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveRole(UsersRemoveRoleViewModel rvm)
+        {
+            // Allows an Admin to Remove a Role from another User.  
+
+            // Get the user to add a Role to from the ViewModel
+            ApplicationUser user = await GetUserById(rvm.UserID);
+
+            // If VM is valid, try to remove Role from user.  If successful Redirect to
+            // the ViewRoles Action.  Otherwise, return to the view with the VM and
+            // errors.
+            if (ModelState.IsValid)
+            {
+                foreach (string role in rvm.Roles)
+                {
+                    var result = await _userManager.RemoveFromRoleAsync(user, role);
+                    if (!result.Succeeded)
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(error.Code, error.Description);
+                        }
+                        rvm.Username = user.UserName;
+                        rvm.Roles = await _userManager.GetRolesAsync(user);
+                        return View(rvm);
+                    }
+                }
+
+                return RedirectToAction("ViewRoles");
+            }
+            
+            rvm.Username = user.UserName;
+            rvm.Roles = await _userManager.GetRolesAsync(user);
+            return View(rvm);
+                
+                    
+        }
+
 
         private async Task<ApplicationUser> GetUserById(string id)
         {

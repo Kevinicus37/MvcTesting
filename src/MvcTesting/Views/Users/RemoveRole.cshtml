@@ -1,0 +1,17 @@
+﻿@model MvcTesting.ViewModels.UsersRemoveRoleViewModel
+
+<h1>Remove Roles from User: @Model.Username</h1>
+<hr />
+<h3>Current Roles:</h3>
+<form asp-controller="Users" asp-action="RemoveRole" method="post">
+    @foreach (var role in Model.Roles)
+    {
+        <label for="@role">@role</label>
+        <input type="checkbox" name="Roles" value="@role" />
+        
+        <br />
+
+    }
+    <input type="hidden" asp-for="UserID" />
+    <button class="btn btn-danger" type="submit">Delete Items</button>
+</form>

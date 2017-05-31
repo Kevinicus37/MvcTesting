@@ -17,7 +17,11 @@
             <tr>
                 <td>@user.UserName</td>
                 <td>@(string.Join(", ", await userManager.GetRolesAsync(user)))</td>
-                <td><a asp-controller="Users" asp-action="AddRole" asp-route-id="@user.Id">Add Role</a></td>
+                <td>
+                    <a asp-controller="Users" asp-action="AddRole" asp-route-id="@user.Id">Add Role</a>
+                    <br />
+                    <a asp-controller="Users" asp-action="RemoveRole" asp-route-id="@user.Id">Remove Role</a>
+                </td>
             </tr>
 
         }
