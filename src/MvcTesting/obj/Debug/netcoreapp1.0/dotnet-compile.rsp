@@ -275,7 +275,10 @@ C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\Ad
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\AddGenreViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\AddMediaFormatViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\AddMovieViewModel.cs
+C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\AudioFormatIndexViewModel.cs
+C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\AudioFormatViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\DisplayUserViewModel.cs
+C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\EditAudioFormatViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\EditGenreViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\EditMediaFormatViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\EditMovieViewModel.cs
@@ -284,6 +287,7 @@ C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\Ge
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\MediaFormatViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\MediaIndexViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\MovieIndexViewModel.cs
+C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\RemoveAudioFormatViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\RemoveGenreViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\RemoveMediaFormatViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\SearchViewModel.cs

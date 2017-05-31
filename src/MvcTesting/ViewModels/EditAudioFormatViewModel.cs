@@ -2,15 +2,15 @@
 
 namespace MvcTesting.ViewModels
 {
-    public class EditMediaFormatViewModel : MediaFormatViewModel
+    public class EditAudioFormatViewModel : AudioFormatViewModel
     {
         public int ID { get; set; }
 
         [Required]
-        [Display(Name = "Media Format Name:")]
+        [Display(Name = "Genre Name:")]
         public string Name { get; set; }
 
-        public EditMediaFormatViewModel()
+        public EditAudioFormatViewModel()
         {
             Action = "Edit";
         }

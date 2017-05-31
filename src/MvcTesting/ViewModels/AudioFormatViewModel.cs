@@ -3,17 +3,15 @@ using System.Collections.Generic;
 
 namespace MvcTesting.ViewModels
 {
-    public class GenreViewModel
+    public class AudioFormatViewModel
     {
-        public List<Genre> Items { get; set; }
+        public List<AudioFormat> Items { get; set; }
         public string Action { get; set; }
         public string Controller { get; set; }
 
-        public GenreViewModel()
+        public AudioFormatViewModel()
         {
-            Controller = "Genre";
+            Controller = "AudioFormat";
         }
     }
-
-    
 }

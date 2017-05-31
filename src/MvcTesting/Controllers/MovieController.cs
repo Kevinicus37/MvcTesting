@@ -9,8 +9,6 @@ using TMDbLib.Objects.Search;
 using MvcTesting.ViewModels;
 using TMDbLib.Objects.Movies;
 using MvcTesting.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
