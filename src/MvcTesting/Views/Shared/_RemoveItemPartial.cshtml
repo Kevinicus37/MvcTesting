@@ -2,11 +2,11 @@
     @foreach (var item in Model.Items)
     {
         <label for="@item.Name">@item.Name</label>
-        <input type="checkbox" name="genres" value="@item.ID" />
+        <input type="checkbox" name="IDs" value="@item.ID" />
         <br />
 
     }
 
-    <button class="btn btn-danger" type="submit">Delete Genres</button>
+    <button class="btn btn-danger" type="submit">Delete Items</button>
 
 </form>

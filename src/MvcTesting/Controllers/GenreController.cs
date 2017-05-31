@@ -13,17 +13,17 @@ namespace MvcTesting.Controllers
     public class GenreController : Controller
     { 
 
-         private MovieCollectorContext context;
+         private MovieCollectorContext _context;
 
 
     public GenreController(MovieCollectorContext dbContext)
         {
-            context = dbContext;
+            _context = dbContext;
         }
     // GET: /<controller>/
     public IActionResult Index()
         {
-            List<Genre> genres = context.Genres.ToList();
+            List<Genre> genres = _context.Genres.ToList();
             var vm = new GenreIndexViewModel() { Items = genres };
             return View(vm);
         }
@@ -40,28 +40,28 @@ namespace MvcTesting.Controllers
             if (ModelState.IsValid)
             {
                 Genre newGenre = new Genre { Name = addGenreViewModel.Name };
-                context.Genres.Add(newGenre);
-                context.SaveChanges();
-                return View();
+                _context.Genres.Add(newGenre);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
             }
             return View(addGenreViewModel);
         }
 
         public IActionResult RemoveGenre()
         {
-            List<Genre> genres = context.Genres.ToList();
+            List<Genre> genres = _context.Genres.ToList();
             RemoveGenreViewModel vm = new RemoveGenreViewModel() { Items = genres };
             return View(vm);
         }
 
         [HttpPost]
-        public IActionResult RemoveGenre(int[] genres)
+        public IActionResult RemoveGenre(int[] IDs)
         {
-            foreach (int genre in genres)
+            foreach (int id in IDs)
             {
-                Genre removeGenre = context.Genres.SingleOrDefault(g => g.ID == genre);
-                context.Genres.Remove(removeGenre);
-                context.SaveChanges();
+                Genre removeGenre = _context.Genres.SingleOrDefault(g => g.ID == id);
+                _context.Genres.Remove(removeGenre);
+                _context.SaveChanges();
             }
 
             return RedirectToAction("Index");
@@ -69,7 +69,7 @@ namespace MvcTesting.Controllers
 
         public IActionResult Edit(int id)
         {
-            Genre editGenre = context.Genres.SingleOrDefault(g => g.ID == id);
+            Genre editGenre = _context.Genres.SingleOrDefault(g => g.ID == id);
             if (editGenre != null)
             {
                 EditGenreViewModel vm = new EditGenreViewModel() { ID = id, Name = editGenre.Name };
@@ -79,13 +79,13 @@ namespace MvcTesting.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(EditMovieViewModel vm)
+        public IActionResult Edit(EditGenreViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                Genre editGenre = context.Genres.SingleOrDefault(g => g.ID == vm.ID);
+                Genre editGenre = _context.Genres.SingleOrDefault(g => g.ID == vm.ID);
                 editGenre.Name = vm.Name;
-                context.SaveChanges();
+                _context.SaveChanges();
 
             }
 
