@@ -48,9 +48,9 @@ namespace MvcTesting.Controllers
             {
                 userCanSeePrivate = true;
             }
-            // Gets a list of all films in order of Name, and then by Year and displays it in the view.
-            List<Film> films = context.Films.OrderBy(f => f.Name)
-                .Where(f=>f.IsPrivate == false || f.IsPrivate == userCanSeePrivate || f.UserID == _userManager.GetUserId(User))
+            //Gets a list of all films in order of Name, and then by Year and displays it in the view.
+            List<Film> films = context.Films.Include(f=>f.User).OrderBy(f => f.Name)
+                .Where(f=> (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || userCanSeePrivate)
                 .OrderBy(f => f.Year)
                 .ToList();
             MovieIndexViewModel movieIndexViewModel = new MovieIndexViewModel(films);

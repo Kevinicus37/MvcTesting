@@ -1,6 +1,6 @@
 ﻿@model MvcTesting.ViewModels.DisplayUserViewModel
 
-<h1>@(Model.User.UserName)'s Collection</h1>
+<h1>@(Model.User.UserName)'@(Model.User.UserName[Model.User.UserName.Length-1].Equals('s')? "" : "s") Collection</h1>
 <hr />
 
 <ul>

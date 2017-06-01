@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 
 namespace MvcTesting.Controllers
 {
@@ -35,7 +36,10 @@ namespace MvcTesting.Controllers
             List<ApplicationUser> Users;
             if (!descending)
             {
-                 Users = _context.Users.OrderBy(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
+                 Users = _context
+                    .Users
+                    .Where(u => !u.IsPrivate || User.IsInRole("Admin") || u.Id ==_userManager.GetUserId(User))
+                    .OrderBy(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
             }
             else
             {
@@ -59,7 +63,19 @@ namespace MvcTesting.Controllers
         public IActionResult DisplayUser(string UserName)
         {
             ApplicationUser user = _context.Users.SingleOrDefault(u => u.UserName == UserName);
-            List<Film> films = _context.Films.Where(f => f.UserID == user.Id).ToList();
+
+            // If someone attempts to access a page for a private User directly and is not that User
+            // and is not an Admin, they are redirected to the Index Action.
+            if (user.IsPrivate && !User.IsInRole("Admin") && user.Id != _userManager.GetUserId(User))
+            {
+                return RedirectToAction("Index");
+            }
+
+
+            List<Film> films = _context.Films
+                .Include(f => f.User)
+                .Where(f => (f.UserID == user.Id) && (!f.IsPrivate || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)))
+                .ToList();
             DisplayUserViewModel displayUserViewModel = new DisplayUserViewModel(films, user);
             return View(displayUserViewModel);
         }

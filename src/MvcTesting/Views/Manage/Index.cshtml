@@ -68,4 +68,6 @@
                 }*@
         </dd>
     </dl>
+    Your account is currently @(Model.IsPrivate? "Private" : "Public").
+    <a asp-controller="Manage" asp-action="ChangePrivacy" class="btn btn-primary">Make @(Model.IsPrivate? "Public" : "Private")</a>
 </div>

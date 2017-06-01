@@ -13,6 +13,7 @@ namespace MvcTesting.Controllers
     [Authorize]
     public class ManageController : Controller
     {
+        private MovieCollectorContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -20,12 +21,14 @@ namespace MvcTesting.Controllers
         private readonly ILogger _logger;
 
         public ManageController(
+        MovieCollectorContext context,
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IEmailSender emailSender,
         ISmsSender smsSender,
         ILoggerFactory loggerFactory)
         {
+            _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -58,7 +61,8 @@ namespace MvcTesting.Controllers
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
                 Logins = await _userManager.GetLoginsAsync(user),
-                BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user)
+                BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
+                IsPrivate = user.IsPrivate
             };
             return View(model);
         }
@@ -324,6 +328,14 @@ namespace MvcTesting.Controllers
             var result = await _userManager.AddLoginAsync(user, info);
             var message = result.Succeeded ? ManageMessageId.AddLoginSuccess : ManageMessageId.Error;
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
+        }
+
+        public async Task<IActionResult> ChangePrivacy()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            user.IsPrivate = !user.IsPrivate;
+            _context.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         #region Helpers
