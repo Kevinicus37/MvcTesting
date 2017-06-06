@@ -60,10 +60,16 @@ namespace MvcTesting.Controllers
 
 
         [AllowAnonymous]
-        public IActionResult DisplayUser(string UserName)
+        public IActionResult DisplayUser(string UserName, string propertyType = null, string propertyValue = null)
         {
             ApplicationUser user = _context.Users.SingleOrDefault(u => u.UserName == UserName);
+            List<Film> films;
+            DisplayUserViewModel vm;
 
+            if (user == null)
+            {
+                return RedirectToAction("Index");
+            }
             // If someone attempts to access a page for a private User directly and is not that User
             // and is not an Admin, they are redirected to the Index Action.
             if (user.IsPrivate && !User.IsInRole("Admin") && user.Id != _userManager.GetUserId(User))
@@ -71,16 +77,22 @@ namespace MvcTesting.Controllers
                 return RedirectToAction("Index");
             }
 
+            switch (propertyType)
+            {
+                case "Genre": films = GetUserFilmsByGenre(user, propertyValue).ToList();
+                    break;
+                default: films = GetUserFilms(user).ToList();
+                    break;
 
-            List<Film> films = _context.Films
-                .Include(f => f.User)
-                .Where(f => (f.UserID == user.Id) && (!f.IsPrivate || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)))
-                .ToList();
-            DisplayUserViewModel displayUserViewModel = new DisplayUserViewModel(films, user);
-            return View(displayUserViewModel);
+            }
+            vm = new DisplayUserViewModel(films, user);
+            vm.Genres = _context.Genres.ToList();
+
+            
+            return View(vm);
         }
 
-
+        
 
         [HttpGet]
         public async Task<IActionResult> AddRole(string id)
@@ -212,6 +224,25 @@ namespace MvcTesting.Controllers
         {
             //Returns all available Roles as a SelectList ordered by Name
             return new SelectList(_roleManager.Roles.OrderBy(r => r.Name));
+        }
+
+
+        private IQueryable<Film> GetUserFilms(ApplicationUser user)
+        {
+            return _context.Films
+                .Include(f => f.User)
+                .Where(f => (f.UserID == user.Id) && (!f.IsPrivate || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)));
+        }
+
+        private IQueryable<Film> GetUserFilmsByGenre(ApplicationUser user, string genre = null)
+        {
+            IQueryable<Film> films = GetUserFilms(user);
+
+            if (!string.IsNullOrEmpty(genre))
+            {
+                films = films.Include(f => f.FilmGenres).Where(f => f.FilmGenres.Any(fg => fg.Genre.Name == genre));
+            }
+            return films;
         }
     }
 }

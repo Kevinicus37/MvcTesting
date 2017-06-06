@@ -3,6 +3,11 @@
 <h1>@(Model.User.UserName)'@(Model.User.UserName[Model.User.UserName.Length-1].Equals('s')? "" : "s") Collection</h1>
 <hr />
 
+@if (!string.IsNullOrEmpty(Model.Genre))
+{
+    <h3>@Model.Genre</h3>
+}
+
 <ul>
 
     @foreach (var film in Model.Films)
@@ -16,3 +21,16 @@
     }
 
 </ul>
+<div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Find by Genre
+    <span class="caret"></span></button>
+    <ul class="dropdown-menu">
+        <li class="dropdown-header">Display Films of Selected Genre</li>
+        <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName">All</a></li>
+        @foreach (var genre in Model.Genres)
+        {
+            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="Genre" asp-route-propertyValue="@genre.Name">@genre.Name</a></li>
+
+        }
+    </ul>
+</div>

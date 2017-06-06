@@ -9,6 +9,10 @@ namespace MvcTesting.ViewModels
 
         public ApplicationUser User { get; set; }
 
+        public List<Genre> Genres { get; set; }
+
+        public string Genre { get; set; }
+
         public DisplayUserViewModel() { }
 
         public DisplayUserViewModel(IList<Film> films, ApplicationUser user)
