@@ -56,3 +56,20 @@
         }
     </ul>
 </div>
+
+<br />
+<div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+        Filter by Audio Format
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li class="dropdown-header">Display Films of Selected Audio Format</li>
+        <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName">All</a></li>
+        @foreach (var audioFormat in Model.AudioFormats)
+        {
+            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="AudioFormat" asp-route-propertyValue="@audioFormat.Name">@audioFormat.Name</a></li>
+
+        }
+    </ul>
+</div>

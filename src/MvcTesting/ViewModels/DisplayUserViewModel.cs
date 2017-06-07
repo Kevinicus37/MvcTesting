@@ -11,9 +11,11 @@ namespace MvcTesting.ViewModels
 
         public List<Genre> Genres { get; set; }
 
-        public string FilterValue { get; set; }
+        public List<AudioFormat> AudioFormats { get; set; }
 
         public List<MediaFormat> MediaFormats { get; set; }
+
+        public string FilterValue { get; set; }
 
         public DisplayUserViewModel() { }
 

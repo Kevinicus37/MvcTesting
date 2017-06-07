@@ -92,6 +92,14 @@ namespace MvcTesting.Controllers
                     }
                     films = GetUserFilmsByMediaFormat(user, propertyValue).ToList();
                     break;
+                case "AudioFormat":
+                    propertyValue = (!_context.AudioFormats.Any(af => af.Name == propertyValue) ? null : propertyValue);
+                    //if (!_context.AudioFormats.Any(af=>af.Name == propertyValue))
+                    //{
+                    //    propertyValue = null;
+                    //}
+                    films = GetUserFilmsByAudioFormat(user, propertyValue).ToList();
+                    break;
                 default: films = GetUserFilms(user).ToList();
                     break;
 
@@ -100,6 +108,7 @@ namespace MvcTesting.Controllers
             vm.FilterValue = propertyValue;
             vm.Genres = _context.Genres.ToList();
             vm.MediaFormats = _context.MediaFormats.ToList();
+            vm.AudioFormats = _context.AudioFormats.ToList();
 
             
             return View(vm);
@@ -250,23 +259,17 @@ namespace MvcTesting.Controllers
         private IQueryable<Film> GetUserFilmsByGenre(ApplicationUser user, string genre = null)
         {
             return GetUserFilms(user).Include(f => f.FilmGenres).Where(f => f.FilmGenres.Any(fg => fg.Genre.Name == genre));
-
-            //if (!string.IsNullOrEmpty(genre))
-            //{
-            //    films = films.Include(f => f.FilmGenres).Where(f => f.FilmGenres.Any(fg => fg.Genre.Name == genre));
-            //}
-            //return films;
         }
+
 
         private IQueryable<Film> GetUserFilmsByMediaFormat(ApplicationUser user, string mediaFormat = null)
         {
             return GetUserFilms(user).Where(f => f.Media.Name == mediaFormat);
+        }
 
-            //if (!string.IsNullOrEmpty(mediaFormat))
-            //{
-            //    films = films.Where(f => f.Media.Name == mediaFormat);
-            //}
-            //return films;
+        private IQueryable<Film> GetUserFilmsByAudioFormat(ApplicationUser user, string audioFormat = null)
+        {
+            return GetUserFilms(user).Where(f => f.Audio.Name == audioFormat);
         }
     }
 }
