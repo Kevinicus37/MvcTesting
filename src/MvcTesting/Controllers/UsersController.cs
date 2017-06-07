@@ -79,14 +79,27 @@ namespace MvcTesting.Controllers
 
             switch (propertyType)
             {
-                case "Genre": films = GetUserFilmsByGenre(user, propertyValue).ToList();
+                case "Genre": if (!_context.Genres.Any(g => g.Name == propertyValue))
+                    {
+                        propertyValue = null;
+                    }
+                    films = GetUserFilmsByGenre(user, propertyValue).ToList();
+                    break;
+                case "MediaFormat":
+                    if (!_context.MediaFormats.Any(mf => mf.Name == propertyValue))
+                    {
+                        propertyValue = null;
+                    }
+                    films = GetUserFilmsByMediaFormat(user, propertyValue).ToList();
                     break;
                 default: films = GetUserFilms(user).ToList();
                     break;
 
             }
             vm = new DisplayUserViewModel(films, user);
+            vm.FilterValue = propertyValue;
             vm.Genres = _context.Genres.ToList();
+            vm.MediaFormats = _context.MediaFormats.ToList();
 
             
             return View(vm);
@@ -236,13 +249,24 @@ namespace MvcTesting.Controllers
 
         private IQueryable<Film> GetUserFilmsByGenre(ApplicationUser user, string genre = null)
         {
-            IQueryable<Film> films = GetUserFilms(user);
+            return GetUserFilms(user).Include(f => f.FilmGenres).Where(f => f.FilmGenres.Any(fg => fg.Genre.Name == genre));
 
-            if (!string.IsNullOrEmpty(genre))
-            {
-                films = films.Include(f => f.FilmGenres).Where(f => f.FilmGenres.Any(fg => fg.Genre.Name == genre));
-            }
-            return films;
+            //if (!string.IsNullOrEmpty(genre))
+            //{
+            //    films = films.Include(f => f.FilmGenres).Where(f => f.FilmGenres.Any(fg => fg.Genre.Name == genre));
+            //}
+            //return films;
+        }
+
+        private IQueryable<Film> GetUserFilmsByMediaFormat(ApplicationUser user, string mediaFormat = null)
+        {
+            return GetUserFilms(user).Where(f => f.Media.Name == mediaFormat);
+
+            //if (!string.IsNullOrEmpty(mediaFormat))
+            //{
+            //    films = films.Where(f => f.Media.Name == mediaFormat);
+            //}
+            //return films;
         }
     }
 }

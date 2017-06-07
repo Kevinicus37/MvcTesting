@@ -3,9 +3,15 @@
 <h1>@(Model.User.UserName)'@(Model.User.UserName[Model.User.UserName.Length-1].Equals('s')? "" : "s") Collection</h1>
 <hr />
 
-@if (!string.IsNullOrEmpty(Model.Genre))
+@if (!string.IsNullOrEmpty(Model.FilterValue))
 {
-    <h3>@Model.Genre</h3>
+    <h3>@Model.FilterValue</h3>
+}
+
+@if (Model.Films.Count < 1)
+{
+    <h4>No @Model.FilterValue Films at this time.</h4>
+
 }
 
 <ul>
@@ -22,7 +28,7 @@
 
 </ul>
 <div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Find by Genre
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Filter by Genre
     <span class="caret"></span></button>
     <ul class="dropdown-menu">
         <li class="dropdown-header">Display Films of Selected Genre</li>
@@ -30,6 +36,22 @@
         @foreach (var genre in Model.Genres)
         {
             <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="Genre" asp-route-propertyValue="@genre.Name">@genre.Name</a></li>
+
+        }
+    </ul>
+</div>
+<br />
+<div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+        Filter by Media Type
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li class="dropdown-header">Display Films of Selected Media Type</li>
+        <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName">All</a></li>
+        @foreach (var mediaFormat in Model.MediaFormats)
+        {
+            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="MediaFormat" asp-route-propertyValue="@mediaFormat.Name">@mediaFormat.Name</a></li>
 
         }
     </ul>
