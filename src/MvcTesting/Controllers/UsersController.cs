@@ -33,17 +33,14 @@ namespace MvcTesting.Controllers
 
             // Display a list of users according to the value of sortBy in either ascending
             // or descending order based on the value of the descending variable.
-            List<ApplicationUser> Users;
+            List<ApplicationUser> Users = GetUsers();
             if (!descending)
             {
-                 Users = _context
-                    .Users
-                    .Where(u => !u.IsPrivate || User.IsInRole("Admin") || u.Id ==_userManager.GetUserId(User))
-                    .OrderBy(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
+                 Users = Users.OrderBy(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
             }
             else
             {
-                Users = _context.Users.OrderByDescending(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
+                Users = Users.OrderByDescending(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
             }
 
             UserIndexViewModel userIndexViewModel = new UserIndexViewModel { Users = Users };
@@ -233,6 +230,15 @@ namespace MvcTesting.Controllers
                     
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult Search(UsersSearchViewModel vm)
+        {
+            List<ApplicationUser> Users = GetUsers().Where(u => u.UserName.ToLower().Contains(vm.UserQuery.ToLower())).OrderBy(u=>u.UserName).ToList();
+            vm.Users = Users;
+            return View(vm);
+        }
+
 
         private async Task<ApplicationUser> GetUserById(string id)
         {
@@ -270,6 +276,11 @@ namespace MvcTesting.Controllers
         private IQueryable<Film> GetUserFilmsByAudioFormat(ApplicationUser user, string audioFormat = null)
         {
             return GetUserFilms(user).Where(f => f.Audio.Name == audioFormat);
+        }
+
+        private List<ApplicationUser> GetUsers()
+        {
+            return _context.Users.Where(u => !u.IsPrivate || User.IsInRole("Admin") || u.Id == _userManager.GetUserId(User)).ToList();
         }
     }
 }

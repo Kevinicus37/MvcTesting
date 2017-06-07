@@ -1,0 +1,21 @@
+﻿@model MvcTesting.ViewModels.UsersSearchViewModel
+
+<h1>User Search Results</h1>
+<hr />
+@if (Model.Users.Count < 1)
+{
+    <h4>No users matching "@Model.UserQuery"</h4>
+
+}
+else
+{
+    <h4>@Model.Users.Count results for "@Model.UserQuery"</h4>
+    foreach (var user in Model.Users)
+    {
+        <li>
+            <label for="@user.UserName">
+                <a asp-controller="Users" asp-action="DisplayUser" asp-route-username="@user.UserName">@user.UserName</a>
+            </label>
+        </li>
+    }
+}

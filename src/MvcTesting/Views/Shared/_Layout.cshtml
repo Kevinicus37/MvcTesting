@@ -48,6 +48,15 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Users<span class="caret"></span></a>
                         <ul class="dropdown-menu">
+                            <li>
+                                <form class="navbar-form navbar-left" asp-controller="Users" asp-action="Search" method="post">
+                                    <div class="form-group">
+                                        <label for="UserQuery"></label>
+                                        <input type="text" class="form-control" name="UserQuery" placeholder="Search for User" />
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                    </form>
+                            </li>
                             <li><a asp-area="" asp-controller="Users" asp-action="Index">Index</a></li>
                             @if (User.IsInRole("Admin"))
                             {
