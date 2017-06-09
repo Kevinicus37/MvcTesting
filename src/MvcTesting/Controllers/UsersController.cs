@@ -76,25 +76,16 @@ namespace MvcTesting.Controllers
 
             switch (propertyType)
             {
-                case "Genre": if (!_context.Genres.Any(g => g.Name == propertyValue))
-                    {
-                        propertyValue = null;
-                    }
+                case "Genre":
+                    propertyValue = (!_context.Genres.Any(g => g.Name == propertyValue) ? null : propertyValue);
                     films = GetUserFilmsByGenre(user, propertyValue).ToList();
                     break;
                 case "MediaFormat":
-                    if (!_context.MediaFormats.Any(mf => mf.Name == propertyValue))
-                    {
-                        propertyValue = null;
-                    }
+                    propertyValue = (!_context.MediaFormats.Any(mf => mf.Name == propertyValue) ? null : propertyValue);
                     films = GetUserFilmsByMediaFormat(user, propertyValue).ToList();
                     break;
                 case "AudioFormat":
                     propertyValue = (!_context.AudioFormats.Any(af => af.Name == propertyValue) ? null : propertyValue);
-                    //if (!_context.AudioFormats.Any(af=>af.Name == propertyValue))
-                    //{
-                    //    propertyValue = null;
-                    //}
                     films = GetUserFilmsByAudioFormat(user, propertyValue).ToList();
                     break;
                 default: films = GetUserFilms(user).ToList();

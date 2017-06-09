@@ -1,6 +1,54 @@
 ﻿@model MvcTesting.ViewModels.DisplayUserViewModel
 
 <h1>@(Model.User.UserName)'@(Model.User.UserName[Model.User.UserName.Length-1].Equals('s')? "" : "s") Collection</h1>
+<div class="btn-group">
+    <a class="btn btn-info" asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName">Display All</a>
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+            Filter by Genre
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li class="dropdown-header">Display Films of Selected Genre</li>
+            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName">All</a></li>
+            @foreach (var genre in Model.Genres)
+            {
+                <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="Genre" asp-route-propertyValue="@genre.Name">@genre.Name</a></li>
+
+            }
+        </ul>
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+            Filter by Media Type
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li class="dropdown-header">Display Films of Selected Media Type</li>
+            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName">All</a></li>
+            @foreach (var mediaFormat in Model.MediaFormats)
+            {
+                <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="MediaFormat" asp-route-propertyValue="@mediaFormat.Name">@mediaFormat.Name</a></li>
+
+            }
+        </ul>
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+            Filter by Audio Format
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li class="dropdown-header">Display Films of Selected Audio Format</li>
+            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName">All</a></li>
+            @foreach (var audioFormat in Model.AudioFormats)
+            {
+                <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="AudioFormat" asp-route-propertyValue="@audioFormat.Name">@audioFormat.Name</a></li>
+
+            }
+        </ul>
+    </div>
+</div>
 <hr />
 
 @if (!string.IsNullOrEmpty(Model.FilterValue))
@@ -14,62 +62,52 @@
 
 }
 
-<ul>
+<table class="table table-condensed table-striped">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Title (Release Year)</th>
+            <th>Media Format</th>
+            <th>Audio Format</th>
+        </tr>
+    </thead>
+    <tbody>
+      @foreach (var film in Model.Films)
+      {
+        <tr>
+            <td>
+                @if (!string.IsNullOrEmpty(film.PosterUrl))
+                {
+                    <label for="@film.PosterUrl">
+                        <img src="@film.PosterUrl" style="max-height:80px; max-width:54px"/>
+                        
+                    </label>
 
-    @foreach (var film in Model.Films)
-    { 
-        <li>
-            <label for="@film.Name">
-                <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">@film.Name @(!string.IsNullOrEmpty(film.Year)? "(" + film.Year+ ")": "")            
-                </a>
-            </label>
-        </li>
-    }
+                }
+                
+            </td>
+            <td>
+                <label for="@film.Name">
+                    <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">
+                        @film.Name @(!string.IsNullOrEmpty(film.Year) ? "(" + film.Year + ")" : "")
+                    </a>
+                </label>
+            </td>
+        
+            <td>
+                <label for="@film.Media">
+                    <a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="MediaFormat" asp-route-propertyValue="@film.Media.Name" >@film.Media.Name</a>
+                </label>
+            </td>
+            <td>
+                <label for="@film.Audio">
+                    <a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="AudioFormat" asp-route-propertyValue="@film.Audio.Name">@film.Audio.Name</a>
+                </label>
+            </td>
+        </tr>
+      }  
+    </tbody>
+ </table>   
 
 </ul>
-<div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Filter by Genre
-    <span class="caret"></span></button>
-    <ul class="dropdown-menu">
-        <li class="dropdown-header">Display Films of Selected Genre</li>
-        <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName">All</a></li>
-        @foreach (var genre in Model.Genres)
-        {
-            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="Genre" asp-route-propertyValue="@genre.Name">@genre.Name</a></li>
 
-        }
-    </ul>
-</div>
-<br />
-<div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-        Filter by Media Type
-        <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu">
-        <li class="dropdown-header">Display Films of Selected Media Type</li>
-        <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName">All</a></li>
-        @foreach (var mediaFormat in Model.MediaFormats)
-        {
-            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="MediaFormat" asp-route-propertyValue="@mediaFormat.Name">@mediaFormat.Name</a></li>
-
-        }
-    </ul>
-</div>
-
-<br />
-<div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-        Filter by Audio Format
-        <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu">
-        <li class="dropdown-header">Display Films of Selected Audio Format</li>
-        <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName">All</a></li>
-        @foreach (var audioFormat in Model.AudioFormats)
-        {
-            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="AudioFormat" asp-route-propertyValue="@audioFormat.Name">@audioFormat.Name</a></li>
-
-        }
-    </ul>
-</div>
