@@ -5,6 +5,7 @@ namespace MvcTesting.ViewModels
 {
     public class DisplayUserViewModel
     {
+
         public IList<Film> Films { get; set; }
 
         public ApplicationUser User { get; set; }

@@ -37,6 +37,7 @@ namespace MvcTesting.Controllers
             if (!descending)
             {
                  Users = Users.OrderBy(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
+
             }
             else
             {
@@ -84,9 +85,20 @@ namespace MvcTesting.Controllers
                     propertyValue = (!_context.MediaFormats.Any(mf => mf.Name == propertyValue) ? null : propertyValue);
                     films = GetUserFilmsByMediaFormat(user, propertyValue).ToList();
                     break;
-                case "AudioFormat":
-                    propertyValue = (!_context.AudioFormats.Any(af => af.Name == propertyValue) ? null : propertyValue);
-                    films = GetUserFilmsByAudioFormat(user, propertyValue).ToList();
+                case "Film":
+                    if (string.IsNullOrEmpty(propertyValue))
+                    {
+                        return Redirect("DisplayUser/?UserName=" + UserName);
+                    }
+                    propertyValue = (!_context.Films.Any(f => f.Name.ToLower().Contains(propertyValue.ToLower())) ? null : propertyValue);
+                    if (!string.IsNullOrEmpty(propertyValue))
+                    {
+                        films = SearchUserFilmsByTitle(user, propertyValue).ToList();
+                    }
+                    else
+                    {
+                        films = new List<Film>();
+                    }
                     break;
                 default: films = GetUserFilms(user).ToList();
                     break;
@@ -225,6 +237,10 @@ namespace MvcTesting.Controllers
         [HttpPost]
         public IActionResult Search(UsersSearchViewModel vm)
         {
+            if (string.IsNullOrEmpty(vm.UserQuery))
+            {
+                return RedirectToAction("Index");
+            }
             List<ApplicationUser> Users = GetUsers().Where(u => u.UserName.ToLower().Contains(vm.UserQuery.ToLower())).OrderBy(u=>u.UserName).ToList();
             vm.Users = Users;
             return View(vm);
@@ -272,6 +288,11 @@ namespace MvcTesting.Controllers
         private List<ApplicationUser> GetUsers()
         {
             return _context.Users.Where(u => !u.IsPrivate || User.IsInRole("Admin") || u.Id == _userManager.GetUserId(User)).ToList();
+        }
+
+        private IQueryable<Film> SearchUserFilmsByTitle(ApplicationUser user, string title = null)
+        {
+            return GetUserFilms(user).Where(f => f.Name.ToLower().Contains(title.ToLower()));
         }
     }
 }

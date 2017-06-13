@@ -48,7 +48,21 @@
             }
         </ul>
     </div>
+    
+            
 </div>
+<br />
+<br />
+<form asp-controller="Users" asp-action="DisplayUser" method="post">
+    <div class="input-group">
+        <input type="hidden" name="UserName" value="@Model.User.UserName" />
+        <input type="hidden" name="propertyType" value="Film" />
+        <input type="text" class="form-control" name="propertyValue" placeholder="Search Films by Title" />
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-primary"><i class="glpyphicon glyphicon-search"></i></button>
+        </div>
+    </div>
+</form>
 <hr />
 
 @if (!string.IsNullOrEmpty(Model.FilterValue))
@@ -61,53 +75,57 @@
     <h4>No @Model.FilterValue Films at this time.</h4>
 
 }
+else
+{
 
-<table class="table table-condensed table-striped">
-    <thead>
-        <tr>
-            <th></th>
-            <th>Title (Release Year)</th>
-            <th>Media Format</th>
-            <th>Audio Format</th>
-        </tr>
-    </thead>
-    <tbody>
-      @foreach (var film in Model.Films)
-      {
-        <tr>
-            <td>
-                @if (!string.IsNullOrEmpty(film.PosterUrl))
-                {
-                    <label for="@film.PosterUrl">
-                        <img src="@film.PosterUrl" style="max-height:80px; max-width:54px"/>
-                        
-                    </label>
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Title (Release Year)</th>
+                <th>Media Format</th>
+                <th>Audio Format</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var film in Model.Films)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(film.PosterUrl))
+                        {
+                            <label for="@film.PosterUrl">
+                                <img src="@film.PosterUrl" style="max-height:80px; max-width:54px" />
 
-                }
-                
-            </td>
-            <td>
-                <label for="@film.Name">
-                    <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">
-                        @film.Name @(!string.IsNullOrEmpty(film.Year) ? "(" + film.Year + ")" : "")
-                    </a>
-                </label>
-            </td>
-        
-            <td>
-                <label for="@film.Media">
-                    <a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="MediaFormat" asp-route-propertyValue="@film.Media.Name" >@film.Media.Name</a>
-                </label>
-            </td>
-            <td>
-                <label for="@film.Audio">
-                    <a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="AudioFormat" asp-route-propertyValue="@film.Audio.Name">@film.Audio.Name</a>
-                </label>
-            </td>
-        </tr>
-      }  
-    </tbody>
- </table>   
+                            </label>
 
-</ul>
+                        }
+
+                    </td>
+                    <td>
+                        <label for="@film.Name">
+                            <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">
+                                @film.Name @(!string.IsNullOrEmpty(film.Year) ? "(" + film.Year + ")" : "")
+                            </a>
+                        </label>
+                    </td>
+
+                    <td>
+                        <label for="@film.Media">
+                            <a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="MediaFormat" asp-route-propertyValue="@film.Media.Name">@film.Media.Name</a>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="@film.Audio">
+                            <a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.User.UserName" asp-route-propertyType="AudioFormat" asp-route-propertyValue="@film.Audio.Name">@film.Audio.Name</a>
+                        </label>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+
 
