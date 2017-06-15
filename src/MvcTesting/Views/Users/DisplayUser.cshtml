@@ -76,9 +76,10 @@
     <div class="input-group">
         <input type="hidden" asp-for="UserName" value="@Model.UserName"/>
         <input type="hidden" asp-for="PropertyType" value="Film" />
-        <input type="text" class="form-control" asp-for="SearchValue" placeholder="Search Films by Title" />
+        <input type="text" class="form-control" asp-for="SearchValue" 
+               placeholder="Search for a film in @(Model.UserName)'@(Model.UserName[Model.UserName.Length-1].Equals('s')? "" : "s") Collection" />
         <div class="input-group-btn">
-            <button type="submit" class="btn btn-primary"><i class="glpyphicon glyphicon-search"></i></button>
+            <button type="submit" class="btn btn-primary">Search</button>
         </div>
     </div>
 </form>
