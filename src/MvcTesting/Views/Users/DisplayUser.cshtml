@@ -67,6 +67,30 @@
             }
         </ul>
     </div>
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+            Sort By...
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            
+            @foreach (var sorter in Model.SortValues)
+            {
+                <li>
+                    <form asp-controller="Users" asp-action="DisplayUser" method="post">
+                        <input type="hidden" asp-for="UserName" value="@Model.UserName" />
+                        <input type="hidden" asp-for="PropertyType" />
+                        <input type="hidden" asp-for="FilterValue" />
+                        <input type="hidden" asp-for="SortValue" value="@sorter" />
+                        <button type="submit" class="btn btn-link">@sorter</button>
+                    </form>
+                </li>
+
+            }
+            
+            
+        </ul>
+    </div>
     
             
 </div>

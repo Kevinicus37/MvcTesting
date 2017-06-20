@@ -12,6 +12,10 @@ namespace MvcTesting.ViewModels
 
         public string SearchValue { get; set; }
 
+        public string SortValue { get; set; }
+
+        public List<string> SortValues = new List<string> { "Title", "Title Desc.", "Year", "Year Desc.", "Audio Format", "Audio Format Desc.", "Media Format", "Media Format Desc." };
+
         public string PropertyType { get; set; }
 
         public IList<Film> Films { get; set; }

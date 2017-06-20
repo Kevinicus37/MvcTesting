@@ -124,8 +124,8 @@ namespace MvcTesting.Controllers
                             break;
 
                 }
-
-                vm.Films = films;
+                
+                vm.Films = SortByValue(films, vm.SortValue);
                 vm.Genres = _context.Genres.ToList();
                 vm.MediaFormats = _context.MediaFormats.ToList();
                 vm.AudioFormats = _context.AudioFormats.ToList();
@@ -287,8 +287,10 @@ namespace MvcTesting.Controllers
 
         private IQueryable<Film> GetUserFilms(ApplicationUser user)
         {
-            // Returns all Films of the user that the current User is authorized to see.
+            // Returns all Films of the user that the current User is authorized to see.  Audio, Media, and User of the film is included.
             return _context.Films
+                .Include(f=>f.Audio)
+                .Include(f=>f.Media)
                 .Include(f => f.User)
                 .Where(f => (f.UserID == user.Id) && (!f.IsPrivate || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)));
         }
@@ -330,5 +332,71 @@ namespace MvcTesting.Controllers
             }
             return GetUserFilms(user).Where(f => f.Name.ToLower().Contains(title.ToLower())).ToList();
         }
+
+        private List<Film> SortByValue(List<Film> films, string sortValue)
+        {
+            switch (sortValue)
+            {
+                case "Title":
+                    return SortByTitle(films);
+                case "Title Desc.":
+                    return SortByTitleDescending(films);
+                case "Year":
+                    return SortByYear(films);
+                case "Year Desc.":
+                    return SortByYearDescending(films);
+                case "Media Format":
+                    return SortByMediaFormat(films);
+                case "Media Format Desc.":
+                    return SortByMediaFormatDescending(films);
+                case "Audio Format":
+                    return SortByAudioFormat(films);
+                case "Audio Format Desc.":
+                    return SortByAudioFormatDescending(films);
+                default:
+                    return SortByTitle(films);
+            }
+        }
+
+        private List<Film> SortByTitle(List<Film> films)
+        {
+            return films.OrderBy(f => f.Name).ToList();
+        }
+
+        private List<Film> SortByTitleDescending(List<Film> films)
+        {
+            return films.OrderByDescending(f => f.Name).ToList();
+        }
+
+        private List<Film> SortByYear(List<Film> films)
+        {
+            return films.OrderBy(f => f.Year).ToList();
+        }
+
+        private List<Film> SortByYearDescending(List<Film> films)
+        {
+            return films.OrderByDescending(f => f.Year).ToList();
+        }
+
+        private List<Film> SortByAudioFormat(List<Film> films)
+        {
+            return films.OrderBy(f => f.Audio.Name).ToList();
+        }
+
+        private List<Film> SortByAudioFormatDescending(List<Film> films)
+        {
+            return films.OrderByDescending(f => f.Audio.Name).ToList();
+        }
+
+        private List<Film> SortByMediaFormat(List<Film> films)
+        {
+            return films.OrderBy(f => f.Media.Name).ToList();
+        }
+
+        private List<Film> SortByMediaFormatDescending(List<Film> films)
+        {
+            return films.OrderByDescending(f => f.Media.Name).ToList();
+        }
+
     }
 }
