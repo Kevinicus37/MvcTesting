@@ -20,7 +20,7 @@ namespace MvcTesting.ViewModels
 
         public IList<Film> Films { get; set; }
 
-        public ApplicationUser User { get; set; }
+        //public ApplicationUser User { get; set; }
 
         public List<Genre> Genres { get; set; }
 
@@ -32,10 +32,10 @@ namespace MvcTesting.ViewModels
 
         public DisplayUserViewModel() { }
 
-        public DisplayUserViewModel(IList<Film> films, ApplicationUser user)
+        public DisplayUserViewModel(IList<Film> films, string userName)
         {
-            User = user;
-            UserName = user.UserName;
+            //User = user;
+            UserName = userName;
             if (films == null)
             {
                 films = new List<Film>();

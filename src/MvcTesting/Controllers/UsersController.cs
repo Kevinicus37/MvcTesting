@@ -71,7 +71,7 @@ namespace MvcTesting.Controllers
             }
 
             films = GetUserFilms(user).ToList();
-            DisplayUserViewModel vm = new DisplayUserViewModel(films, user);
+            DisplayUserViewModel vm = new DisplayUserViewModel(films, user.UserName);
             vm.Genres = _context.Genres.ToList();
             vm.MediaFormats = _context.MediaFormats.ToList();
             vm.AudioFormats = _context.AudioFormats.ToList();
@@ -105,19 +105,22 @@ namespace MvcTesting.Controllers
                             films = GetUserFilmsByMediaFormat(user, vm.FilterValue);
                             break;
                     case "AudioFormat":
-                        vm.FilterValue = (!_context.AudioFormats.Any(af => af.Name == vm.FilterValue) ? null : vm.FilterValue);
-                        films = GetUserFilmsByAudioFormat(user, vm.FilterValue);
-                        break;
+                            vm.FilterValue = (!_context.AudioFormats.Any(af => af.Name == vm.FilterValue) ? null : vm.FilterValue);
+                            films = GetUserFilmsByAudioFormat(user, vm.FilterValue);
+                            break;
                     case "Film":
                             if (string.IsNullOrEmpty(vm.SearchValue))
                             {
                                 return Redirect("DisplayUser/?UserName=" + vm.UserName);
                             }
+
                             string title = (!_context.Films.Any(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower())) ? null : vm.SearchValue);
+
                             if (!string.IsNullOrEmpty(title))
                             {
                                 films = SearchUserFilmsByTitle(user, title);
                             }
+
                             break;
                     default:
                             films = GetUserFilms(user).ToList();

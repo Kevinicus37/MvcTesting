@@ -2,11 +2,8 @@
 
 namespace MvcTesting.Models
 {
-    public class AudioFormat : IItemList
+    public class AudioFormat : MediaProperty, IItemList
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
-
         public IList<Film> Films { get; set; }
 
     }
