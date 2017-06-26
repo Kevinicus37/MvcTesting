@@ -313,6 +313,7 @@ namespace MvcTesting.Controllers
         //
         // GET: /Manage/LinkLoginCallback
         [HttpGet]
+        [Authorize(Roles = "Admin, Member") ]
         public async Task<ActionResult> LinkLoginCallback()
         {
             var user = await GetCurrentUserAsync();

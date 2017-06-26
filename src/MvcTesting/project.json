@@ -45,7 +45,8 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
-    "TMDbLib": "1.0.5-alpha"
+    "TMDbLib": "1.0.5-alpha",
+    "Microsoft.AspNetCore.Authentication.Facebook": "1.1.2"
   },
 
   "tools": {
