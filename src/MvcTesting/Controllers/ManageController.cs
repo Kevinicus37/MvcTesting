@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using MvcTesting.Models;
 using MvcTesting.Models.ManageViewModels;
 using MvcTesting.Services;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace MvcTesting.Controllers
 {
@@ -16,6 +18,7 @@ namespace MvcTesting.Controllers
         private MovieCollectorContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private IHostingEnvironment _environment;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
@@ -24,6 +27,7 @@ namespace MvcTesting.Controllers
         MovieCollectorContext context,
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
+        IHostingEnvironment environment,
         IEmailSender emailSender,
         ISmsSender smsSender,
         ILoggerFactory loggerFactory)
@@ -31,6 +35,7 @@ namespace MvcTesting.Controllers
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _environment = environment;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<ManageController>();
@@ -55,16 +60,17 @@ namespace MvcTesting.Controllers
             {
                 return View("Error");
             }
-            var model = new IndexViewModel
+            var vm = new IndexViewModel
             {
+                User = user,
                 HasPassword = await _userManager.HasPasswordAsync(user),
-                PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
-                TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
+                //PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
+                //TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
                 Logins = await _userManager.GetLoginsAsync(user),
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 IsPrivate = user.IsPrivate
             };
-            return View(model);
+            return View(vm);
         }
 
         //
@@ -89,122 +95,122 @@ namespace MvcTesting.Controllers
 
         //
         // GET: /Manage/AddPhoneNumber
-        public IActionResult AddPhoneNumber()
-        {
-            return View();
-        }
+        //public IActionResult AddPhoneNumber()
+        //{
+        //    return View();
+        //}
 
         //
         // POST: /Manage/AddPhoneNumber
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddPhoneNumber(AddPhoneNumberViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-            // Generate the token and send it
-            var user = await GetCurrentUserAsync();
-            if (user == null)
-            {
-                return View("Error");
-            }
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
-            await _smsSender.SendSmsAsync(model.PhoneNumber, "Your security code is: " + code);
-            return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> AddPhoneNumber(AddPhoneNumberViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View(model);
+        //    }
+        //    // Generate the token and send it
+        //    var user = await GetCurrentUserAsync();
+        //    if (user == null)
+        //    {
+        //        return View("Error");
+        //    }
+        //    var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
+        //    await _smsSender.SendSmsAsync(model.PhoneNumber, "Your security code is: " + code);
+        //    return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
+        //}
 
-        //
-        // POST: /Manage/EnableTwoFactorAuthentication
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EnableTwoFactorAuthentication()
-        {
-            var user = await GetCurrentUserAsync();
-            if (user != null)
-            {
-                await _userManager.SetTwoFactorEnabledAsync(user, true);
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                _logger.LogInformation(1, "User enabled two-factor authentication.");
-            }
-            return RedirectToAction(nameof(Index), "Manage");
-        }
+        ////
+        //// POST: /Manage/EnableTwoFactorAuthentication
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> EnableTwoFactorAuthentication()
+        //{
+        //    var user = await GetCurrentUserAsync();
+        //    if (user != null)
+        //    {
+        //        await _userManager.SetTwoFactorEnabledAsync(user, true);
+        //        await _signInManager.SignInAsync(user, isPersistent: false);
+        //        _logger.LogInformation(1, "User enabled two-factor authentication.");
+        //    }
+        //    return RedirectToAction(nameof(Index), "Manage");
+        //}
 
-        //
-        // POST: /Manage/DisableTwoFactorAuthentication
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DisableTwoFactorAuthentication()
-        {
-            var user = await GetCurrentUserAsync();
-            if (user != null)
-            {
-                await _userManager.SetTwoFactorEnabledAsync(user, false);
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                _logger.LogInformation(2, "User disabled two-factor authentication.");
-            }
-            return RedirectToAction(nameof(Index), "Manage");
-        }
+        ////
+        //// POST: /Manage/DisableTwoFactorAuthentication
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DisableTwoFactorAuthentication()
+        //{
+        //    var user = await GetCurrentUserAsync();
+        //    if (user != null)
+        //    {
+        //        await _userManager.SetTwoFactorEnabledAsync(user, false);
+        //        await _signInManager.SignInAsync(user, isPersistent: false);
+        //        _logger.LogInformation(2, "User disabled two-factor authentication.");
+        //    }
+        //    return RedirectToAction(nameof(Index), "Manage");
+        //}
 
         //
         // GET: /Manage/VerifyPhoneNumber
-        [HttpGet]
-        public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
-        {
-            var user = await GetCurrentUserAsync();
-            if (user == null)
-            {
-                return View("Error");
-            }
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
-            // Send an SMS to verify the phone number
-            return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
-        }
+        //[HttpGet]
+        //public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
+        //{
+        //    var user = await GetCurrentUserAsync();
+        //    if (user == null)
+        //    {
+        //        return View("Error");
+        //    }
+        //    var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
+        //    // Send an SMS to verify the phone number
+        //    return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
+        //}
 
-        //
-        // POST: /Manage/VerifyPhoneNumber
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-            var user = await GetCurrentUserAsync();
-            if (user != null)
-            {
-                var result = await _userManager.ChangePhoneNumberAsync(user, model.PhoneNumber, model.Code);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.AddPhoneSuccess });
-                }
-            }
-            // If we got this far, something failed, redisplay the form
-            ModelState.AddModelError(string.Empty, "Failed to verify phone number");
-            return View(model);
-        }
+        ////
+        //// POST: /Manage/VerifyPhoneNumber
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View(model);
+        //    }
+        //    var user = await GetCurrentUserAsync();
+        //    if (user != null)
+        //    {
+        //        var result = await _userManager.ChangePhoneNumberAsync(user, model.PhoneNumber, model.Code);
+        //        if (result.Succeeded)
+        //        {
+        //            await _signInManager.SignInAsync(user, isPersistent: false);
+        //            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.AddPhoneSuccess });
+        //        }
+        //    }
+        //    // If we got this far, something failed, redisplay the form
+        //    ModelState.AddModelError(string.Empty, "Failed to verify phone number");
+        //    return View(model);
+        //}
 
         //
         // POST: /Manage/RemovePhoneNumber
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RemovePhoneNumber()
-        {
-            var user = await GetCurrentUserAsync();
-            if (user != null)
-            {
-                var result = await _userManager.SetPhoneNumberAsync(user, null);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.RemovePhoneSuccess });
-                }
-            }
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> RemovePhoneNumber()
+        //{
+        //    var user = await GetCurrentUserAsync();
+        //    if (user != null)
+        //    {
+        //        var result = await _userManager.SetPhoneNumberAsync(user, null);
+        //        if (result.Succeeded)
+        //        {
+        //            await _signInManager.SignInAsync(user, isPersistent: false);
+        //            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.RemovePhoneSuccess });
+        //        }
+        //    }
+        //    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+        //}
 
         //
         // GET: /Manage/ChangePassword
@@ -337,6 +343,40 @@ namespace MvcTesting.Controllers
             user.IsPrivate = !user.IsPrivate;
             _context.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> EditProfilePicture(IndexViewModel vm)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser user = await _userManager.GetUserAsync(User);
+
+                if (vm.ProfilePictureFile != null)
+                {
+                    string uploadPath = Path.Combine(_environment.WebRootPath, "images");
+                    Directory.CreateDirectory(Path.Combine(uploadPath, user.UserName));
+
+                    string filename = vm.ProfilePictureFile.FileName;
+
+                    if (filename.Contains('\\'))
+                    {
+                        filename = filename.Split('\\').Last();
+                    }
+
+                    using (FileStream fs = new FileStream(Path.Combine(uploadPath, user.UserName, filename), FileMode.Create))
+                    {
+                        await vm.ProfilePictureFile.CopyToAsync(fs);
+                    }
+                    user.ProfilePicture = filename;
+                }
+
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Index");
+            }
+
+            return View("Index", vm);
         }
 
         #region Helpers

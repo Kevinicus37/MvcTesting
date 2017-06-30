@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace MvcTesting.Models.ManageViewModels
 {
@@ -19,5 +20,11 @@ namespace MvcTesting.Models.ManageViewModels
         public bool BrowserRemembered { get; set; }
 
         public bool IsPrivate { get; set; }
+
+        public string ProfilePicture { get; set; }
+
+        public ApplicationUser User { get; set; }
+
+        public IFormFile ProfilePictureFile { get; set; }
     }
 }

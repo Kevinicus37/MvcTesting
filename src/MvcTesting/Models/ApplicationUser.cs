@@ -10,5 +10,6 @@ namespace MvcTesting.Models
         public DateTime Updated { get; set; }
         public IList<Film> Films { get; set; }
         public bool IsPrivate { get; set; }
+        public string ProfilePicture { get; set; }
     }
 }
