@@ -22,7 +22,7 @@ namespace MvcTesting.Controllers
     public class MovieController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private MovieCollectorContext context;
+        private MovieCollectorContext _context;
         
         TMDbClient client;
 
@@ -31,7 +31,7 @@ namespace MvcTesting.Controllers
             // Initialize items to be used throughout the controller
 
             _userManager = userManager;
-            context = dbContext;
+            _context = dbContext;
 
             // This is the client that is used to work with the TMDb.org API
             client = new TMDbClient("9950b6bfd3eef8b5c9b7343ead080098");
@@ -49,7 +49,7 @@ namespace MvcTesting.Controllers
                 userCanSeePrivate = true;
             }
             //Gets a list of all films in order of Name, and then by Year and displays it in the view.
-            List<Film> films = context.Films.Include(f=>f.User).OrderBy(f => f.Name)
+            List<Film> films = _context.Films.Include(f=>f.User).OrderBy(f => f.Name)
                 .Where(f=> (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || userCanSeePrivate)
                 .OrderBy(f => f.Year)
                 .ToList();
@@ -98,6 +98,78 @@ namespace MvcTesting.Controllers
             return View("Results", searchViewModel);
         }
 
+        [AllowAnonymous]
+        public IActionResult SearchAll(string query)
+        {
+            
+            List<Film> films = _context.Films
+                .Include(f=>f.User)
+                .Where(f => (!f.IsPrivate && !f.User.IsPrivate) || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User))
+                .Where(f => f.Name.ToLower().Contains(query.ToLower()))
+                .ToList();
+
+            var vm = new SearchAllMovieViewModel(films);
+
+            vm.Genres = _context.Genres.ToList();
+            vm.MediaFormats = _context.MediaFormats.ToList();
+            vm.AudioFormats = _context.AudioFormats.ToList();
+            
+            
+            return View(vm);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult SearchAll(SearchAllMovieViewModel vm)
+        {
+            List<Film> films = new List<Film>();
+
+            // If someone attempts to access a page for a private User directly and is not that User
+            // and is not an Admin, they are redirected to the Index Action.
+            
+
+            switch (vm.PropertyType)
+            {
+                case "Genre":
+                    vm.FilterValue = (!_context.Genres.Any(g => g.Name == vm.FilterValue) ? null : vm.FilterValue);
+                    films = GetAllFilmsByGenre(vm.SearchValue, vm.FilterValue);
+                    break;
+                case "MediaFormat":
+                    vm.FilterValue = (!_context.MediaFormats.Any(mf => mf.Name == vm.FilterValue) ? null : vm.FilterValue);
+                    films = GetAllFilmsByMediaFormat(vm.SearchValue, vm.FilterValue);
+                    break;
+                case "AudioFormat":
+                    vm.FilterValue = (!_context.AudioFormats.Any(af => af.Name == vm.FilterValue) ? null : vm.FilterValue);
+                    films = GetAllFilmsByAudioFormat(vm.SearchValue, vm.FilterValue);
+                    break;
+                case "Film":
+                    if (string.IsNullOrEmpty(vm.SearchValue))
+                    {
+                        return RedirectToAction("Index");
+                    }
+
+                    string title = (!_context.Films.Any(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower())) ? null : vm.SearchValue);
+
+                    if (!string.IsNullOrEmpty(title))
+                    {
+                        films = GetFilmsByTitle(title).ToList();
+                    }
+
+                    break;
+                default:
+                    films = GetFilmsByTitle(vm.SearchValue).ToList();
+                    break;
+
+            }
+
+            vm.Films = SortByValue(films, vm.SortValue);
+            vm.Genres = _context.Genres.ToList();
+            vm.MediaFormats = _context.MediaFormats.ToList();
+            vm.AudioFormats = _context.AudioFormats.ToList();
+
+            return View(vm);
+        }
+
         public IActionResult ViewSearchedMovie(int Id)
         {
             // This displays a closer look at an individual movie when it is selected.
@@ -114,8 +186,8 @@ namespace MvcTesting.Controllers
         {
             // Get Audio Formats, and Media Formats arguments to pass into ViewModel
             // to generate selection options.
-            List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
-            List<AudioFormat> audioFormats = context.AudioFormats.ToList();
+            List<MediaFormat> mediaFormats = _context.MediaFormats.ToList();
+            List<AudioFormat> audioFormats = _context.AudioFormats.ToList();
             
             Movie movie = null;
 
@@ -126,7 +198,7 @@ namespace MvcTesting.Controllers
             }
 
             AddMovieViewModel addMovieViewModel = new AddMovieViewModel(mediaFormats, audioFormats, movie);
-            addMovieViewModel.AvailableGenres = context.Genres.ToList();
+            addMovieViewModel.AvailableGenres = _context.Genres.ToList();
 
             return View(addMovieViewModel);
         }
@@ -139,7 +211,7 @@ namespace MvcTesting.Controllers
             // it's not valid, return to the view.
             if (ModelState.IsValid)
             {
-                ApplicationUser user = context.Users.Single(u => u.Id == _userManager.GetUserId(User));
+                ApplicationUser user = _context.Users.Single(u => u.Id == _userManager.GetUserId(User));
                 Film film = new Film();
                 film.User = user;
                 int whatID = film.ID;
@@ -147,8 +219,8 @@ namespace MvcTesting.Controllers
                 return Redirect($"/Movie/ViewMovie/{id}");
             }
 
-            addMovieViewModel.MediaFormats = addMovieViewModel.PopulateList(context.MediaFormats.ToList());
-            addMovieViewModel.AudioFormats = addMovieViewModel.PopulateList(context.AudioFormats.ToList());
+            addMovieViewModel.MediaFormats = addMovieViewModel.PopulateList(_context.MediaFormats.ToList());
+            addMovieViewModel.AudioFormats = addMovieViewModel.PopulateList(_context.AudioFormats.ToList());
 
             return View(addMovieViewModel);
         }
@@ -159,10 +231,10 @@ namespace MvcTesting.Controllers
 
             // Finds and displays a Film based on the ID.  If no Film is found with a matching ID,
             // the User is returned to the Index action.
-            Film film = context.Films.Include(f => f.Media).Include(f => f.Audio).SingleOrDefault(f => f.ID == id);
+            Film film = _context.Films.Include(f => f.Media).Include(f => f.Audio).SingleOrDefault(f => f.ID == id);
             if (film != null)
             {
-                List<FilmGenre> genres = context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
+                List<FilmGenre> genres = _context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
                 ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
                 return View(viewMovieViewModel);
             }
@@ -175,7 +247,7 @@ namespace MvcTesting.Controllers
         {
             // Display a list of films in the current User's collection that can be removed.
             // I might want to create a ViewModel instead of passing the List directly to the View.
-            List<Film> films = context.Films.OrderBy(f=>f.Name).OrderBy(f=>f.Year).Where(f => f.UserID== _userManager.GetUserId(User)).ToList();
+            List<Film> films = _context.Films.OrderBy(f=>f.Name).OrderBy(f=>f.Year).Where(f => f.UserID== _userManager.GetUserId(User)).ToList();
             return View(films);
         }
 
@@ -189,14 +261,14 @@ namespace MvcTesting.Controllers
             foreach (int id in filmIds)
             {
                 
-                Film oldFilm = context.Films.SingleOrDefault(f => f.ID == id);
+                Film oldFilm = _context.Films.SingleOrDefault(f => f.ID == id);
                 if (oldFilm.User.UserName == _userManager.GetUserName(User) || User.IsInRole("Admin"))
                 {
-                    context.Films.Remove(oldFilm);
+                    _context.Films.Remove(oldFilm);
                 }
             }
 
-            context.SaveChanges();
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
@@ -206,7 +278,7 @@ namespace MvcTesting.Controllers
         {
             // Allows user to edit Properties of one of the Films in their Collection
 
-            Film editFilm = context.Films.SingleOrDefault(f => f.ID == id);
+            Film editFilm = _context.Films.SingleOrDefault(f => f.ID == id);
 
             // If editFilm with the passed in id exists and the User is associated with the Film or Admin,
             // then the ViewModel is seeded.  Otherwise the User is redirected to the Index Action.
@@ -214,12 +286,12 @@ namespace MvcTesting.Controllers
             {
                 if (editFilm.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
                 {
-                    List<MediaFormat> mediaFormats = context.MediaFormats.ToList();
-                    List<AudioFormat> audioFormats = context.AudioFormats.ToList();
+                    List<MediaFormat> mediaFormats = _context.MediaFormats.ToList();
+                    List<AudioFormat> audioFormats = _context.AudioFormats.ToList();
                     EditMovieViewModel editMovieViewModel = new EditMovieViewModel(mediaFormats, audioFormats, editFilm);
                     editMovieViewModel.Genres = GetGenres(id);
                     editMovieViewModel.ID = id;
-                    editMovieViewModel.AvailableGenres = context.Genres.ToList();
+                    editMovieViewModel.AvailableGenres = _context.Genres.ToList();
                     return View(editMovieViewModel);
                 }
             }
@@ -238,7 +310,7 @@ namespace MvcTesting.Controllers
             if (ModelState.IsValid)
             {
 
-                Film film = context.Films.Single(f => f.ID == editMovieViewModel.ID);
+                Film film = _context.Films.Single(f => f.ID == editMovieViewModel.ID);
                 if (film.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
                 {
                     int id = await UpdateMovieAsync(editMovieViewModel, film);
@@ -249,9 +321,9 @@ namespace MvcTesting.Controllers
             }
 
             // If the model is not valid, it is re-seeded and returned to the View.
-            editMovieViewModel.MediaFormats = editMovieViewModel.PopulateList(context.MediaFormats.ToList());
-            editMovieViewModel.AudioFormats = editMovieViewModel.PopulateList(context.AudioFormats.ToList());
-            editMovieViewModel.AvailableGenres = context.Genres.ToList();
+            editMovieViewModel.MediaFormats = editMovieViewModel.PopulateList(_context.MediaFormats.ToList());
+            editMovieViewModel.AudioFormats = editMovieViewModel.PopulateList(_context.AudioFormats.ToList());
+            editMovieViewModel.AvailableGenres = _context.Genres.ToList();
             return View(editMovieViewModel);
         }
 
@@ -260,8 +332,8 @@ namespace MvcTesting.Controllers
             // UpdateMovie transfers data from viewModel to the Film object.  The created
             // or edited film's ID is returned as an int.
 
-            MediaFormat newMediaFormat = context.MediaFormats.Single(m => m.ID == viewModel.MediaID);
-            AudioFormat newAudioFormat = context.AudioFormats.Single(a => a.ID == viewModel.AudioID);
+            MediaFormat newMediaFormat = _context.MediaFormats.Single(m => m.ID == viewModel.MediaID);
+            AudioFormat newAudioFormat = _context.AudioFormats.Single(a => a.ID == viewModel.AudioID);
 
             film.Name = viewModel.Name;
             film.Year = viewModel.Year;
@@ -280,23 +352,23 @@ namespace MvcTesting.Controllers
             film.Media = newMediaFormat;
 
             // Adds the film to the db if it does not already exist.
-            Film existingFilm = context.Films.SingleOrDefault(f => f.ID == film.ID);
+            Film existingFilm = _context.Films.SingleOrDefault(f => f.ID == film.ID);
             if (existingFilm == null)
             {
-                context.Films.Add(film);
+                _context.Films.Add(film);
             }
 
             // Add genres to the film.  Deletes any previously selected genres if they arne't still selected from an edit.
             if (viewModel.Genres != null)
             {
-                List<FilmGenre> thisFilmGenres = context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == film.ID).ToList();
+                List<FilmGenre> thisFilmGenres = _context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == film.ID).ToList();
 
                 // Eliminate any previous FilmGenres that weren't selected in an edit
                 foreach (FilmGenre filmGenre in thisFilmGenres)
                 {
                     if (!viewModel.Genres.Contains(filmGenre.Genre.Name))
                     {
-                        context.FilmGenres.Remove(filmGenre);
+                        _context.FilmGenres.Remove(filmGenre);
                     }
                 }
 
@@ -304,10 +376,10 @@ namespace MvcTesting.Controllers
                 foreach (string genre in viewModel.Genres)
                 {
                     // Gets a list of existing FilmGenre items to check against.
-                    IList<FilmGenre> existingFilmGenres = context.FilmGenres.Where(fg => fg.FilmID == film.ID)
+                    IList<FilmGenre> existingFilmGenres = _context.FilmGenres.Where(fg => fg.FilmID == film.ID)
                         .Where(fg => fg.Genre.Name == genre).ToList();
 
-                    Models.Genre newGenre = context.Genres.Single(g => g.Name == genre);
+                    Models.Genre newGenre = _context.Genres.Single(g => g.Name == genre);
 
                     // If no FilmGenres with the current FilmID and GenreID exist, one is created.
                     if (existingFilmGenres.Count == 0)
@@ -318,7 +390,7 @@ namespace MvcTesting.Controllers
                             GenreID = newGenre.ID
                         };
 
-                        context.FilmGenres.Add(newFilmGenre);
+                        _context.FilmGenres.Add(newFilmGenre);
                     }
                     
                 }
@@ -329,7 +401,7 @@ namespace MvcTesting.Controllers
             film.Updated = DateTime.Now;
             ApplicationUser user = await _userManager.GetUserAsync(User);
             user.Updated = DateTime.Now;
-            context.SaveChanges();
+            _context.SaveChanges();
 
             return film.ID;
         }
@@ -340,7 +412,7 @@ namespace MvcTesting.Controllers
             // List of strings containing the names of the Genres.  These are the
             // Genres that have previously been selected for the Film.
             List<string> genres = new List<string>();
-            List<FilmGenre> FilmGenres = context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == filmId).ToList();
+            List<FilmGenre> FilmGenres = _context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == filmId).ToList();
             foreach (var filmGenre in FilmGenres)
             {
                 genres.Add(filmGenre.Genre.Name);
@@ -381,7 +453,114 @@ namespace MvcTesting.Controllers
                 return null;
             }
         }
-    }  
 
-    
+        private IQueryable<Film> GetFilmsByTitle(string title)
+        {
+            // Returns all Films of the user that the current User is authorized to see.  Audio, Media, and User of the film is included.
+            return _context.Films
+                .Include(f => f.Audio)
+                .Include(f => f.Media)
+                .Include(f => f.User)
+                .Where(f => f.Name.ToLower().Contains(title.ToLower()) && (!f.IsPrivate || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)));
+        }
+
+        private List<Film> GetAllFilmsByGenre(string title, string genre = null)
+        {
+            // Returns all Films of the user for a specific genre, displaying only those that the current User is authorized to see 
+            return GetFilmsByTitle(title).Include(f => f.FilmGenres).Where(f => f.FilmGenres.Any(fg => fg.Genre.Name == genre)).ToList();
+        }
+
+
+        private List<Film> GetAllFilmsByMediaFormat(string title, string mediaFormat = null)
+        {
+            // Returns all Films of the user for a specific MediaFormat, displaying only those that the current User is authorized to see 
+
+            return GetFilmsByTitle(title).Where(f => f.Media.Name == mediaFormat).ToList();
+        }
+
+        private List<Film> GetAllFilmsByAudioFormat(string title, string audioFormat = null)
+        {
+            // Returns all Films of the user for a specific AudioFormat, displaying only those that the current User is authorized to see 
+
+            return GetFilmsByTitle(title).Where(f => f.Audio.Name == audioFormat).ToList();
+        }
+        private List<Film> SearchAllFilmsByTitle(string title = null)
+        {
+            // Returns all Films of the user containing the search parameter (title), displaying only those that the current User is authorized to see 
+
+            if (string.IsNullOrEmpty(title))
+            {
+                return new List<Film>();
+            }
+            return _context.Films.Where(f => f.Name.ToLower().Contains(title.ToLower())).ToList();
+        }
+
+        private List<Film> SortByValue(List<Film> films, string sortValue)
+        {
+            switch (sortValue)
+            {
+                case "Title":
+                    return SortByTitle(films);
+                case "Title Desc.":
+                    return SortByTitleDescending(films);
+                case "Year":
+                    return SortByYear(films);
+                case "Year Desc.":
+                    return SortByYearDescending(films);
+                case "Media Format":
+                    return SortByMediaFormat(films);
+                case "Media Format Desc.":
+                    return SortByMediaFormatDescending(films);
+                case "Audio Format":
+                    return SortByAudioFormat(films);
+                case "Audio Format Desc.":
+                    return SortByAudioFormatDescending(films);
+                default:
+                    return SortByTitle(films);
+            }
+        }
+
+        private List<Film> SortByTitle(List<Film> films)
+        {
+            return films.OrderBy(f => f.Name).ToList();
+        }
+
+        private List<Film> SortByTitleDescending(List<Film> films)
+        {
+            return films.OrderByDescending(f => f.Name).ToList();
+        }
+
+        private List<Film> SortByYear(List<Film> films)
+        {
+            return films.OrderBy(f => f.Year).ToList();
+        }
+
+        private List<Film> SortByYearDescending(List<Film> films)
+        {
+            return films.OrderByDescending(f => f.Year).ToList();
+        }
+
+        private List<Film> SortByAudioFormat(List<Film> films)
+        {
+            return films.OrderBy(f => f.Audio.Name).ToList();
+        }
+
+        private List<Film> SortByAudioFormatDescending(List<Film> films)
+        {
+            return films.OrderByDescending(f => f.Audio.Name).ToList();
+        }
+
+        private List<Film> SortByMediaFormat(List<Film> films)
+        {
+            return films.OrderBy(f => f.Media.Name).ToList();
+        }
+
+        private List<Film> SortByMediaFormatDescending(List<Film> films)
+        {
+            return films.OrderByDescending(f => f.Media.Name).ToList();
+        }
+
+    }
+
+
 }
