@@ -128,7 +128,7 @@ namespace MvcTesting.Controllers
 
                 }
                 
-                vm.Films = SortByValue(films, vm.SortValue);
+                vm.Films = FilmSortingHelpers.SortByValue(films, vm.SortValue);
                 vm.Genres = _context.Genres.ToList();
                 vm.MediaFormats = _context.MediaFormats.ToList();
                 vm.AudioFormats = _context.AudioFormats.ToList();
@@ -137,9 +137,6 @@ namespace MvcTesting.Controllers
             }
             
             
-        
-
-        
 
         [HttpGet]
         public async Task<IActionResult> AddRole(string id)
@@ -274,37 +271,39 @@ namespace MvcTesting.Controllers
 
         // Helper Functions
 
-
+        [NonAction]
         private async Task<ApplicationUser> GetUserById(string id)
         {
             //Returns a User by the id.
             return await _userManager.FindByIdAsync(id);
         }
 
+        [NonAction]
         private SelectList GetAllRoles()
         {
             //Returns all available Roles as a SelectList ordered by Name
             return new SelectList(_roleManager.Roles.OrderBy(r => r.Name));
         }
 
-
+        [NonAction]
         private IQueryable<Film> GetUserFilms(ApplicationUser user)
         {
             // Returns all Films of the user that the current User is authorized to see.  Audio, Media, and User of the film is included.
             return _context.Films
-                .Include(f=>f.Audio)
-                .Include(f=>f.Media)
-                .Include(f => f.User)
-                .Where(f => (f.UserID == user.Id) && (!f.IsPrivate || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)));
+                .Where(f => (f.UserID == user.Id) && (!f.IsPrivate || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)))
+                .Include(f => f.Audio)
+                .Include(f => f.Media)
+                .Include(f => f.User);
         }
 
+        [NonAction]
         private List<Film> GetUserFilmsByGenre(ApplicationUser user, string genre = null)
         {
             // Returns all Films of the user for a specific genre, displaying only those that the current User is authorized to see 
             return GetUserFilms(user).Include(f => f.FilmGenres).Where(f => f.FilmGenres.Any(fg => fg.Genre.Name == genre)).ToList();
         }
 
-
+        [NonAction]
         private List<Film> GetUserFilmsByMediaFormat(ApplicationUser user, string mediaFormat = null)
         {
             // Returns all Films of the user for a specific MediaFormat, displaying only those that the current User is authorized to see 
@@ -312,6 +311,7 @@ namespace MvcTesting.Controllers
             return GetUserFilms(user).Where(f => f.Media.Name == mediaFormat).ToList();
         }
 
+        [NonAction]
         private List<Film> GetUserFilmsByAudioFormat(ApplicationUser user, string audioFormat = null)
         {
             // Returns all Films of the user for a specific AudioFormat, displaying only those that the current User is authorized to see 
@@ -319,12 +319,14 @@ namespace MvcTesting.Controllers
             return GetUserFilms(user).Where(f => f.Audio.Name == audioFormat).ToList();
         }
 
+        [NonAction]
         private List<ApplicationUser> GetUsers()
         {
             // Returns all users that the current User is authorized to see
             return _context.Users.Where(u => !u.IsPrivate || User.IsInRole("Admin") || u.Id == _userManager.GetUserId(User)).ToList();
         }
 
+        [NonAction]
         private List<Film> SearchUserFilmsByTitle(ApplicationUser user, string title = null)
         {
             // Returns all Films of the user containing the search parameter (title), displaying only those that the current User is authorized to see 
@@ -336,70 +338,7 @@ namespace MvcTesting.Controllers
             return GetUserFilms(user).Where(f => f.Name.ToLower().Contains(title.ToLower())).ToList();
         }
 
-        private List<Film> SortByValue(List<Film> films, string sortValue)
-        {
-            switch (sortValue)
-            {
-                case "Title":
-                    return SortByTitle(films);
-                case "Title Desc.":
-                    return SortByTitleDescending(films);
-                case "Year":
-                    return SortByYear(films);
-                case "Year Desc.":
-                    return SortByYearDescending(films);
-                case "Media Format":
-                    return SortByMediaFormat(films);
-                case "Media Format Desc.":
-                    return SortByMediaFormatDescending(films);
-                case "Audio Format":
-                    return SortByAudioFormat(films);
-                case "Audio Format Desc.":
-                    return SortByAudioFormatDescending(films);
-                default:
-                    return SortByTitle(films);
-            }
-        }
-
-        private List<Film> SortByTitle(List<Film> films)
-        {
-            return films.OrderBy(f => f.Name).ToList();
-        }
-
-        private List<Film> SortByTitleDescending(List<Film> films)
-        {
-            return films.OrderByDescending(f => f.Name).ToList();
-        }
-
-        private List<Film> SortByYear(List<Film> films)
-        {
-            return films.OrderBy(f => f.Year).ToList();
-        }
-
-        private List<Film> SortByYearDescending(List<Film> films)
-        {
-            return films.OrderByDescending(f => f.Year).ToList();
-        }
-
-        private List<Film> SortByAudioFormat(List<Film> films)
-        {
-            return films.OrderBy(f => f.Audio.Name).ToList();
-        }
-
-        private List<Film> SortByAudioFormatDescending(List<Film> films)
-        {
-            return films.OrderByDescending(f => f.Audio.Name).ToList();
-        }
-
-        private List<Film> SortByMediaFormat(List<Film> films)
-        {
-            return films.OrderBy(f => f.Media.Name).ToList();
-        }
-
-        private List<Film> SortByMediaFormatDescending(List<Film> films)
-        {
-            return films.OrderByDescending(f => f.Media.Name).ToList();
-        }
+        
 
     }
 }
