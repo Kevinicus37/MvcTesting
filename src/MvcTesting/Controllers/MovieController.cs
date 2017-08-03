@@ -340,7 +340,6 @@ namespace MvcTesting.Controllers
             film.Name = viewModel.Name;
             film.Year = viewModel.Year;
             film.AspectRatio = viewModel.AspectRatio;
-            film.TMDbId = viewModel.TMDbId;
             film.Comments = viewModel.Comments;
             film.Rating = viewModel.Rating;
             film.Directors = viewModel.Directors;
@@ -352,6 +351,7 @@ namespace MvcTesting.Controllers
             film.Has3D = viewModel.Has3D;
             film.Audio = newAudioFormat;
             film.Media = newMediaFormat;
+            film.Runtime = viewModel.Runtime;
 
             // Adds the film to the db if it does not already exist.
             Film existingFilm = _context.Films.SingleOrDefault(f => f.ID == film.ID);

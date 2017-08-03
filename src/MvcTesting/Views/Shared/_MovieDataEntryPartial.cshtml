@@ -8,6 +8,10 @@
 <input class="form-control" type="text" asp-for="Year" />
 <span asp-validation-for="Year"></span>
 
+<label class="control-label" asp-for="Runtime"></label>
+<input class="form-control" type="text" asp-for="Runtime" />
+<span asp-validation-for="Runtime"></span>
+
 <label class="control-label" asp-for="MediaID"></label>
 <select class="form-control" asp-for="MediaID" asp-items="Model.MediaFormats"></select>
 <span asp-validation-for="MediaID"></span>

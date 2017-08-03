@@ -20,7 +20,7 @@ namespace MvcTesting.ViewModels
             CastMembers = new List<string>();
             CastMembers = film.Cast.Split(',').ToList();
             Genres = genres;
-            if (!string.IsNullOrEmpty(film.Year))
+            if (film.Year != null)
             {
                 DisplayYear = "(" + film.Year + ")";
             }

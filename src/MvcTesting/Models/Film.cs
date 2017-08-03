@@ -16,7 +16,7 @@ namespace MvcTesting.Models
         public string Name { get; set; }
 
         // Year of release (theatrical)
-        public string Year { get; set; }
+        public int? Year { get; set; }
 
         // Format (DVD, Blu-ray, 4K UHD, Digital, etc.) 
         // This is a one-to many relationship
@@ -25,9 +25,6 @@ namespace MvcTesting.Models
 
         // Aspect ratio of film (1.33:1, 1.77:1, 1.85:1, 16:9, 2.35:1, 2.39:1, 2.4:1, shifting, etc.)
         public string AspectRatio { get; set; }
-
-        // Film Id on TMDb.org
-        public int TMDbId { get; set; }
 
         // Thoughts a user has on the movie
         public string Comments { get; set; }
@@ -68,9 +65,8 @@ namespace MvcTesting.Models
         // When film was created or last updated.  Whichever is most recent.
         public DateTime Updated { get; set; }
 
-        // Length of the film
-        
-        public string Runtime { get; set; }
+        // Length of the film        
+        public int? Runtime { get; set; }
 
     }
 }

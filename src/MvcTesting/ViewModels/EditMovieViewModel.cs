@@ -15,11 +15,10 @@ namespace MvcTesting.ViewModels
             List<string> cast = new List<string>();
 
             Name = film.Name;
-            TMDbId = film.TMDbId;
             Overview = film.Overview;
 
             Year = film.Year;
-            if (!string.IsNullOrEmpty(Year))
+            if (Year != null)
             {
                 DisplayYear = "(" + Year + ")";
             }

@@ -20,17 +20,13 @@ namespace MvcTesting.ViewModels
         [Display(Name="Disc Format (Required):")]
         public int MediaID { get; set; }
 
-        [RegularExpression("^([1][9][0-9]{2}|[2-9][0-9]{3})$", ErrorMessage = "Year must be a number greater than 1900")]
+        [Range(1900, 9999)]
         [Display(Name = "Year:")]
-        public string Year { get; set; }
+        public int? Year { get; set; }
 
         // Aspect ratio of film (1.33:1, 1.77:1, 1.85:1, 16:9, 2.35:1, 2.39:1, 2.4:1, shifting, etc.)
         [Display(Name = "Aspect Ratio:")]
         public string AspectRatio { get; set; }
-
-        // Film Id on TMDb.org
-        [Display(Name = "TMDb.org Film ID:")]
-        public int TMDbId { get; set; }
 
         // Thoughts a user has on the movie
         [Display(Name = "Comments:")]
@@ -80,8 +76,9 @@ namespace MvcTesting.ViewModels
         [Display(Name="Private? (If Checked, others will not be able to see this movie in your collection.)")]
         public bool IsPrivate { get; set; }
 
-        [Display(Name= "Runtime:")]
-        public string Runtime { get; set; }
+        [Display(Name= "Runtime (in minutes):")]
+        [Range(1,999)]
+        public int? Runtime { get; set; }
 
         public string DisplayYear { get; set; }
 
@@ -113,15 +110,14 @@ namespace MvcTesting.ViewModels
             if (movie != null)
             {
                 Name = movie.Title;
-                TMDbId = movie.Id;
                 Overview = movie.Overview;
-                Runtime = movie.Runtime.ToString();
+                Runtime = movie.Runtime;
                 List<string> directors = new List<string>();
                 List<string> cast = new List<string>();
 
                 if (movie.ReleaseDate != null)
                 {
-                    Year = movie.ReleaseDate.Value.ToString("yyyy");
+                    Year = movie.ReleaseDate.Value.Year;
                     DisplayYear = "(" + Year + ")";
                 }
 

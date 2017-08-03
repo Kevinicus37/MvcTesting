@@ -8,9 +8,10 @@ using MvcTesting.Models;
 namespace MvcTesting.Migrations
 {
     [DbContext(typeof(MovieCollectorContext))]
-    partial class MovieCollectorContextModelSnapshot : ModelSnapshot
+    [Migration("20170803200258_YearToInt")]
+    partial class YearToInt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
