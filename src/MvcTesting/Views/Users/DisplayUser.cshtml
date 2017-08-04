@@ -162,7 +162,7 @@ else
                         <form asp-controller="Movie" asp-action="ViewMovie" method="get">
                             <input type="hidden" name="id" value="@film.ID" />
                             <button type="submit" class="btn btn-link">
-                                @film.Name @(!string.IsNullOrEmpty(film.Year) ? "(" + film.Year + ")" : "")
+                                @film.Name @(film.Year != null ? "(" + film.Year + ")" : "")
                             </button>
                         </form>
                     </td>

@@ -49,7 +49,12 @@ namespace MvcTesting
             //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-                options.Cookies.ApplicationCookie.AccessDeniedPath = "/Account/Login")
+            {
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireDigit = false;
+                options.Cookies.ApplicationCookie.AccessDeniedPath = "/Account/Login";
+            })
                 .AddEntityFrameworkStores<MovieCollectorContext>()
                 .AddDefaultTokenProviders();
 
