@@ -56,6 +56,24 @@ namespace MvcTesting.Controllers
             return View(vm);
         }
 
+        public IActionResult Delete(string userName)
+        {
+            
+            return View(new UsersDeleteViewModel { UserName = userName });
+        
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(UsersDeleteViewModel vm)
+        {
+            var user = await _userManager.FindByNameAsync(vm.UserName);
+            if (user != null)
+            {
+                await _userManager.DeleteAsync(user);
+            }
+
+            return RedirectToAction("Index");
+        }
 
         [AllowAnonymous]
         public IActionResult DisplayUser(string UserName)

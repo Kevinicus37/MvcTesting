@@ -1,0 +1,9 @@
+﻿@model MvcTesting.ViewModels.UsersDeleteViewModel
+
+<h1>Are you sure you want to delete the User @Model.UserName?</h1>
+<form asp-controller="Users" asp-action="Delete" method="Post">
+    <input type="hidden" asp-for="UserName" />
+    <input type="submit" class="btn btn-danger" value="Delete User" />
+</form>
+<br />
+<a class="btn btn-primary" asp-action="Index" asp-controller="Users">No.</a>

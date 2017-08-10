@@ -189,7 +189,14 @@ else
         </tbody>
     </table>
 
+
+    
 }
 
+@if (User.IsInRole("Admin"))
+{
+    <a class="btn btn-danger" asp-action="Delete" asp-controller="Users" asp-route-userName="@Model.UserName">Delete User</a>
+
+}
 
 
