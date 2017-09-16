@@ -28,23 +28,29 @@ namespace MvcTesting.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Index(string sortBy = "UserName", bool descending = false)
+        public IActionResult Index(string sortBy = "UserName", bool descending = false, int page = 1)
         {
 
             // Display a list of users according to the value of sortBy in either ascending
             // or descending order based on the value of the descending variable.
-            List<ApplicationUser> Users = GetUsers();
+            int perPage = 20;
+            int skip = (page - 1) * perPage;
+            List<ApplicationUser> users = GetUsers();
+            int lastPage = users.Count / perPage;
+            if (users.Count % perPage > 0) { lastPage++; }
+            users = users.Skip(skip).Take(perPage).ToList();
+
             if (!descending)
             {
-                 Users = Users.OrderBy(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
+                 users = users.OrderBy(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
 
             }
             else
             {
-                Users = Users.OrderByDescending(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
+                users = users.OrderByDescending(u => u.GetType().GetProperty(sortBy).GetValue(u)).ToList();
             }
 
-            UserIndexViewModel userIndexViewModel = new UserIndexViewModel { Users = Users };
+            UserIndexViewModel userIndexViewModel = new UserIndexViewModel { Users = users, CurrentPage = page, LastPage = lastPage };
             return View(userIndexViewModel);
         }
 

@@ -7,6 +7,10 @@ namespace MvcTesting.ViewModels
     {
         public List<ApplicationUser> Users { get; set; }
 
+        public int CurrentPage { get; set; }
+
+        public int LastPage { get; set; }
+
         public UserIndexViewModel() { }
     }
 

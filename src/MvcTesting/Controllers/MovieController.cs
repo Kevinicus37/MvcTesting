@@ -81,7 +81,7 @@ namespace MvcTesting.Controllers
             {
                 lastPage = results.TotalPages;
                 currentPage = page;
-
+                
                 foreach (var result in results.Results)
                 {
                     Movie aMovie = GetTMDbMovieInfo(result.Id);

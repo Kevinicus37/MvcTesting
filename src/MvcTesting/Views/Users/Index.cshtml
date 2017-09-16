@@ -21,3 +21,18 @@
 <p><a asp-controller="Users" asp-action="Index" asp-route-sortBy="UserName">Sort by Username</a></p>
 <p><a asp-controller="Users" asp-action="Index" asp-route-sortBy="UserName" asp-route-descending="true">Sort by Username - Descending</a></p>
 
+<form asp-controller="Users" asp-action="Index">
+     
+    <ul class="pager">
+
+        @if (Model.CurrentPage > 1)
+            {
+            <li><button class="btn btn-primary" name="page" value="@(Model.CurrentPage -1)">Previous</button></li>
+        }
+        @if (Model.LastPage > Model.CurrentPage)
+            {
+            <li><button class="btn btn-primary" name="page" value="@(Model.CurrentPage +1)">Next</button></li>
+        }
+
+    </ul>
+</form>
