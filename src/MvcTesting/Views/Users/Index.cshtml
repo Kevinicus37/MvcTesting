@@ -1,6 +1,14 @@
 ﻿@model MvcTesting.ViewModels.UserIndexViewModel
 
 <h1>User Index</h1>
+
+<div class="btn-group">
+    <a class="btn btn-primary" asp-controller="Users" asp-action="Index" asp-route-sortBy="Updated" asp-route-descending="true">Sort by Most Recent Activity</a>
+    <a class="btn btn-primary" asp-controller="Users" asp-action="Index" asp-route-sortBy="Updated">Sort by Oldest Activity</a>
+    <a class="btn btn-primary" asp-controller="Users" asp-action="Index" asp-route-sortBy="UserName">Sort by Username</a>
+    <a class="btn btn-primary" asp-controller="Users" asp-action="Index" asp-route-sortBy="UserName" asp-route-descending="true">Sort by Username - Descending</a>
+</div>
+
 <hr />
 
 <ul>
@@ -16,13 +24,9 @@
 
 </ul>
 
-<p><a asp-controller="Users" asp-action="Index" asp-route-sortBy="Updated" asp-route-descending="true">Sort by Most Recent Activity</a></p>
-<p><a asp-controller="Users" asp-action="Index" asp-route-sortBy="Updated">Sort by Oldest Activity</a></p>
-<p><a asp-controller="Users" asp-action="Index" asp-route-sortBy="UserName">Sort by Username</a></p>
-<p><a asp-controller="Users" asp-action="Index" asp-route-sortBy="UserName" asp-route-descending="true">Sort by Username - Descending</a></p>
+
 
 <form asp-controller="Users" asp-action="Index">
-     
     <ul class="pager">
 
         @if (Model.CurrentPage > 1)
