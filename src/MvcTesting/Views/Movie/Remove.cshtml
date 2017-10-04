@@ -19,7 +19,7 @@
     <label for="@film.Name"><a asp-controller="Movie" 
                                asp-action="ViewMovie" 
                                asp-route-id="@film.ID">
-                               @film.Name @(!string.IsNullOrEmpty(film.Year) ? "("+film.Year+")" : "")</a>
+                               @film.Name @(film.Year != null ? "("+film.Year+")" : "")</a>
     </label>
     <br />
 }
