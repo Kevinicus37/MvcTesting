@@ -216,7 +216,6 @@ namespace MvcTesting.Controllers
                 ApplicationUser user = _context.Users.Single(u => u.Id == _userManager.GetUserId(User));
                 Film film = new Film();
                 film.User = user;
-                int whatID = film.ID;
                 int id = await UpdateMovieAsync(addMovieViewModel, film);
                 return Redirect($"/Movie/ViewMovie/{id}");
             }
@@ -262,8 +261,12 @@ namespace MvcTesting.Controllers
             // Index Action.
             foreach (int id in filmIds)
             {
+
+                //Film oldFilm = _context.Films.SingleOrDefault(f => f.ID == id);
+                Film oldFilm = _context.Films
+                    .Include(f => f.User)
+                    .SingleOrDefault(f => f.ID == 9010);
                 
-                Film oldFilm = _context.Films.SingleOrDefault(f => f.ID == id);
                 if (oldFilm.User.UserName == _userManager.GetUserName(User) || User.IsInRole("Admin"))
                 {
                     _context.Films.Remove(oldFilm);

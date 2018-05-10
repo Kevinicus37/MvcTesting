@@ -46,7 +46,6 @@ namespace MvcTesting.ViewModels
         public string Cast { get; set; }
 
         // Audio Format (Dolby Digital, DTS, Dolby True HD, DTS-MA HD, Dolby Atmos, DTS-X, Auro, Stereo, Mono, etc.)
-        // Likely need to create a class
         [Required]
         [Display(Name = "Audio Format (Required):")]
         public int AudioID { get; set; }
@@ -114,6 +113,8 @@ namespace MvcTesting.ViewModels
                 Runtime = movie.Runtime;
                 List<string> directors = new List<string>();
                 List<string> cast = new List<string>();
+                var trailers = movie.Videos.Results;
+                var posters = movie.Images.Posters;
 
                 if (movie.ReleaseDate != null)
                 {
@@ -121,15 +122,25 @@ namespace MvcTesting.ViewModels
                     DisplayYear = "(" + Year + ")";
                 }
 
-
-                if (movie.Videos.Results.Count > 0)
+                
+                
+                if (trailers.Count > 0)
                 {
-                    TrailerUrl = "https://www.youtube.com/embed/" + movie.Videos.Results[movie.Videos.Results.Count - 1].Key;
+                    string key = trailers[0].Key;
+
+                    foreach (var mov in movie.Videos.Results)
+                    {
+                        
+                        if (mov.Type == "Trailer") key = mov.Key;
+                    }
+
+                    TrailerUrl = "https://www.youtube.com/embed/" + key;
                 }
 
-                if (movie.Images.Posters.Count > 0)
+                if (String.IsNullOrEmpty(movie.PosterPath))
                 {
-                    PosterUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + movie.Images.Posters[0].FilePath;
+                    PosterUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" +movie.PosterPath;
+                    
                 }
 
                 if (movie.Credits.Crew.Count > 0)
@@ -157,7 +168,7 @@ namespace MvcTesting.ViewModels
 
             Ratings = new List<SelectListItem>();
 
-            Ratings.Add(new SelectListItem { Value = 0.ToString(), Text = "No Rating." });
+            Ratings.Add(new SelectListItem { Value = "0", Text = "No Rating." });
 
             for (int i=1; i<=10; i++)
             {
