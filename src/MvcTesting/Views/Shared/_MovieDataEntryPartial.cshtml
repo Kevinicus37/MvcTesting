@@ -64,7 +64,7 @@
         @foreach (var genre in Model.AvailableGenres)
         {
             <label class="checkbox-inline"><input type="checkbox" name="Genres" value="@genre.Name"
-                           @(Model.Genres != null? Model.Genres.Contains(@genre.Name)? "checked='checked'" : "" : "")/>@genre.Name</label>
+                           @(Model.Genres != null? Model.Genres.Contains(genre.Name)? "checked='checked'" : "" : "")/>@genre.Name</label>
         }
     </div>
 </div>

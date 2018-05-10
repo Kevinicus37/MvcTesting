@@ -190,7 +190,7 @@ namespace MvcTesting.Controllers
             // to generate selection options.
             List<MediaFormat> mediaFormats = _context.MediaFormats.ToList();
             List<AudioFormat> audioFormats = _context.AudioFormats.ToList();
-            
+
             Movie movie = null;
 
             // If id has a value, then try to get a movie object from TMDb (Null if not found).
