@@ -9,6 +9,11 @@
             {
                 <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
             }
+            else
+            {
+                <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Copy this Movie</a>
+
+            }
         </h1>
     
 

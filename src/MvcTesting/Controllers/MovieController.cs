@@ -12,6 +12,7 @@ using MvcTesting.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using MvcTesting.ViewModels.MovieViewModels;
 //using MvcTesting.Data;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
@@ -289,16 +290,20 @@ namespace MvcTesting.Controllers
             // then the ViewModel is seeded.  Otherwise the User is redirected to the Index Action.
             if (editFilm != null)
             {
+
+                List<MediaFormat> mediaFormats = _context.MediaFormats.ToList();
+                List<AudioFormat> audioFormats = _context.AudioFormats.ToList();
+                EditMovieViewModel editMovieViewModel = new EditMovieViewModel(mediaFormats, audioFormats, editFilm);
+                editMovieViewModel.Genres = GetGenres(id);
+                editMovieViewModel.AvailableGenres = _context.Genres.ToList();
+
                 if (editFilm.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
                 {
-                    List<MediaFormat> mediaFormats = _context.MediaFormats.ToList();
-                    List<AudioFormat> audioFormats = _context.AudioFormats.ToList();
-                    EditMovieViewModel editMovieViewModel = new EditMovieViewModel(mediaFormats, audioFormats, editFilm);
-                    editMovieViewModel.Genres = GetGenres(id);
                     editMovieViewModel.ID = id;
-                    editMovieViewModel.AvailableGenres = _context.Genres.ToList();
-                    return View(editMovieViewModel);
                 }
+
+                return View(editMovieViewModel);
+                
             }
             
             return RedirectToAction("Index");
@@ -311,31 +316,48 @@ namespace MvcTesting.Controllers
             // Verify model data is valid and that the active User is the owner of the Film
             // or Admin.  If so, the Film is then updated.  The User is Redirected to the page of
             // the Film.  
-
+            
             if (ModelState.IsValid)
             {
 
                 Film film = _context.Films.Single(f => f.ID == editMovieViewModel.ID);
-                if (film.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+                if (!(film.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin")))
                 {
+                    film = new Film();
+                    editMovieViewModel.ID = 0;
+                }
                     int id = await UpdateMovieAsync(editMovieViewModel, film);
                     return Redirect($"/Movie/ViewMovie/{id}");
-                }
+                //}
                 
-                return RedirectToAction("Index");
+                //return RedirectToAction("Index");
             }
 
             // If the model is not valid, it is re-seeded and returned to the View.
             editMovieViewModel.MediaFormats = editMovieViewModel.PopulateList(_context.MediaFormats.ToList());
             editMovieViewModel.AudioFormats = editMovieViewModel.PopulateList(_context.AudioFormats.ToList());
             editMovieViewModel.AvailableGenres = _context.Genres.ToList();
+
             return View(editMovieViewModel);
         }
 
+        public IActionResult Copy(int id)
+        {
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult Copy(CopyMovieViewModel vm)
+        {
+            return RedirectToAction("Index");
+        }
+
         private async Task<int> UpdateMovieAsync(AddMovieViewModel viewModel, Film film)
-        {   
+        {
             // UpdateMovie transfers data from viewModel to the Film object.  The created
             // or edited film's ID is returned as an int.
+            ApplicationUser user = await _userManager.GetUserAsync(User);
 
             MediaFormat newMediaFormat = _context.MediaFormats.Single(m => m.ID == viewModel.MediaID);
             AudioFormat newAudioFormat = _context.AudioFormats.Single(a => a.ID == viewModel.AudioID);
@@ -360,7 +382,9 @@ namespace MvcTesting.Controllers
             Film existingFilm = _context.Films.SingleOrDefault(f => f.ID == film.ID);
             if (existingFilm == null)
             {
+                film.UserID = user.Id;
                 _context.Films.Add(film);
+                _context.SaveChanges();
             }
 
             // Add genres to the film.  Deletes any previously selected genres if they arne't still selected from an edit.
@@ -404,7 +428,7 @@ namespace MvcTesting.Controllers
             // The time the Film and User are updated are saved, allowing them to be sorted later
             // by most recent activity.
             film.Updated = DateTime.Now;
-            ApplicationUser user = await _userManager.GetUserAsync(User);
+            
             user.Updated = DateTime.Now;
             _context.SaveChanges();
 

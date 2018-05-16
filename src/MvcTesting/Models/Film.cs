@@ -67,5 +67,6 @@ namespace MvcTesting.Models
         // Length of the film        
         public int? Runtime { get; set; }
 
+        public Film() { }
     }
 }
