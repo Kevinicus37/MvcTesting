@@ -18,7 +18,7 @@ namespace MvcTesting.ViewModels
         {
             Film = film;
             CastMembers = new List<string>();
-            CastMembers = film.Cast.Split(',').ToList();
+            if (!string.IsNullOrEmpty(film.Cast)) CastMembers = film.Cast.Split(',').ToList();
             Genres = genres;
             if (film.Year != null)
             {

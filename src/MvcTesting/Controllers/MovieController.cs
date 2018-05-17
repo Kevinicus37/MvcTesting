@@ -266,7 +266,7 @@ namespace MvcTesting.Controllers
                 //Film oldFilm = _context.Films.SingleOrDefault(f => f.ID == id);
                 Film oldFilm = _context.Films
                     .Include(f => f.User)
-                    .SingleOrDefault(f => f.ID == 9010);
+                    .SingleOrDefault(f => f.ID == id);
                 
                 if (oldFilm.User.UserName == _userManager.GetUserName(User) || User.IsInRole("Admin"))
                 {
@@ -343,14 +343,48 @@ namespace MvcTesting.Controllers
 
         public IActionResult Copy(int id)
         {
-            return View();
+            Film editFilm = _context.Films.SingleOrDefault(f => f.ID == id);
+
+            // If editFilm with the passed in id exists and the User is associated with the Film or Admin,
+            // then the ViewModel is seeded.  Otherwise the User is redirected to the Index Action.
+            if (editFilm != null)
+            {
+
+                List<MediaFormat> mediaFormats = _context.MediaFormats.ToList();
+                List<AudioFormat> audioFormats = _context.AudioFormats.ToList();
+                CopyMovieViewModel vm = new CopyMovieViewModel(mediaFormats, audioFormats, editFilm);
+                vm.Genres = GetGenres(id);
+                vm.AvailableGenres = _context.Genres.ToList();
+
+                return View(vm);
+
+            }
+
+            return RedirectToAction("Index");
         }
 
         [Authorize]
         [HttpPost]
-        public IActionResult Copy(CopyMovieViewModel vm)
+        public async Task<IActionResult> Copy(CopyMovieViewModel vm)
         {
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                Film film = new Film();
+                vm.ID = 0;
+                
+                int id = await UpdateMovieAsync(vm, film);
+                return Redirect($"/Movie/ViewMovie/{id}");
+                //}
+
+                //return RedirectToAction("Index");
+            }
+
+            // If the model is not valid, it is re-seeded and returned to the View.
+            vm.MediaFormats = vm.PopulateList(_context.MediaFormats.ToList());
+            vm.AudioFormats = vm.PopulateList(_context.AudioFormats.ToList());
+            vm.AvailableGenres = _context.Genres.ToList();
+
+            return View(vm);
         }
 
         private async Task<int> UpdateMovieAsync(AddMovieViewModel viewModel, Film film)
@@ -358,7 +392,6 @@ namespace MvcTesting.Controllers
             // UpdateMovie transfers data from viewModel to the Film object.  The created
             // or edited film's ID is returned as an int.
             ApplicationUser user = await _userManager.GetUserAsync(User);
-
             MediaFormat newMediaFormat = _context.MediaFormats.Single(m => m.ID == viewModel.MediaID);
             AudioFormat newAudioFormat = _context.AudioFormats.Single(a => a.ID == viewModel.AudioID);
 
@@ -390,50 +423,61 @@ namespace MvcTesting.Controllers
             // Add genres to the film.  Deletes any previously selected genres if they arne't still selected from an edit.
             if (viewModel.Genres != null)
             {
-                List<FilmGenre> thisFilmGenres = _context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == film.ID).ToList();
-
-                // Eliminate any previous FilmGenres that weren't selected in an edit
-                foreach (FilmGenre filmGenre in thisFilmGenres)
-                {
-                    if (!viewModel.Genres.Contains(filmGenre.Genre.Name))
-                    {
-                        _context.FilmGenres.Remove(filmGenre);
-                    }
-                }
-
-                // Add selected Genres to a film <FilmGenre> if it doesn't already exist
-                foreach (string genre in viewModel.Genres)
-                {
-                    // Gets a list of existing FilmGenre items to check against.
-                    IList<FilmGenre> existingFilmGenres = _context.FilmGenres.Where(fg => fg.FilmID == film.ID)
-                        .Where(fg => fg.Genre.Name == genre).ToList();
-
-                    Models.Genre newGenre = _context.Genres.Single(g => g.Name == genre);
-
-                    // If no FilmGenres with the current FilmID and GenreID exist, one is created.
-                    if (existingFilmGenres.Count == 0)
-                    {
-                        FilmGenre newFilmGenre = new FilmGenre
-                        {
-                            FilmID = film.ID,
-                            GenreID = newGenre.ID
-                        };
-
-                        _context.FilmGenres.Add(newFilmGenre);
-                    }
-                    
-                }
+                EraseGenres(viewModel, film);
+                CreateFilmGenre(viewModel, film);
             }
 
             // The time the Film and User are updated are saved, allowing them to be sorted later
             // by most recent activity.
             film.Updated = DateTime.Now;
-            
             user.Updated = DateTime.Now;
             _context.SaveChanges();
 
             return film.ID;
         }
+
+
+        [NonAction]
+        private void EraseGenres(AddMovieViewModel vm, Film film)
+        {
+            List<FilmGenre> thisFilmGenres = _context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == film.ID).ToList();
+
+            // Eliminate any previous FilmGenres that weren't selected in an edit
+            foreach (FilmGenre filmGenre in thisFilmGenres)
+            {
+                if (!vm.Genres.Contains(filmGenre.Genre.Name))
+                {
+                    _context.FilmGenres.Remove(filmGenre);
+                }
+            }
+        }
+
+        [NonAction]
+        private void CreateFilmGenre(AddMovieViewModel vm, Film film)
+        {
+            foreach (string genre in vm.Genres)
+            {
+                // Gets a list of existing FilmGenre items to check against.
+                IList<FilmGenre> existingFilmGenres = _context.FilmGenres.Where(fg => fg.FilmID == film.ID)
+                    .Where(fg => fg.Genre.Name == genre).ToList();
+
+                Models.Genre newGenre = _context.Genres.Single(g => g.Name == genre);
+
+                // If no FilmGenres with the current FilmID and GenreID exist, one is created.
+                if (existingFilmGenres.Count == 0)
+                {
+                    FilmGenre newFilmGenre = new FilmGenre
+                    {
+                        FilmID = film.ID,
+                        GenreID = newGenre.ID
+                    };
+
+                    _context.FilmGenres.Add(newFilmGenre);
+                }
+
+            }
+        }
+
 
         [NonAction]
         private List<string> GetGenres(int filmId)
