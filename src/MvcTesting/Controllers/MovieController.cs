@@ -24,16 +24,17 @@ namespace MvcTesting.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private MovieCollectorContext _context;
-        
+                
         TMDbClient client;
 
         public MovieController(MovieCollectorContext dbContext,  UserManager<ApplicationUser> userManager)
         {
             // Initialize items to be used throughout the controller
 
+            
             _userManager = userManager;
             _context = dbContext;
-
+            
             // This is the client that is used to work with the TMDb.org API
             client = new TMDbClient("9950b6bfd3eef8b5c9b7343ead080098");
         }
@@ -43,15 +44,15 @@ namespace MvcTesting.Controllers
         public IActionResult Index()
         {
 
-            bool userCanSeePrivate = false;
+            //bool userCanSeePrivate = false;
 
-            if (User.IsInRole("Admin"))
-            {
-                userCanSeePrivate = true;
-            }
+            //if (User.IsInRole("Admin"))
+            //{
+            //    userCanSeePrivate = true;
+            //}
             //Gets a list of all films in order of Name, and then by Year and displays it in the view.
             List<Film> films = _context.Films.Include(f=>f.User).OrderBy(f => f.Name)
-                .Where(f=> (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || userCanSeePrivate)
+                .Where(f=> (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
                 .OrderBy(f => f.Year)
                 .ToList();
             MovieIndexViewModel movieIndexViewModel = new MovieIndexViewModel(films);
@@ -72,7 +73,7 @@ namespace MvcTesting.Controllers
             int lastPage = 1;
             
             List<Movie> movies = new List<Movie>();
-
+            
             // This is the request to the TMDb API.  It returns a container of movies.
             // Null is returned if the site cannot be reached and there is an exception.
             SearchContainer<SearchMovie> results = TMDbSearch(client, query, page);
@@ -129,35 +130,18 @@ namespace MvcTesting.Controllers
             // and is not an Admin, they are redirected to the Index Action.
             if (!string.IsNullOrEmpty(vm.SearchValue))
             {
-                switch (vm.PropertyType)
-                {
-                    case "Genre":
-                        vm.FilterValue = (!_context.Genres.Any(g => g.Name == vm.FilterValue) ? null : vm.FilterValue);
-                        films = GetAllFilmsByGenre(vm.SearchValue, vm.FilterValue);
-                        break;
-                    case "MediaFormat":
-                        vm.FilterValue = (!_context.MediaFormats.Any(mf => mf.Name == vm.FilterValue) ? null : vm.FilterValue);
-                        films = GetAllFilmsByMediaFormat(vm.SearchValue, vm.FilterValue);
-                        break;
-                    case "AudioFormat":
-                        vm.FilterValue = (!_context.AudioFormats.Any(af => af.Name == vm.FilterValue) ? null : vm.FilterValue);
-                        films = GetAllFilmsByAudioFormat(vm.SearchValue, vm.FilterValue);
-                        break;
-                    case "Film":
-                        string title = (!_context.Films.Any(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower())) ? null : vm.SearchValue);
-
-                        if (!string.IsNullOrEmpty(title))
-                        {
-                            films = GetFilmsByTitle(title).ToList();
-                        }
-
-                        break;
-                    default:
-                        films = GetFilmsByTitle(vm.SearchValue).ToList();
-                        break;
-
-                }
-
+                // Gets films matching the search value and filter (if selected).
+                films = _context.Films
+                    .Include(f => f.Audio)
+                    .Include(f => f.Media)
+                    .Include(f => f.FilmGenres)
+                    .Where(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower()))
+                    .Where(f => string.IsNullOrEmpty(vm.AudioFilter) || f.Audio.Name == vm.AudioFilter)
+                    .Where(f => string.IsNullOrEmpty(vm.MediaFilter) || f.Media.Name == vm.MediaFilter)
+                    .Where(f => string.IsNullOrEmpty(vm.GenreFilter) || f.FilmGenres.Any(fg => fg.Genre.Name == vm.GenreFilter))
+                    .ToList();
+            
+                // sort the collection of films by selected value (title ascending is default)
                 vm.Films = FilmSortingHelpers.SortByValue(films, vm.SortValue);
             }
             else
@@ -165,7 +149,6 @@ namespace MvcTesting.Controllers
                 vm.Films = films;
             }
 
-            
             vm.Genres = _context.Genres.ToList();
             vm.MediaFormats = _context.MediaFormats.ToList();
             vm.AudioFormats = _context.AudioFormats.ToList();
@@ -506,8 +489,9 @@ namespace MvcTesting.Controllers
                 SearchContainer<SearchMovie> results = client.SearchMovieAsync(query, page).Result;
                 return results;
             }
-            catch (Exception)
+            catch (Exception e) // Catches generic exception if TMDb cannot be reached for any reason.
             {
+                Console.Out.WriteLine(e.Message);
                 return null;
             }
         }
@@ -543,7 +527,8 @@ namespace MvcTesting.Controllers
                     .ThenInclude(fg=>fg.Genre)
                 .Where(f => f.Name.ToLower().Contains(title.ToLower())
                 && ((!f.IsPrivate && !f.User.IsPrivate) || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)));
-            return films.ToList();
+             return films.ToList();
+             
         }
 
         [NonAction]

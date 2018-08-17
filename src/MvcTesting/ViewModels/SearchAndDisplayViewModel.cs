@@ -18,6 +18,12 @@ namespace MvcTesting.ViewModels
 
         public string PropertyType { get; set; }
 
+        public string GenreFilter { get; set; } = null;
+
+        public string AudioFilter { get; set; } = null;
+
+        public string MediaFilter { get; set; } = null;
+
         public IList<Film> Films { get; set; }
 
         public List<Genre> Genres { get; set; }

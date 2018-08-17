@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MvcTesting.Models
 {
@@ -27,5 +25,6 @@ namespace MvcTesting.Models
         public DbSet<Genre> Genres { get; set; }
         public DbSet<FilmGenre> FilmGenres { get; set; }
 
+        
     }
 }

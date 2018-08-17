@@ -14,6 +14,7 @@ namespace MvcTesting.Models
 
         // Title of Movie/Disc
         public string Name { get; set; }
+        
         // Year of release (theatrical)
         public int? Year { get; set; }
 

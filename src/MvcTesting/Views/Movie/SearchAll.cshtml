@@ -22,8 +22,8 @@
                 <li>
                     <form asp-controller="Movie" asp-action="SearchAll" method="post">
                         <input type="hidden" asp-for="SearchValue" />
-                        <input type="hidden" asp-for="PropertyType" value="Genre" />
-                        <input type="hidden" asp-for="FilterValue" value="@genre.Name" />
+                        @*<input type="hidden" asp-for="PropertyType" value="Genre" />*@
+                        <input type="hidden" asp-for="GenreFilter" value="@genre.Name" />
                         <button type="submit" class="btn btn-link">@genre.Name</button>
                     </form>
                 </li>
@@ -42,8 +42,8 @@
                 <li>
                     <form asp-controller="Movie" asp-action="SearchAll" method="post">
                         <input type="hidden" asp-for="SearchValue" />
-                        <input type="hidden" asp-for="PropertyType" value="MediaFormat" />
-                        <input type="hidden" asp-for="FilterValue" value="@mediaFormat.Name" />
+                        @*<input type="hidden" asp-for="PropertyType" value="MediaFormat" />*@
+                        <input type="hidden" asp-for="MediaFilter" value="@mediaFormat.Name" />
                         <button type="submit" class="btn btn-link">@mediaFormat.Name</button>
                     </form>
                 </li>
@@ -63,8 +63,8 @@
                 <li>
                     <form asp-controller="Movie" asp-action="SearchAll" method="post">
                         <input type="hidden" asp-for="SearchValue" />
-                        <input type="hidden" asp-for="PropertyType" value="AudioFormat" />
-                        <input type="hidden" asp-for="FilterValue" value="@audioFormat.Name" />
+                        @*<input type="hidden" asp-for="PropertyType" value="AudioFormat" />*@
+                        <input type="hidden" asp-for="AudioFilter" value="@audioFormat.Name" />
                         <button type="submit" class="btn btn-link">@audioFormat.Name</button>
                     </form>
                 </li>
@@ -83,8 +83,10 @@
                 <li>
                     <form asp-controller="Movie" asp-action="SearchAll" method="post">
                         <input type="hidden" asp-for="SearchValue" />
-                        <input type="hidden" asp-for="PropertyType" />
-                        <input type="hidden" asp-for="FilterValue" />
+                        @*<input type="hidden" asp-for="PropertyType" />*@
+                        <input type="hidden" asp-for="GenreFilter" />
+                        <input type="hidden" asp-for="AudioFilter" />
+                        <input type="hidden" asp-for="MediaFilter" />
                         <input type="hidden" asp-for="SortValue" value="@sorter" />
                         <button type="submit" class="btn btn-link">@sorter</button>
                     </form>
@@ -105,7 +107,7 @@
         <form asp-controller="Movie" asp-action="SearchAll" method="post">
             <div class="input-group form-group">
                 <input type="text" class="form-control" asp-for="SearchValue" placeholder="Search for a film." />
-                <input type="hidden" asp-for="PropertyType" value="Film" />
+                @*<input type="hidden" asp-for="PropertyType" value="Film" />*@
 
                 <div class="input-group-btn">
                     <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
@@ -168,8 +170,8 @@ else
                     <td>
                         <label for="@film.Media"></label>
                         <form asp-controller="Movie" asp-action="SearchAll" method="post">
-                            <input type="hidden" asp-for="PropertyType" value="MediaFormat" />
-                            <input type="hidden" asp-for="FilterValue" value="@film.Media.Name" />
+                            @*<input type="hidden" asp-for="PropertyType" value="MediaFormat" />*@
+                            <input type="hidden" asp-for="MediaFilter" value="@film.Media.Name" />
                             <input type="hidden" asp-for="SearchValue" />
                             <button type="submit" class="btn btn-link">@film.Media.Name</button>
                         </form>
@@ -177,8 +179,8 @@ else
                     <td>
                         <label for="@film.Audio"></label>
                         <form asp-controller="Movie" asp-action="SearchAll" method="post">
-                            <input type="hidden" asp-for="PropertyType" value="AudioFormat" />
-                            <input type="hidden" asp-for="FilterValue" value="@film.Audio.Name" />
+                            @*<input type="hidden" asp-for="PropertyType" value="AudioFormat" />*@
+                            <input type="hidden" asp-for="AudioFilter" value="@film.Audio.Name" />
                             <input type="hidden" asp-for="SearchValue" />
                             <button type="submit" class="btn btn-link">@film.Audio.Name</button>
                         </form>
