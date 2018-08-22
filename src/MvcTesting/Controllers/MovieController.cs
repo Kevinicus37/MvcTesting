@@ -44,12 +44,6 @@ namespace MvcTesting.Controllers
         public IActionResult Index()
         {
 
-            //bool userCanSeePrivate = false;
-
-            //if (User.IsInRole("Admin"))
-            //{
-            //    userCanSeePrivate = true;
-            //}
             //Gets a list of all films in order of Name, and then by Year and displays it in the view.
             List<Film> films = _context.Films.Include(f=>f.User).OrderBy(f => f.Name)
                 .Where(f=> (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
@@ -418,8 +412,7 @@ namespace MvcTesting.Controllers
 
             return film.ID;
         }
-
-
+        
         [NonAction]
         private void EraseGenres(AddMovieViewModel vm, Film film)
         {
@@ -460,8 +453,7 @@ namespace MvcTesting.Controllers
 
             }
         }
-
-
+        
         [NonAction]
         private List<string> GetGenres(int filmId)
         {
@@ -489,7 +481,7 @@ namespace MvcTesting.Controllers
                 SearchContainer<SearchMovie> results = client.SearchMovieAsync(query, page).Result;
                 return results;
             }
-            catch (Exception e) // Catches generic exception if TMDb cannot be reached for any reason.
+            catch (Exception e) // Catches and logs generic exception if TMDb cannot be reached for any reason.
             {
                 Console.Out.WriteLine(e.Message);
                 return null;
@@ -508,56 +500,11 @@ namespace MvcTesting.Controllers
                 Movie movie = client.GetMovieAsync(Id, MovieMethods.Credits | MovieMethods.Videos | MovieMethods.Images).Result;
                 return movie;
             }
-            catch (Exception)
+            catch (Exception e)  // Catches and logs generic exception if TMDb cannot be reached for any reason.
             {
+                Console.Out.WriteLine(e.Message);
                 return null;
             }
         }
-
-        [NonAction]
-        private List<Film> GetFilmsByTitle(string title)
-        {
-            // Returns all Films, containing search parameter, that the current User is authorized to see.  
-            // Audio, Media, FilmGenre.Genre and User of the film are included.
-            IQueryable<Film> films = _context.Films
-                .Include(f => f.Audio)
-                .Include(f => f.Media)
-                .Include(f => f.User)
-                .Include(f=> f.FilmGenres)
-                    .ThenInclude(fg=>fg.Genre)
-                .Where(f => f.Name.ToLower().Contains(title.ToLower())
-                && ((!f.IsPrivate && !f.User.IsPrivate) || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)));
-             return films.ToList();
-             
-        }
-
-        [NonAction]
-        private List<Film> GetAllFilmsByGenre(string title, string genre = null)
-        {
-            // Returns all Films, containing the search parameter, for a specific genre, 
-            // displaying only those that the current User is authorized to see 
-            return GetFilmsByTitle(title).Where(f => f.FilmGenres.Any(fg => fg.Genre.Name == genre)).ToList();
-        }
-
-        [NonAction]
-        private List<Film> GetAllFilmsByMediaFormat(string title, string mediaFormat = null)
-        {
-            // Returns all Films, containing the search parameter, for a specific MediaFormat, 
-            // displaying only those that the current User is authorized to see 
-            return GetFilmsByTitle(title).Where(f=> f.Media.Name == mediaFormat).ToList();
-        }
-
-        [NonAction]
-        private List<Film> GetAllFilmsByAudioFormat(string title, string audioFormat = null)
-        {
-            // Returns all Films, containing the search parameter, for a specific AudioFormat, 
-            // displaying only those that the current User is authorized to see 
-
-            return GetFilmsByTitle(title).Where(f => f.Audio.Name == audioFormat).ToList();
-        }
-
-        
     }
-
-
 }
