@@ -16,8 +16,6 @@ namespace MvcTesting.ViewModels
 
         public List<string> SortValues = new List<string> { "Title", "Title Desc.", "Year", "Year Desc.", "Audio Format", "Audio Format Desc.", "Media Format", "Media Format Desc." };
 
-        public string PropertyType { get; set; }
-
         public string GenreFilter { get; set; } = null;
 
         public string AudioFilter { get; set; } = null;

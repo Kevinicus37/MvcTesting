@@ -16,8 +16,8 @@
                 <li>
                     <form asp-controller="Users" asp-action="DisplayUser" method="post">
                         <input type="hidden" asp-for="UserName" value="@Model.UserName"/>
-                        <input type="hidden" asp-for="PropertyType" value="Genre" />
-                        <input type="hidden" asp-for="FilterValue" value="@genre.Name" />
+                        <input type="hidden" asp-for="GenreFilter" value="@genre.Name" />
+                        <input type="hidden" asp-for="SearchValue" />
                         <button type="submit" class="btn btn-link">@genre.Name</button>
                     </form>
                 </li>
@@ -37,12 +37,11 @@
                 <li>
                     <form asp-controller="Users" asp-action="DisplayUser" method="post">
                         <input type="hidden" asp-for="UserName" value="@Model.UserName"/>
-                        <input type="hidden" asp-for="PropertyType" value="MediaFormat" />
-                        <input type="hidden" asp-for="FilterValue" value="@mediaFormat.Name" />
+                        <input type="hidden" asp-for="MediaFilter" value="@mediaFormat.Name" />
+                        <input type="hidden" asp-for="SearchValue" />
                         <button type="submit" class="btn btn-link">@mediaFormat.Name</button>
                     </form>
                 </li>
-
             }
         </ul>
     </div>
@@ -59,8 +58,8 @@
                 <li>
                     <form asp-controller="Users" asp-action="DisplayUser" method="post">
                         <input type="hidden" asp-for="UserName" value="@Model.UserName"/>
-                        <input type="hidden" asp-for="PropertyType" value="AudioFormat" />
-                        <input type="hidden" asp-for="FilterValue" value="@audioFormat.Name" />
+                        <input type="hidden" asp-for="AudioFilter" value="@audioFormat.Name" />
+                        <input type="hidden" asp-for="SearchValue" />
                         <button type="submit" class="btn btn-link">@audioFormat.Name</button>
                     </form>
                 </li>
@@ -79,20 +78,17 @@
                 <li>
                     <form asp-controller="Users" asp-action="DisplayUser" method="post">
                         <input type="hidden" asp-for="UserName" value="@Model.UserName" />
-                        <input type="hidden" asp-for="PropertyType" />
-                        <input type="hidden" asp-for="FilterValue" />
+                        <input type="hidden" asp-for="GenreFilter" />
+                        <input type="hidden" asp-for="MediaFilter" />
+                        <input type="hidden" asp-for="AudioFilter" />
                         <input type="hidden" asp-for="SortValue" value="@sorter" />
+                        <input type="hidden" asp-for="SearchValue" />
                         <button type="submit" class="btn btn-link">@sorter</button>
                     </form>
                 </li>
-
             }
-            
-            
         </ul>
     </div>
-    
-            
 </div>
 <br />
 <br />
@@ -102,18 +98,14 @@
             <div class="input-group form-group">
                 <input type="text" class="form-control" asp-for="SearchValue" placeholder="Search for a film in @(Model.UserName)'@(Model.UserName[Model.UserName.Length-1].Equals('s')? "" : "s") Collection" />
                 <input type="hidden" asp-for="UserName" value="@Model.UserName" />
-                <input type="hidden" asp-for="PropertyType" value="Film" />
-
                 <div class="input-group-btn">
                     <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
                 </div>
             </div>
         </form>
-
     </div>
 </div>
 <hr />
-
 @if (!string.IsNullOrEmpty(Model.FilterValue))
 {
     <h3>@Model.FilterValue</h3>
@@ -122,17 +114,13 @@
 @if (!string.IsNullOrEmpty(Model.SearchValue))
 {
     <h3>Search Results for: '@Model.SearchValue'</h3>
-
 }
-
 @if (Model.Films.Count < 1)
 {
     <h4>No @Model.FilterValue Films at this time.</h4>
-
 }
 else
 {
-
     <table class="table table-condensed table-striped">
         <thead>
             <tr>
@@ -151,11 +139,8 @@ else
                         {
                             <label for="@film.PosterUrl">
                                 <img src="@film.PosterUrl" style="max-height:80px; max-width:54px" />
-
                             </label>
-
                         }
-
                     </td>
                     <td>
                         <label for="@film.Name"></label>
@@ -170,8 +155,8 @@ else
                         <label for="@film.Media"></label>
                             <form asp-controller="Users" asp-action="DisplayUser" method="post">
                                 <input type="hidden" asp-for="UserName" value="@Model.UserName" />
-                                <input type="hidden" asp-for="PropertyType" value="MediaFormat" />
-                                <input type="hidden" asp-for="FilterValue" value="@film.Media.Name" />
+                                <input type="hidden" asp-for="MediaFilter" value="@film.Media.Name" />
+                                <input type="hidden" asp-for="SearchValue" />
                                 <button type="submit" class="btn btn-link">@film.Media.Name</button>
                             </form>
                     </td>
@@ -179,8 +164,8 @@ else
                         <label for="@film.Audio"></label>
                         <form asp-controller="Users" asp-action="DisplayUser" method="post">
                             <input type="hidden" asp-for="UserName" value="@Model.UserName" />
-                            <input type="hidden" asp-for="PropertyType" value="AudioFormat" />
-                            <input type="hidden" asp-for="FilterValue" value="@film.Audio.Name" />
+                            <input type="hidden" asp-for="AudioFilter" value="@film.Audio.Name" />
+                            <input type="hidden" asp-for="SearchValue" />
                             <button type="submit" class="btn btn-link">@film.Audio.Name</button>
                         </form>
                     </td>
@@ -188,15 +173,8 @@ else
             }
         </tbody>
     </table>
-
-
-    
 }
-
 @if (User.IsInRole("Admin"))
 {
     <a class="btn btn-danger" asp-action="Delete" asp-controller="Users" asp-route-userName="@Model.UserName">Delete User</a>
-
 }
-
-

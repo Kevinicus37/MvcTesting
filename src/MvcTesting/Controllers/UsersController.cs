@@ -54,8 +54,6 @@ namespace MvcTesting.Controllers
             return View(userIndexViewModel);
         }
 
-
-
         public IActionResult ViewRoles()
         {
             UsersViewRolesViewModel vm = new UsersViewRolesViewModel { Users = _context.Users.ToList() };
@@ -109,8 +107,7 @@ namespace MvcTesting.Controllers
         public IActionResult DisplayUser(DisplayUserViewModel vm)
         {
             ApplicationUser user = _context.Users.SingleOrDefault(u => u.UserName == vm.UserName);
-            List<Film> films = new List<Film>();
-
+            
             // If someone attempts to access a page for a private User directly and is not that User
             // and is not an Admin, they are redirected to the Index Action.
             if (!ModelState.IsValid || (user.IsPrivate && !User.IsInRole("Admin") && user.Id != _userManager.GetUserId(User)))
@@ -118,50 +115,29 @@ namespace MvcTesting.Controllers
                 return RedirectToAction("Index");
             }
 
-                switch (vm.PropertyType)
-                {
-                    case "Genre":
-                            vm.FilterValue = (!_context.Genres.Any(g => g.Name == vm.FilterValue) ? null : vm.FilterValue);
-                            films = GetUserFilmsByGenre(user, vm.FilterValue);
-                            break;
-                    case "MediaFormat":
-                            vm.FilterValue = (!_context.MediaFormats.Any(mf => mf.Name == vm.FilterValue) ? null : vm.FilterValue);
-                            films = GetUserFilmsByMediaFormat(user, vm.FilterValue);
-                            break;
-                    case "AudioFormat":
-                            vm.FilterValue = (!_context.AudioFormats.Any(af => af.Name == vm.FilterValue) ? null : vm.FilterValue);
-                            films = GetUserFilmsByAudioFormat(user, vm.FilterValue);
-                            break;
-                    case "Film":
-                            if (string.IsNullOrEmpty(vm.SearchValue))
-                            {
-                                return Redirect("DisplayUser/?UserName=" + vm.UserName);
-                            }
+            List<Film> films = new List<Film>();
 
-                            string title = (!_context.Films.Any(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower())) ? null : vm.SearchValue);
+            films = GetUserFilms(user)
+                .Include(f => f.FilmGenres)
+                .Where(f => string.IsNullOrEmpty(vm.AudioFilter) || f.Audio.Name == vm.AudioFilter)
+                .Where(f => string.IsNullOrEmpty(vm.MediaFilter) || f.Media.Name == vm.MediaFilter)
+                .Where(f => string.IsNullOrEmpty(vm.GenreFilter) || f.FilmGenres.Any(fg => fg.Genre.Name == vm.GenreFilter))
+               // .Where(f => string.IsNullOrEmpty(vm.SearchValue) || f.Name.ToLower().Contains(vm.SearchValue.ToLower()))
+                .ToList();
 
-                            if (!string.IsNullOrEmpty(title))
-                            {
-                                films = SearchUserFilmsByTitle(user, title);
-                            }
-
-                            break;
-                    default:
-                            films = GetUserFilms(user).ToList();
-                            break;
-
-                }
-                
-                vm.Films = FilmSortingHelpers.SortByValue(films, vm.SortValue);
-                vm.Genres = _context.Genres.ToList();
-                vm.MediaFormats = _context.MediaFormats.ToList();
-                vm.AudioFormats = _context.AudioFormats.ToList();
-
-                return View(vm);
+            if (!string.IsNullOrEmpty(vm.SearchValue))
+            {
+                films = films.Where(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower())).ToList();
             }
-            
-            
 
+            vm.Films = FilmSortingHelpers.SortByValue(films, vm.SortValue);
+            vm.Genres = _context.Genres.ToList();
+            vm.MediaFormats = _context.MediaFormats.ToList();
+            vm.AudioFormats = _context.AudioFormats.ToList();
+
+            return View(vm);
+        }
+ 
         [HttpGet]
         public async Task<IActionResult> AddRole(string id)
         {
@@ -182,8 +158,6 @@ namespace MvcTesting.Controllers
             }
             return RedirectToAction("ViewRoles");
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> AddRole(UsersAddRoleViewModel rvm)
@@ -215,7 +189,6 @@ namespace MvcTesting.Controllers
             return View(rvm);
         }
 
-
         [HttpGet]
         public async Task<IActionResult> RemoveRole(string id)
         {
@@ -238,8 +211,6 @@ namespace MvcTesting.Controllers
             }
             return RedirectToAction("ViewRoles");
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> RemoveRole(UsersRemoveRoleViewModel rvm)
@@ -292,7 +263,6 @@ namespace MvcTesting.Controllers
             return View(vm);
         }
 
-
         // Helper Functions
 
         [NonAction]
@@ -321,48 +291,11 @@ namespace MvcTesting.Controllers
         }
 
         [NonAction]
-        private List<Film> GetUserFilmsByGenre(ApplicationUser user, string genre = null)
-        {
-            // Returns all Films of the user for a specific genre, displaying only those that the current User is authorized to see 
-            return GetUserFilms(user).Include(f => f.FilmGenres).Where(f => f.FilmGenres.Any(fg => fg.Genre.Name == genre)).ToList();
-        }
-
-        [NonAction]
-        private List<Film> GetUserFilmsByMediaFormat(ApplicationUser user, string mediaFormat = null)
-        {
-            // Returns all Films of the user for a specific MediaFormat, displaying only those that the current User is authorized to see 
-
-            return GetUserFilms(user).Where(f => f.Media.Name == mediaFormat).ToList();
-        }
-
-        [NonAction]
-        private List<Film> GetUserFilmsByAudioFormat(ApplicationUser user, string audioFormat = null)
-        {
-            // Returns all Films of the user for a specific AudioFormat, displaying only those that the current User is authorized to see 
-
-            return GetUserFilms(user).Where(f => f.Audio.Name == audioFormat).ToList();
-        }
-
-        [NonAction]
         private List<ApplicationUser> GetUsers()
         {
             // Returns all users that the current User is authorized to see
             return _context.Users.Where(u => !u.IsPrivate || User.IsInRole("Admin") || u.Id == _userManager.GetUserId(User)).ToList();
         }
-
-        [NonAction]
-        private List<Film> SearchUserFilmsByTitle(ApplicationUser user, string title = null)
-        {
-            // Returns all Films of the user containing the search parameter (title), displaying only those that the current User is authorized to see 
-
-            if (string.IsNullOrEmpty(title))
-            {
-                return new List<Film>();
-            }
-            return GetUserFilms(user).Where(f => f.Name.ToLower().Contains(title.ToLower())).ToList();
-        }
-
         
-
     }
 }
