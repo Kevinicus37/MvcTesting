@@ -117,18 +117,18 @@ namespace MvcTesting.Controllers
 
             List<Film> films = new List<Film>();
 
-            films = GetUserFilms(user)
-                .Include(f => f.FilmGenres)
+            films = GetUserFilms(user).Include(f => f.FilmGenres).ToList();
+            films = films
                 .Where(f => string.IsNullOrEmpty(vm.AudioFilter) || f.Audio.Name == vm.AudioFilter)
                 .Where(f => string.IsNullOrEmpty(vm.MediaFilter) || f.Media.Name == vm.MediaFilter)
                 .Where(f => string.IsNullOrEmpty(vm.GenreFilter) || f.FilmGenres.Any(fg => fg.Genre.Name == vm.GenreFilter))
-               // .Where(f => string.IsNullOrEmpty(vm.SearchValue) || f.Name.ToLower().Contains(vm.SearchValue.ToLower()))
+                .Where(f => string.IsNullOrEmpty(vm.SearchValue) || f.Name.ToLower().Contains(vm.SearchValue.ToLower()))
                 .ToList();
 
-            if (!string.IsNullOrEmpty(vm.SearchValue))
-            {
-                films = films.Where(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower())).ToList();
-            }
+            //if (!string.IsNullOrEmpty(vm.SearchValue))
+            //{
+            //    films = films.Where(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower())).ToList();
+            //}
 
             vm.Films = FilmSortingHelpers.SortByValue(films, vm.SortValue);
             vm.Genres = _context.Genres.ToList();

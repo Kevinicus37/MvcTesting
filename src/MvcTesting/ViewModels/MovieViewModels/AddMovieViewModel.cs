@@ -111,14 +111,13 @@ namespace MvcTesting.ViewModels
                 Runtime = movie.Runtime;
                 
                 Genres = new List<string>();
-
                 SetGenres(movie);
+
                 FormatDisplayedDate(movie);
                 SetTrailer(movie);
                 SetPoster(movie);
                 SetDirectors(movie);
                 SetCast(movie);
-             
             }
         }
         
@@ -192,7 +191,11 @@ namespace MvcTesting.ViewModels
                 foreach (var mov in movie.Videos.Results)
                 {
 
-                    if (mov.Type == "Trailer") key = mov.Key;
+                    if (mov.Type == "Trailer")
+                    {
+                        key = mov.Key;
+                        break;
+                    }
                 }
 
                 TrailerUrl = "https://www.youtube.com/embed/" + key;

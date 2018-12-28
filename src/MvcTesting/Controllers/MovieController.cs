@@ -83,6 +83,7 @@ namespace MvcTesting.Controllers
                     Movie aMovie = GetTMDbMovieInfo(result.Id);
                     if (aMovie != null)
                     {
+                        
                         movies.Add(aMovie);
                     }
                 }
@@ -395,14 +396,13 @@ namespace MvcTesting.Controllers
             {
                 film.UserID = user.Id;
                 _context.Films.Add(film);
-                _context.SaveChanges();
             }
 
             // Add genres to the film.  Deletes any previously selected genres if they arne't still selected from an edit.
             if (viewModel.Genres != null)
             {
                 EraseGenres(viewModel, film);
-                CreateFilmGenre(viewModel, film);
+                CreateFilmGenres(viewModel, film);
             }
 
             // The time the Film and User are updated are saved, allowing them to be sorted later
@@ -430,7 +430,7 @@ namespace MvcTesting.Controllers
         }
 
         [NonAction]
-        private void CreateFilmGenre(AddMovieViewModel vm, Film film)
+        private void CreateFilmGenres(AddMovieViewModel vm, Film film)
         {
             foreach (string genre in vm.Genres)
             {
