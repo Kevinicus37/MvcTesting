@@ -1,6 +1,182 @@
-﻿<h1>Movie Search</h1>
-<form asp-controller="Movie" asp-action="Search" method="post">
-    <input type="text" name="query" />
-    <input type="hidden" name="page" value="1" />
-    <button class="btn btn-primary" type="submit">Search for Movie</button>
-</form>
+﻿@model MvcTesting.ViewModels.SearchMovieViewModel
+
+<h1>Movie Search
+    
+    @if (!string.IsNullOrEmpty(Model.SearchValue))
+    {
+        <small> - Search Results for: '@Model.SearchValue'</small>
+    }
+    
+    </h1>
+
+<div class="btn-group">
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+            Filter by Genre
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li class="dropdown-header">Display Films of Selected Genre</li>
+            @foreach (var genre in Model.Genres)
+            {
+                <li>
+                    <form asp-controller="Movie" asp-action="Search" method="post">
+                        <input type="hidden" asp-for="SearchValue" />
+                        <input type="hidden" asp-for="GenreFilter" value="@genre.Name" />
+                        <button type="submit" class="btn btn-link">@genre.Name</button>
+                    </form>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+            Filter by Media Type
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li class="dropdown-header">Display Films of Selected Media Type</li>
+            @foreach (var mediaFormat in Model.MediaFormats)
+            {
+                <li>
+                    <form asp-controller="Movie" asp-action="Search" method="post">
+                        <input type="hidden" asp-for="SearchValue" />
+                        <input type="hidden" asp-for="MediaFilter" value="@mediaFormat.Name" />
+                        <button type="submit" class="btn btn-link">@mediaFormat.Name</button>
+                    </form>
+                </li>
+
+            }
+        </ul>
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+            Filter by Audio Format
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li class="dropdown-header">Display Films of Selected Audio Format</li>
+            @foreach (var audioFormat in Model.AudioFormats)
+            {
+                <li>
+                    <form asp-controller="Movie" asp-action="Search" method="post">
+                        <input type="hidden" asp-for="SearchValue" />
+                        <input type="hidden" asp-for="AudioFilter" value="@audioFormat.Name" />
+                        <button type="submit" class="btn btn-link">@audioFormat.Name</button>
+                    </form>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+            Sort By...
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+
+            @foreach (var sorter in Model.SortValues)
+            {
+                <li>
+                    <form asp-controller="Movie" asp-action="Search" method="post">
+                        <input type="hidden" asp-for="SearchValue" />
+                        <input type="hidden" asp-for="GenreFilter" />
+                        <input type="hidden" asp-for="AudioFilter" />
+                        <input type="hidden" asp-for="MediaFilter" />
+                        <input type="hidden" asp-for="SortValue" value="@sorter" />
+                        <button type="submit" class="btn btn-link">@sorter</button>
+                    </form>
+                </li>
+
+            }
+
+
+        </ul>
+    </div>
+
+
+</div>
+<br />
+<br />
+<div class="row">
+    <div class="col-xs-6">
+        <form asp-controller="Movie" asp-action="Search" method="post">
+            <div class="input-group form-group">
+                <input type="text" class="form-control" asp-for="SearchValue" placeholder="Search for a film." />
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+<hr />
+@if (!string.IsNullOrEmpty(Model.FilterValue))
+{
+    <h3>@Model.FilterValue</h3>
+}
+@if (Model.Films.Count < 1)
+{
+    <h4>No @Model.FilterValue Films at this time.</h4>
+}
+else
+{
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Title (Release Year)</th>
+                <th>Media Format</th>
+                <th>Audio Format</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var film in Model.Films)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(film.PosterUrl))
+                        {
+                            <label for="@film.PosterUrl">
+                                <img src="@film.PosterUrl" style="max-height:80px; max-width:54px" />
+
+                            </label>
+
+                        }
+
+                    </td>
+                    <td>
+                        <label for="@film.Name"></label>
+                        <form asp-controller="Movie" asp-action="ViewMovie" method="get">
+                            <input type="hidden" name="id" value="@film.ID" />
+                            <button type="submit" class="btn btn-link">
+                                @film.Name @(!(film.Year == null) ? "(" + film.Year + ")" : "")
+                            </button>
+                        </form>
+                    </td>
+                    <td>
+                        <label for="@film.Media"></label>
+                        <form asp-controller="Movie" asp-action="Search" method="post">
+                            <input type="hidden" asp-for="MediaFilter" value="@film.Media.Name" />
+                            <input type="hidden" asp-for="SearchValue" />
+                            <button type="submit" class="btn btn-link">@film.Media.Name</button>
+                        </form>
+                    </td>
+                    <td>
+                        <label for="@film.Audio"></label>
+                        <form asp-controller="Movie" asp-action="Search" method="post">
+                            <input type="hidden" asp-for="AudioFilter" value="@film.Audio.Name" />
+                            <input type="hidden" asp-for="SearchValue" />
+                            <button type="submit" class="btn btn-link">@film.Audio.Name</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+
+

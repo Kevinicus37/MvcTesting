@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MvcTesting.ViewModels.MovieViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 //using MvcTesting.Data;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
@@ -43,8 +44,9 @@ namespace MvcTesting.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
+            // TODO - Filter out titles with the same name so there aren't duplicates when displaying on the main page.
 
-            //Gets a list of all films in order of Name, and then by Year and displays it in the view.
+            // Gets a list of all films in order of Name, and then by Year and displays it in the view.
             List<Film> films = _context.Films.Include(f=>f.User).OrderBy(f => f.Name)
                 .Where(f=> (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
                 .OrderBy(f => f.Year)
@@ -53,14 +55,14 @@ namespace MvcTesting.Controllers
             return View(movieIndexViewModel);
         }
 
-        public IActionResult Search()
+        public IActionResult WebSearch()
         {
             // Displays view allowing a user to search for a movie (using TMDb) to add to their collection.
             return View();
         }
 
         [HttpPost]
-        public IActionResult Search(string query, int page)
+        public IActionResult WebSearch(string query, int page)
         {
             // Accepts a search query and passes it to TMDb.org's API and accepts the search results.
             int currentPage = 1;
@@ -96,7 +98,7 @@ namespace MvcTesting.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult SearchAll(string query)
+        public IActionResult Search(string query)
         {
             
             List<Film> films = _context.Films
@@ -105,7 +107,7 @@ namespace MvcTesting.Controllers
                 .Where(f => f.Name.ToLower().Contains(query.ToLower()))
                 .ToList();
 
-            var vm = new SearchAllMovieViewModel(films);
+            var vm = new SearchMovieViewModel(films);
 
             vm.Genres = _context.Genres.ToList();
             vm.MediaFormats = _context.MediaFormats.ToList();
@@ -117,7 +119,7 @@ namespace MvcTesting.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult SearchAll(SearchAllMovieViewModel vm)
+        public IActionResult Search(SearchMovieViewModel vm)
         {
             List<Film> films = new List<Film>();
             
@@ -125,13 +127,15 @@ namespace MvcTesting.Controllers
             // and is not an Admin, they are redirected to the Index Action.
             if (!string.IsNullOrEmpty(vm.SearchValue))
             {
+                // TODO - Create a WhereIf() extension method.
                 // Gets films matching the search value and filter (if selected).
                 films = _context.Films
                     .Include(f => f.Audio)
                     .Include(f => f.Media)
                     .Include(f => f.FilmGenres)
                     .Where(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower())
-                    && ((!f.IsPrivate && !f.User.IsPrivate) || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)))
+                    && ((!f.IsPrivate && !f.User.IsPrivate) || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User))).ToList();
+                films=films
                     .Where(f => string.IsNullOrEmpty(vm.AudioFilter) || f.Audio.Name == vm.AudioFilter)
                     .Where(f => string.IsNullOrEmpty(vm.MediaFilter) || f.Media.Name == vm.MediaFilter)
                     .Where(f => string.IsNullOrEmpty(vm.GenreFilter) || f.FilmGenres.Any(fg => fg.Genre.Name == vm.GenreFilter))
@@ -145,6 +149,7 @@ namespace MvcTesting.Controllers
                 vm.Films = films;
             }
 
+            // TODO - Check if Genres needs the full Genre models or just the Ids
             vm.Genres = _context.Genres.ToList();
             vm.MediaFormats = _context.MediaFormats.ToList();
             vm.AudioFormats = _context.AudioFormats.ToList();
@@ -176,12 +181,15 @@ namespace MvcTesting.Controllers
             // If id has a value, then try to get a movie object from TMDb (Null if not found).
             if (id.HasValue)
             {
-                movie = GetTMDbMovieInfo((int)id);
+                movie = GetTMDbMovieInfo((int)id);   
             }
-
+            
             AddMovieViewModel addMovieViewModel = new AddMovieViewModel(mediaFormats, audioFormats, movie);
-            addMovieViewModel.AvailableGenres = _context.Genres.ToList();
-
+            addMovieViewModel.SetGenres(_context, movie);
+            addMovieViewModel.AvailableGenres = _context.Genres
+                .Select(x => new SelectListItem { Value = x.ID.ToString(), Text = x.Name, Selected = addMovieViewModel.Genres.Contains(x.ID.ToString())})
+                .ToList();
+            
             return View(addMovieViewModel);
         }
 
@@ -273,8 +281,10 @@ namespace MvcTesting.Controllers
                 List<MediaFormat> mediaFormats = _context.MediaFormats.ToList();
                 List<AudioFormat> audioFormats = _context.AudioFormats.ToList();
                 EditMovieViewModel editMovieViewModel = new EditMovieViewModel(mediaFormats, audioFormats, editFilm);
-                editMovieViewModel.Genres = GetGenres(id);
-                editMovieViewModel.AvailableGenres = _context.Genres.ToList();
+                editMovieViewModel.Genres = GetFilmGenreIds(id);
+                editMovieViewModel.AvailableGenres = _context.Genres
+                    .Select(x => new SelectListItem { Value = x.ID.ToString(), Text = x.Name, Selected = editMovieViewModel.Genres.Contains(x.ID.ToString()) })
+                    .ToList();
 
                 if (editFilm.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
                 {
@@ -290,6 +300,7 @@ namespace MvcTesting.Controllers
 
         [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditMovieViewModel editMovieViewModel)
         {
             // Verify model data is valid and that the active User is the owner of the Film
@@ -315,7 +326,9 @@ namespace MvcTesting.Controllers
             // If the model is not valid, it is re-seeded and returned to the View.
             editMovieViewModel.MediaFormats = editMovieViewModel.PopulateList(_context.MediaFormats.ToList());
             editMovieViewModel.AudioFormats = editMovieViewModel.PopulateList(_context.AudioFormats.ToList());
-            editMovieViewModel.AvailableGenres = _context.Genres.ToList();
+            editMovieViewModel.AvailableGenres = _context.Genres
+                .Select(x => new SelectListItem { Value = x.ID.ToString(), Text = x.Name, Selected = editMovieViewModel.Genres.Contains(x.ID.ToString()) })
+                .ToList();
 
             return View(editMovieViewModel);
         }
@@ -332,8 +345,10 @@ namespace MvcTesting.Controllers
                 List<MediaFormat> mediaFormats = _context.MediaFormats.ToList();
                 List<AudioFormat> audioFormats = _context.AudioFormats.ToList();
                 CopyMovieViewModel vm = new CopyMovieViewModel(mediaFormats, audioFormats, editFilm);
-                vm.Genres = GetGenres(id);
-                vm.AvailableGenres = _context.Genres.ToList();
+                vm.Genres = GetFilmGenreIds(id);
+                vm.AvailableGenres = _context.Genres
+                    .Select(x => new SelectListItem { Value = x.ID.ToString(), Text = x.Name, Selected = vm.Genres.Contains(x.ID.ToString()) })
+                    .ToList();
 
                 return View(vm);
 
@@ -344,6 +359,7 @@ namespace MvcTesting.Controllers
 
         [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Copy(CopyMovieViewModel vm)
         {
             if (ModelState.IsValid)
@@ -361,10 +377,15 @@ namespace MvcTesting.Controllers
             // If the model is not valid, it is re-seeded and returned to the View.
             vm.MediaFormats = vm.PopulateList(_context.MediaFormats.ToList());
             vm.AudioFormats = vm.PopulateList(_context.AudioFormats.ToList());
-            vm.AvailableGenres = _context.Genres.ToList();
+            vm.AvailableGenres = _context.Genres
+                .Select(x => new SelectListItem { Value = x.ID.ToString(), Text = x.Name, Selected = vm.Genres.Contains(x.ID.ToString()) })
+                .ToList();
 
             return View(vm);
         }
+
+
+        // Additional Helper Functions
 
         private async Task<int> UpdateMovieAsync(AddMovieViewModel viewModel, Film film)
         {
@@ -401,8 +422,8 @@ namespace MvcTesting.Controllers
             // Add genres to the film.  Deletes any previously selected genres if they arne't still selected from an edit.
             if (viewModel.Genres != null)
             {
-                EraseGenres(viewModel, film);
-                CreateFilmGenres(viewModel, film);
+                EraseGenres(viewModel, film.ID);
+                CreateFilmGenres(viewModel, film.ID);
             }
 
             // The time the Film and User are updated are saved, allowing them to be sorted later
@@ -415,14 +436,16 @@ namespace MvcTesting.Controllers
         }
         
         [NonAction]
-        private void EraseGenres(AddMovieViewModel vm, Film film)
+        private void EraseGenres(AddMovieViewModel vm, int filmId)
         {
-            List<FilmGenre> thisFilmGenres = _context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == film.ID).ToList();
+            // Deletes any existing FilmGenres that are no longer selected for this film.
+
+            List<FilmGenre> thisFilmGenres = _context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == filmId).ToList();
 
             // Eliminate any previous FilmGenres that weren't selected in an edit
             foreach (FilmGenre filmGenre in thisFilmGenres)
             {
-                if (!vm.Genres.Contains(filmGenre.Genre.Name))
+                if (!vm.Genres.Contains(filmGenre.Genre.ID.ToString()))
                 {
                     _context.FilmGenres.Remove(filmGenre);
                 }
@@ -430,42 +453,39 @@ namespace MvcTesting.Controllers
         }
 
         [NonAction]
-        private void CreateFilmGenres(AddMovieViewModel vm, Film film)
+        private void CreateFilmGenres(AddMovieViewModel vm, int filmId)
         {
             foreach (string genre in vm.Genres)
             {
                 // Gets a list of existing FilmGenre items to check against.
-                IList<FilmGenre> existingFilmGenres = _context.FilmGenres.Where(fg => fg.FilmID == film.ID)
-                    .Where(fg => fg.Genre.Name == genre).ToList();
-
-                Models.Genre newGenre = _context.Genres.Single(g => g.Name == genre);
+                IList<FilmGenre> existingFilmGenres = _context.FilmGenres.Where(fg => fg.FilmID == filmId)
+                    .Where(fg => fg.Genre.ID.ToString() == genre).ToList();
 
                 // If no FilmGenres with the current FilmID and GenreID exist, one is created.
                 if (existingFilmGenres.Count == 0)
                 {
                     FilmGenre newFilmGenre = new FilmGenre
                     {
-                        FilmID = film.ID,
-                        GenreID = newGenre.ID
+                        FilmID = filmId,
+                        GenreID = int.Parse(genre)
                     };
 
                     _context.FilmGenres.Add(newFilmGenre);
                 }
-
             }
         }
         
         [NonAction]
-        private List<string> GetGenres(int filmId)
+        private List<string> GetFilmGenreIds(int filmId)
         {
             // Retrieves a list of FilmGenres associated with a film and returns a
-            // List of strings containing the names of the Genres.  These are the
+            // List of strings containing the IDs of those Genres.  These are the
             // Genres that have previously been selected for the Film.
             List<string> genres = new List<string>();
             List<FilmGenre> FilmGenres = _context.FilmGenres.Include(fg => fg.Genre).Where(fg => fg.FilmID == filmId).ToList();
             foreach (var filmGenre in FilmGenres)
             {
-                genres.Add(filmGenre.Genre.Name);
+                genres.Add(filmGenre.Genre.ID.ToString());
             }
             return genres;
         }

@@ -3,6 +3,7 @@ using MvcTesting.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
 
@@ -57,10 +58,10 @@ namespace MvcTesting.ViewModels
 
         // Genres the film belongs to.
         [Display(Name = "Genres:")]
-        public List<string> Genres { get; set; }
+        public List<string> Genres { get; set; } = new List<string>();
 
         // Available Genres a film can belong to.
-        public List<Models.Genre> AvailableGenres { get; set; }
+        public List<SelectListItem> AvailableGenres { get; set; } = new List<SelectListItem>();
 
         // Url for the film's trailer on Youtube.com
         [Display(Name = "Trailer URL:")]
@@ -103,15 +104,12 @@ namespace MvcTesting.ViewModels
             SetRatings();
             AudioFormats = PopulateList(audioFormats);
             MediaFormats = PopulateList(mediaFormats);
-
+            
             if (movie != null)
             {
                 Name = movie.Title;
                 Overview = movie.Overview;
                 Runtime = movie.Runtime;
-                
-                Genres = new List<string>();
-                SetGenres(movie);
 
                 FormatDisplayedDate(movie);
                 SetTrailer(movie);
@@ -155,14 +153,22 @@ namespace MvcTesting.ViewModels
             return Items;
         }
 
-        public void SetGenres(Movie movie)
+        public void SetGenres(MovieCollectorContext _context, Movie movie)
         {
-            // Add selected genres from tmdb.org
+            //Add selected genres from tmdb.org
             foreach (var genre in movie.Genres)
             {
-                if (genre.Name == "Science Fiction") Genres.Add("Sci-Fi");
-                else Genres.Add(genre.Name);
+                if (genre.Name == "Science Fiction")
+                {
+                    Genres.Add(_context.Genres.Where(x => x.Name == "Sci-Fi").First().ID.ToString());
+                }
+                else
+                {
+                    Genres.Add(_context.Genres.Where(x => x.Name == genre.Name).First().ID.ToString());
+                }
             }
+
+            
 
         }
 
@@ -232,6 +238,7 @@ namespace MvcTesting.ViewModels
                     }
                 }
             }
+
             Directors = String.Join(", ", directors);
         }
 

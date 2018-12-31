@@ -63,8 +63,7 @@
     <div class="panel-body">
         @foreach (var genre in Model.AvailableGenres)
         {
-            <label class="checkbox-inline"><input type="checkbox" name="Genres" value="@genre.Name"
-                           @(Model.Genres != null? Model.Genres.Contains(genre.Name)? "checked='checked'" : "" : "")/>@genre.Name</label>
+            <label class="checkbox-inline"><input type="checkbox" name="Genres" value="@genre.Value" checked="@genre.Selected"/>@genre.Text</label>
         }
     </div>
 </div>
