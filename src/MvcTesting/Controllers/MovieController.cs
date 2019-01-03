@@ -224,8 +224,18 @@ namespace MvcTesting.Controllers
             Film film = _context.Films.Include(f => f.Media).Include(f => f.Audio).SingleOrDefault(f => f.ID == id);
             if (film != null)
             {
+                
                 List<FilmGenre> genres = _context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
                 ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
+
+                ApplicationUser user = _context.Users.Where(u => u.Id == film.UserID).Include(u=> u.Films).FirstOrDefault();
+                if (user != null)
+                {
+                    viewMovieViewModel.FilmOwnerName = user.UserName;
+                    viewMovieViewModel.OwnerProfilePicture = user.ProfilePicture;
+                    viewMovieViewModel.OwnerCollectionSize = user.Films.Count;
+                }
+
                 return View(viewMovieViewModel);
             }
             return RedirectToAction("Index");

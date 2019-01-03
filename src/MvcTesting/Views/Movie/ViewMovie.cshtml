@@ -1,53 +1,87 @@
 ﻿@model MvcTesting.ViewModels.ViewMovieViewModel
 
 @inject UserManager<ApplicationUser> UserManager
-<div class="page-header">
-   
-        <h1>
-            @Model.Film.Name @Model.DisplayYear
-            @if (Model.Film.UserID == UserManager.GetUserId(User) || User.IsInRole("Admin") )
-            {
-                <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
-            }
-            else
-            {
-                <a class="btn btn-primary" asp-controller="Movie" asp-action="Copy" asp-route-id="@Model.Film.ID">Copy this Movie</a>
-            }
-        </h1>
-</div>
 
-@if (!string.IsNullOrEmpty(Model.Film.PosterUrl))
-    {
-    <div class="center-block">
-        <img src="@Model.Film.PosterUrl" />
-    </div>
-    }
+<div class="row">
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-md-4">
+                @if (!string.IsNullOrEmpty(Model.Film.PosterUrl))
+                {
+                    <div class="center-block">
+                        <img src="@Model.Film.PosterUrl" class="img-responsive" />
+                    </div>
+                }
+            </div>
+            <div class="col-md-8">
+                <div class="row">
+                    <h1>
+                        @Model.Film.Name @Model.DisplayYear
+                        @if (Model.Film.UserID == UserManager.GetUserId(User) || User.IsInRole("Admin"))
+                        {
+                            <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary" asp-controller="Movie" asp-action="Copy" asp-route-id="@Model.Film.ID">Copy this Movie</a>
+                        }
+                    </h1>
 
-@if (Model.CastMembers.Count > 0)
-{
-    <h2>Cast</h2>
-    <ul>
-        @foreach (var cast in Model.CastMembers)
-        {
-            <li>@cast</li>
+                </div>
+                <div class="row">
+                    @if (!string.IsNullOrEmpty(Model.Film.Overview))
+                    {
+                        <h2>Synopsis</h2>
+                        @Model.Film.Overview
+                        <br />
+
+                    }
+                </div>
+                <div class="row">
+                    <h2>Top Cast Members</h2>
+                </div>
+                <div class="row">
+                    @foreach (var castMember in Model.CastMembers)
+                    {
+                        <div class="col-md-4">
+                            @castMember
+                        </div>
+                    }
+                </div>
+                @* Title(Date), Synopsis, maybe director(s) and user notes (use username - ex. "Kevinicus' comments:") go here . *@
+            </div>
+        </div>
+        <div class="row">
+            @* Cast goes here (horizontally) *@
+            
+        </div>
+        <br /><br />
+        @if (!string.IsNullOrEmpty(Model.Film.TrailerUrl)){
+        <div class="row">
+            <h2>Trailer</h2>
+            <br />
+        </div>
+        <div class="row embed-responsive embed-responsive-16by9">
+            <iframe class="embed-responsive-item" src="@Model.Film.TrailerUrl" frameborder="0" allowfullscreen></iframe>
+        </div>
+
         }
-    </ul>
-}
-
-@if (!string.IsNullOrEmpty(Model.Film.Overview))
-{
-    <h2>Synopsis</h2>
-    @Model.Film.Overview
-    <br />
-}
-
-@if (!string.IsNullOrEmpty(Model.Film.TrailerUrl))
-    {
-    <h2>Trailer</h2>
-    <iframe width="560" height="315" src="@Model.Film.TrailerUrl" frameborder="0" allowfullscreen></iframe>
-    }
-
-@if (UserManager.GetUserId(User) == Model.Film.UserID || User.IsInRole("Admin") )
+    </div>
+    <div class="col-md-3">
+        @* Film User Image, Name, Collection Count, Film Media Format, Film Audio FOrmat, Runtime, 3D?, Genre, and user rating goes here. *@
+        <div class="row">
+            <img src="~/images/@Model.FilmOwnerName/@Model.OwnerProfilePicture" class="profilePicture form-control img-responsive" />
+        </div>
+        <div class="row">
+            @Model.FilmOwnerName
+        </div>
+        <div class="row">
+            @Model.OwnerCollectionSize Titles
+        </div>
+    </div>
+</div>
+<br />
+@if (UserManager.GetUserId(User) == Model.Film.UserID || User.IsInRole("Admin"))
 {
     <form asp-controller="Movie" asp-action="Remove" method="post">
         <input type="hidden" name="filmIds" value="@Model.Film.ID" />
