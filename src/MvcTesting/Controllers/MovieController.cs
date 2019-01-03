@@ -226,7 +226,7 @@ namespace MvcTesting.Controllers
             {
                 List<FilmGenre> genres = _context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
                 ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
-                return View("ViewMovie2", viewMovieViewModel);
+                return View(viewMovieViewModel);
             }
             return RedirectToAction("Index");
             
