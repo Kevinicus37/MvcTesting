@@ -12,11 +12,8 @@
             else
             {
                 <a class="btn btn-primary" asp-controller="Movie" asp-action="Copy" asp-route-id="@Model.Film.ID">Copy this Movie</a>
-
             }
         </h1>
-    
-
 </div>
 
 @if (!string.IsNullOrEmpty(Model.Film.PosterUrl))

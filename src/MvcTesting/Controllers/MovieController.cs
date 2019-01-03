@@ -48,7 +48,7 @@ namespace MvcTesting.Controllers
 
             // Gets a list of all films in order of Name, and then by Year and displays it in the view.
             List<Film> films = _context.Films.Include(f=>f.User).OrderBy(f => f.Name)
-                .Where(f=> (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+                .Where(f => (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
                 .OrderBy(f => f.Year)
                 .ToList();
             MovieIndexViewModel movieIndexViewModel = new MovieIndexViewModel(films);
@@ -217,6 +217,7 @@ namespace MvcTesting.Controllers
         [AllowAnonymous]
         public IActionResult ViewMovie(int id)
         {
+            // TODO - Check if this maintains privacy settings.
 
             // Finds and displays a Film based on the ID.  If no Film is found with a matching ID,
             // the User is returned to the Index action.
@@ -225,7 +226,7 @@ namespace MvcTesting.Controllers
             {
                 List<FilmGenre> genres = _context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
                 ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
-                return View(viewMovieViewModel);
+                return View("ViewMovie2", viewMovieViewModel);
             }
             return RedirectToAction("Index");
             
