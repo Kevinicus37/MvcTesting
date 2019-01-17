@@ -26,7 +26,7 @@ namespace MvcTesting.ViewModels
 
         public List<FilmGenre> Genres { get; set; } = new List<FilmGenre>();
 
-        public bool Has3D {get; set;}
+        public string OptionFor3D { get; set; } = "No";
 
         public string Comments { get; set; }
 
@@ -34,13 +34,14 @@ namespace MvcTesting.ViewModels
 
         public string AudioFormat { get; set; }
 
+        public string PosterUrl { get; set; } = "/images/filmposterdefault.jpg";
+
         public ViewMovieViewModel(Film film, List<FilmGenre> genres)
         {
             Film = film;
 
             Directors = film.Directors;
             RunTime = film.Runtime.ToString();
-            Has3D = film.Has3D;
             Comments = film.Comments;
             MediaFormat = film.Media.Name;
             AudioFormat = film.Audio.Name;
@@ -51,6 +52,11 @@ namespace MvcTesting.ViewModels
                 CastMembers = film.Cast.Split(',').ToList();
             }
 
+            if (film.Has3D)
+            {
+                OptionFor3D = "Yes";
+            }
+
             Genres = genres;
 
             if (film.Year != null)
@@ -58,6 +64,10 @@ namespace MvcTesting.ViewModels
                 DisplayYear = "(" + film.Year + ")";
             }
 
+            if (!string.IsNullOrEmpty(film.PosterUrl))
+            {
+                PosterUrl = film.PosterUrl;
+            }
             
         }
     }

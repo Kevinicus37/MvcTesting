@@ -3,18 +3,17 @@
 @inject UserManager<ApplicationUser> UserManager
 
 <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-10 main-film-top-margin">
         <div class="row">
-            <div class="col-md-4">
-                @if (!string.IsNullOrEmpty(Model.Film.PosterUrl))
-                {
+            <div class="col-md-4 poster">
+                
                     <div class="center-block">
-                        <img src="@Model.Film.PosterUrl" class="img-responsive" />
+                        <img src="@Model.PosterUrl" class="img-responsive" />
                     </div>
-                }
+                
             </div>
             <div class="col-md-8">
-                <div class="row">
+                <div class="row main-film-info margin-right-offset" style="border-bottom:3px groove gray">
                     <h1>
                         @Model.Film.Name @Model.DisplayYear
                         @if (Model.Film.UserID == UserManager.GetUserId(User) || User.IsInRole("Admin"))
@@ -26,9 +25,8 @@
                             <a class="btn btn-primary" asp-controller="Movie" asp-action="Copy" asp-route-id="@Model.Film.ID">Copy this Movie</a>
                         }
                     </h1>
-
                 </div>
-                <div class="row">
+                <div class="row main-film-info">
                     @if (!string.IsNullOrEmpty(Model.Film.Overview))
                     {
                         <h2>Synopsis</h2>
@@ -37,46 +35,72 @@
 
                     }
                 </div>
-                <div class="row">
+                <div class="row main-film-info">
                     <h2>Top Cast Members</h2>
                 </div>
                 <div class="row">
                     @foreach (var castMember in Model.CastMembers)
                     {
-                        <div class="col-md-4">
+                        <div class="col-md-4 cast-display">
                             @castMember
                         </div>
                     }
                 </div>
+                <div class="row main-film-info">
+                    @* Comments go here*@
+                    <h2>Comments from @Model.FilmOwnerName:</h2>
+                    <p>@Model.Comments</p>
+                </div>
                 @* Title(Date), Synopsis, maybe director(s) and user notes (use username - ex. "Kevinicus' comments:") go here . *@
             </div>
         </div>
-        <div class="row">
-            @* Cast goes here (horizontally) *@
-            
-        </div>
+        
         <br /><br />
         @if (!string.IsNullOrEmpty(Model.Film.TrailerUrl)){
         <div class="row">
             <h2>Trailer</h2>
             <br />
         </div>
-        <div class="row embed-responsive embed-responsive-16by9">
+        <div class="row embed-responsive embed-responsive-16by9 margin-right-offset">
             <iframe class="embed-responsive-item" src="@Model.Film.TrailerUrl" frameborder="0" allowfullscreen></iframe>
         </div>
 
         }
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2 extra-film-info">
         @* Film User Image, Name, Collection Count, Film Media Format, Film Audio FOrmat, Runtime, 3D?, Genre, and user rating goes here. *@
         <div class="row">
-            <img src="~/images/@Model.FilmOwnerName/@Model.OwnerProfilePicture" class="profilePicture form-control img-responsive" />
+            <img src="~/images/@Model.FilmOwnerName/@Model.OwnerProfilePicture" class="image-centered profilePicture" />
         </div>
-        <div class="row">
-            @Model.FilmOwnerName
+        <div class="row text-centered">
+            <p>@Model.FilmOwnerName</p>
         </div>
-        <div class="row">
+        <div class="row text-centered">
             @Model.OwnerCollectionSize Titles
+        </div>
+        <hr />
+        <div class="film-stats">
+        <div class="row">
+            <h4>Format:</h4>
+            <p>@Model.MediaFormat</p>
+            
+        </div>
+        <div class="row">
+            <h4>Audio:</h4>
+            <p>@Model.AudioFormat</p>
+        </div>
+        <div class="row">
+            <h4>Runtime (in minutes):</h4>
+            <p>@Model.RunTime</p>
+        </div>
+        <div class="row">
+            <h4>Directed By:</h4>
+            <p>@Model.Directors</p>
+        </div>
+        <div class="row">
+            <h4>Playable in 3D?</h4>
+            <p>@Model.OptionFor3D</p>
+        </div>
         </div>
     </div>
 </div>

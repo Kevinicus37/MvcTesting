@@ -194,12 +194,13 @@ namespace MvcTesting.ViewModels
             {
                 string key = videos[0].Key;
 
-                foreach (var mov in movie.Videos.Results)
+                // Find the last results of type of "Trailer" to get the best choice.
+                for (int i = videos.Count - 1; i >= 0; i--)
                 {
 
-                    if (mov.Type == "Trailer")
+                    if (videos[i].Type == "Trailer")
                     {
-                        key = mov.Key;
+                        key = videos[i].Key;
                         break;
                     }
                 }
