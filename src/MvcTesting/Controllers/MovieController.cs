@@ -233,8 +233,12 @@ namespace MvcTesting.Controllers
                 if (user != null)
                 {
                     viewMovieViewModel.FilmOwnerName = user.UserName;
-                    viewMovieViewModel.OwnerProfilePicture = user.ProfilePicture;
                     viewMovieViewModel.OwnerCollectionSize = user.Films.Count;
+
+                    if (!string.IsNullOrEmpty(user.ProfilePicture))
+                    {
+                        viewMovieViewModel.OwnerProfilePicture = $"/images/{user.UserName}/{user.ProfilePicture}";
+                    }
                 }
 
                 return View(viewMovieViewModel);

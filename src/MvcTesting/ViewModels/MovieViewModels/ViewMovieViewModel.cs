@@ -14,7 +14,7 @@ namespace MvcTesting.ViewModels
 
         public string FilmOwnerId { get; set; }
 
-        public string OwnerProfilePicture { get; set; }
+        public string OwnerProfilePicture { get; set; } = "/images/profilePictureDefault.png";
 
         public int OwnerCollectionSize { get; set; }
 

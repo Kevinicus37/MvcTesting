@@ -102,3 +102,11 @@ textarea {
 .poster{
     padding-left:0px;
 }
+
+.main-film-info h2{
+    color: ghostwhite;
+}
+
+.film-stats h4{
+    color:ghostwhite;
+}
