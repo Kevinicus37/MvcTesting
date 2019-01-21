@@ -1,28 +1,33 @@
 ﻿using MvcTesting.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MvcTesting.ViewModels
 {
     public class MovieIndexViewModel
     {
         public List<Film> Films { get; set; }
-        public List<string> PosterUrls { get; set; }
+        public List<string> PosterUrls { get; set; } = new List<string>();
 
         public MovieIndexViewModel() { }
 
         public MovieIndexViewModel(IList<Film> films)
         {
-            PosterUrls = new List<string>();
             Films = new List<Film>();
 
-            for (int i =0; i < films.Count && PosterUrls.Count < 10 && Films.Count < 10; i++)
+            for (int i =0; i < films.Count && PosterUrls.Count < 100 && Films.Count < 100; i++)
             {
-                if (!string.IsNullOrEmpty(films[i].PosterUrl))
-                {
-                    PosterUrls.Add(films[i].PosterUrl);
-                }
+                List<Film> existingFilms = Films.Where(x => x.Name == films[i].Name).ToList();
 
-                Films.Add(films[i]);
+                if (!existingFilms.Any())
+                {
+                    if (!string.IsNullOrEmpty(films[i].PosterUrl))
+                    {
+                        PosterUrls.Add(films[i].PosterUrl);
+                    }
+
+                    Films.Add(new Film { ID = films[i].ID, Name = films[i].Name, Year = films[i].Year });
+                }
             }
         }
     }
