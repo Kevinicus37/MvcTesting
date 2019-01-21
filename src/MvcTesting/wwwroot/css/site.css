@@ -110,3 +110,11 @@ textarea {
 .film-stats h4{
     color:ghostwhite;
 }
+
+.extra-film-info hr{
+    border-top:2px solid white;
+}
+
+.film-stats ul{
+    padding-left:20px;
+}

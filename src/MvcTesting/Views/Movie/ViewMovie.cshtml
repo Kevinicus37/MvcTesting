@@ -100,6 +100,19 @@
             <h4>Playable in 3D?</h4>
             <p>@Model.OptionFor3D</p>
         </div>
+        @if (Model.Genres.Count > 0)
+        {
+            <div class="row">
+                <h4>Genres</h4>
+                <ul>
+                    @foreach (var genre in Model.Genres)
+                    {
+                        <li>@genre.Genre.Name</li>
+                    }
+                </ul>
+            </div>
+
+        }
         </div>
     </div>
 </div>
