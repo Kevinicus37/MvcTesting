@@ -118,3 +118,12 @@ textarea {
 .film-stats ul{
     padding-left:20px;
 }
+
+.carousel-poster{
+    height: 450px;
+}
+
+.carousel-poster > .carousel-inner > .item > img{
+    height: 450px;
+    width: auto;
+}
