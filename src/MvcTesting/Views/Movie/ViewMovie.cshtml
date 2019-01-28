@@ -75,9 +75,6 @@
         <div class="row text-centered">
             <a asp-controller="Users" asp-action="DisplayUser" asp-route-username="@Model.FilmOwnerName">@Model.FilmOwnerName (@Model.OwnerCollectionSize)</a>
         </div>
-        @*<div class="row text-centered">
-            @Model.OwnerCollectionSize Titles
-        </div>*@
         <hr />
         <div class="film-stats">
         <div class="row">
@@ -111,7 +108,6 @@
                     }
                 </ul>
             </div>
-
         }
         </div>
     </div>

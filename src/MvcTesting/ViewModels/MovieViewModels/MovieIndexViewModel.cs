@@ -8,6 +8,7 @@ namespace MvcTesting.ViewModels
     {
         public List<Film> Films { get; set; }
         public List<string> PosterUrls { get; set; } = new List<string>();
+        public List<ApplicationUser> Users = new List<ApplicationUser>();
 
         public MovieIndexViewModel() { }
 

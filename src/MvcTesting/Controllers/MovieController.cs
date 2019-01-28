@@ -49,9 +49,17 @@ namespace MvcTesting.Controllers
             // Gets a list of all films in order of Name, and then by Year and displays it in the view.
             List<Film> films = _context.Films.Include(f=>f.User).OrderBy(f => f.Name)
                 .Where(f => (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
-                .OrderBy(f => f.Year)
+                .OrderByDescending(f => f.Updated)
                 .ToList();
+
+            List<ApplicationUser> users = _context.Users.Include(u => u.Films).Where(u => u.IsPrivate == false)
+                .OrderByDescending(u => u.Films.Count)
+                .Take(10)
+                .ToList();
+
             MovieIndexViewModel movieIndexViewModel = new MovieIndexViewModel(films);
+            movieIndexViewModel.Users = users;
+
             return View(movieIndexViewModel);
         }
 

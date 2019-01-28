@@ -127,3 +127,38 @@ textarea {
     height: 450px;
     width: auto;
 }
+
+.main-index-list {
+    padding-left:30px;
+    padding-top:30px;
+}
+
+.main-index-list ul{
+    padding-left: 20px;
+}
+
+.main-index-list hr{
+    border-top:2px solid white;
+}
+
+.movie-index-background{
+    background-color:black;
+    
+}
+
+.movie-index-left-background{
+    background-color:#272b30;
+    padding-right:30px;
+}
+
+.movie-index-left-background p{
+    background-color:darkslategray;
+    border-radius:5px;
+    padding:10px;
+    color:white;
+    
+}
+
+.carousel-gap {
+    margin-top:50px;
+}
