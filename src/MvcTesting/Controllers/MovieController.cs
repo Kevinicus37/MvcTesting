@@ -129,39 +129,35 @@ namespace MvcTesting.Controllers
         [HttpPost]
         public IActionResult Search(SearchMovieViewModel vm)
         {
+            // TODO - Show what filters have been applied.
             List<Film> films = new List<Film>();
             
-            // If someone attempts to access a page for a private User directly and is not that User
-            // and is not an Admin, they are redirected to the Index Action.
-            if (!string.IsNullOrEmpty(vm.SearchValue))
-            {
-                // TODO - Create a WhereIf() extension method.
-                // Gets films matching the search value and filter (if selected).
-                films = _context.Films
-                    .Include(f => f.Audio)
-                    .Include(f => f.Media)
-                    .Include(f => f.FilmGenres)
-                    .Where(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower())
-                    && ((!f.IsPrivate && !f.User.IsPrivate) || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User))).ToList();
-                films=films
-                    .Where(f => string.IsNullOrEmpty(vm.AudioFilter) || f.Audio.Name == vm.AudioFilter)
-                    .Where(f => string.IsNullOrEmpty(vm.MediaFilter) || f.Media.Name == vm.MediaFilter)
-                    .Where(f => string.IsNullOrEmpty(vm.GenreFilter) || f.FilmGenres.Any(fg => fg.Genre.Name == vm.GenreFilter))
-                    .ToList();
+            // TODO - Create a WhereIf() extension method.
+            // Gets films matching the search value and filter (if selected).
+            films = _context.Films
+                .Include(f => f.Audio)
+                .Include(f => f.Media)
+                .Include(f => f.FilmGenres).ThenInclude(fg => fg.Genre)
+                .Include(f=>f.User)
+                .ToList();
+                    
+            films=films.Where(f=> string.IsNullOrEmpty(vm.SearchValue) || f.Name.ToLower().Contains(vm.SearchValue.ToLower()))
+                .Where(f => (!f.IsPrivate && !f.User.IsPrivate) || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User))
+                .Where(f => string.IsNullOrEmpty(vm.AudioFilter) || f.Audio.Name == vm.AudioFilter)
+                .Where(f => string.IsNullOrEmpty(vm.MediaFilter) || f.Media.Name == vm.MediaFilter)
+                .Where(f => string.IsNullOrEmpty(vm.GenreFilter) || f.FilmGenres.Any(fg => fg.Genre != null && fg.Genre.Name == vm.GenreFilter))
+                .ToList();
             
-                // sort the collection of films by selected value (title ascending is default)
-                vm.Films = FilmSortingHelpers.SortByValue(films, vm.SortValue);
-            }
-            else
-            {
-                vm.Films = films;
-            }
+            // sort the collection of films by selected value (title ascending is default)
+            vm.Films = films.SortByValue(vm.SortValue);
 
             // TODO - Check if Genres needs the full Genre models or just the Ids
             vm.Genres = _context.Genres.ToList();
             vm.MediaFormats = _context.MediaFormats.ToList();
             vm.AudioFormats = _context.AudioFormats.ToList();
 
+
+            // TODO - Add pagination for the results.  See WebSearch.
             return View(vm);
         }
 
@@ -428,7 +424,15 @@ namespace MvcTesting.Controllers
             film.Cast = viewModel.Cast;
             film.Overview = viewModel.Overview;
             film.TrailerUrl = viewModel.TrailerUrl;
-            film.PosterUrl = viewModel.PosterUrl;
+            if (!string.IsNullOrEmpty(viewModel.PosterUrl))
+            {
+                film.PosterUrl = viewModel.PosterUrl;
+            }
+            else
+            {
+                film.PosterUrl = "/images/filmposterdefault.jpg";
+            }
+            
             film.IsPrivate = viewModel.IsPrivate;
             film.Has3D = viewModel.Has3D;
             film.Audio = newAudioFormat;
