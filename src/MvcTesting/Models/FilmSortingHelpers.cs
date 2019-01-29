@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace MvcTesting.Models
 {
-    public class FilmSortingHelpers
+    public static class FilmSortingHelpers
     {
 
-        public static List<Film> SortByValue(List<Film> films, string sortValue)
+        public static List<Film> SortByValue(this List<Film> films, string sortValue)
         {
             switch (sortValue)
             {

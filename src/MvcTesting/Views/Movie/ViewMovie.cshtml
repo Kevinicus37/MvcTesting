@@ -81,13 +81,17 @@
         <hr />
         <div class="film-stats">
         <div class="row">
-            <h4>Format:</h4>
-            <p>@Model.MediaFormat</p>
+            <form asp-controller="Movie" asp-action="Search" method="post">
+                <h4>Format:</h4>
+                <button class="filter-link" type="submit" name="MediaFilter" value="@Model.MediaFormat">@Model.MediaFormat</button>
+            </form>
         </div>
         <div class="row">
-            <h4>Audio:</h4>
-            <p>@Model.AudioFormat</p>
-        </div>
+            <form asp-controller="Movie" asp-action="Search" method="post">
+                <h4>Audio:</h4>
+                <button class="filter-link" type="submit" name="AudioFilter" value="@Model.AudioFormat">@Model.AudioFormat</button>
+            </form>
+</div>
         <div class="row">
             <h4>Runtime <small>(in minutes)</small>:</h4>
             <p>@Model.RunTime</p>
@@ -107,7 +111,10 @@
                 <ul>
                     @foreach (var genre in Model.Genres)
                     {
-                        <li>@genre.Genre.Name</li>
+                        <li><form asp-controller="Movie" asp-action="Search" method="post">
+                            <button class="filter-link" type="submit" name="GenreFilter" value="@genre.Genre.Name">@genre.Genre.Name</button>
+                            </form>
+                        </li>
                     }
                 </ul>
             </div>

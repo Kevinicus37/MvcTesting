@@ -118,3 +118,11 @@ textarea {
 .film-stats ul{
     padding-left:20px;
 }
+
+.filter-link{
+    background-color:black;
+    border:0;
+    padding-left:0;
+    margin-bottom:20px;
+    text-underline-position:below;
+}
