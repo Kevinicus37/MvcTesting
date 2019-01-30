@@ -15,27 +15,30 @@
             <h4>Share</h4>
             <p>Let your friends know what you have and let them pick something out before movie night.  No more waiting for someone to pick something before you get started.</p>
         </div>
-        @if (Model.PosterUrls.Count > 0)
+        @if (Model.PosterFilms.Count > 0)
         {
             <div class="row carousel-gap">
                 <div id="myCarousel" style="background-color: rgba(10,0,10,.8)" class="carousel slide carousel-poster" data-ride="carousel">
                     <!-- Indicators -->
                     <ol class="carousel-indicators">
                         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                        @for (int i = 1; i < Model.PosterUrls.Count; i++)
-                {
+                        @for (int i = 1; i < Model.PosterFilms.Count; i++)
+                        {
                             <li data-target="#myCarousel" data-slide-to="@i"></li>
                         }
                     </ol>
                     <!-- Wrapper for slides -->
                     <div class="carousel-inner">
                         <div class="item active">
-                            <img class="img-responsive center-block" src="@Model.PosterUrls[0]">
-                        </div>
-                        @for (int i = 1; i < Model.PosterUrls.Count; i++)
-                {
+                            <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@Model.PosterFilms[0].ID">
+                                <img class="img-responsive center-block" src="@Model.PosterFilms[0].PosterUrl">
+                            </a>                        </div>
+                        @for (int i = 1; i < Model.PosterFilms.Count; i++)
+                        {
                             <div class="item">
-                                <img class="img-responsive center-block" src="@Model.PosterUrls[i]">
+                                <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@Model.PosterFilms[i].ID">
+                                    <img class="img-responsive center-block" src="@Model.PosterFilms[i].PosterUrl">
+                                </a>
                             </div>
                         }
                     </div>
