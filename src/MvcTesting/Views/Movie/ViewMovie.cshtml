@@ -77,45 +77,46 @@
         </div>
         <hr />
         <div class="film-stats">
-        <div class="row">
-            <form asp-controller="Movie" asp-action="Search" method="post">
-                <h4>Format:</h4>
-                <button class="filter-link" type="submit" name="MediaFilter" value="@Model.MediaFormat">@Model.MediaFormat</button>
-            </form>
-        </div>
-        <div class="row">
-            <form asp-controller="Movie" asp-action="Search" method="post">
-                <h4>Audio:</h4>
-                <button class="filter-link" type="submit" name="AudioFilter" value="@Model.AudioFormat">@Model.AudioFormat</button>
-            </form>
-</div>
-        <div class="row">
-            <h4>Runtime <small>(in minutes)</small>:</h4>
-            <p>@Model.RunTime</p>
-        </div>
-        <div class="row">
-            <h4>Directed By:</h4>
-            <p>@Model.Directors</p>
-        </div>
-        <div class="row">
-            <h4>Playable in 3D?</h4>
-            <p>@Model.OptionFor3D</p>
-        </div>
-        @if (Model.Genres.Count > 0)
-        {
             <div class="row">
-                <h4>Genres</h4>
-                <ul>
-                    @foreach (var genre in Model.Genres)
-                    {
-                        <li><form asp-controller="Movie" asp-action="Search" method="post">
-                            <button class="filter-link" type="submit" name="GenreFilter" value="@genre.Genre.Name">@genre.Genre.Name</button>
-                            </form>
-                        </li>
-                    }
-                </ul>
+                <form asp-controller="Movie" asp-action="Search" method="post">
+                    <h4>Format:</h4>
+                    <button class="filter-link" type="submit" name="MediaFilter" value="@Model.MediaFormat">@Model.MediaFormat</button>
+                </form>
             </div>
-        }
+            <div class="row">
+                <form asp-controller="Movie" asp-action="Search" method="post">
+                    <h4>Audio:</h4>
+                    <button class="filter-link" type="submit" name="AudioFilter" value="@Model.AudioFormat">@Model.AudioFormat</button>
+                </form>
+            </div>
+            <div class="row">
+                <h4>Runtime <small>(in minutes)</small>:</h4>
+                <p>@Model.RunTime</p>
+            </div>
+            <div class="row">
+                <h4>Directed By:</h4>
+                <p>@Model.Directors</p>
+            </div>
+            <div class="row">
+                <h4>Playable in 3D?</h4>
+                <p>@Model.OptionFor3D</p>
+            </div>
+            @if (Model.Genres.Count > 0)
+            {
+                <div class="row">
+                    <h4>Genres</h4>
+                    <ul>
+                        @foreach (var genre in Model.Genres)
+                        {
+                            <li>
+                                <form asp-controller="Movie" asp-action="Search" method="post">
+                                    <button class="filter-link" type="submit" name="GenreFilter" value="@genre.Genre.Name">@genre.Genre.Name</button>
+                                </form>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
         </div>
     </div>
 </div>

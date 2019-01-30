@@ -54,9 +54,6 @@ textarea {
     padding-left:25px;
 }
 
-.film-stats p{
-    margin-bottom:30px;
-}
 
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
@@ -80,8 +77,20 @@ textarea {
     background-color: black;
 }
 
+.extra-film-info a{
+    text-decoration:underline;
+}
+
+.extra-film-info hr{
+    border-top:2px solid white;
+}
+
 .main-film-info{
     padding-right: 15px;
+}
+
+.main-film-info h2{
+    color: ghostwhite;
 }
 
 .main-film-top-margin{
@@ -100,16 +109,8 @@ textarea {
     padding-left:0px;
 }
 
-.main-film-info h2{
-    color: ghostwhite;
-}
-
 .film-stats h4{
     color:ghostwhite;
-}
-
-.extra-film-info hr{
-    border-top:2px solid white;
 }
 
 .film-stats ul{
@@ -125,13 +126,13 @@ textarea {
     width: auto;
 }
 
+.carousel-gap {
+    margin-top:50px;
+}
+
 .main-index-list {
     padding-left:30px;
     padding-top:30px;
-}
-
-.main-index-list ul{
-    padding-left: 20px;
 }
 
 .main-index-list hr{
@@ -154,14 +155,21 @@ textarea {
     color:white;
 }
 
-.carousel-gap {
-    margin-top:50px;
-}
-
 .filter-link{
     background-color:black;
     border:0;
     padding-left:0;
-    margin-bottom:20px;
-    text-underline-position:below;
+    text-decoration: underline;
+}
+
+.film-stats > .row {
+    margin-top:20px;
+}
+
+.film-stats > .row button, p{
+    padding-left:10px;
+}
+
+.film-stats > .row h4{
+    margin-bottom:0;
 }
