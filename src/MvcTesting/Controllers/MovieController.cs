@@ -44,20 +44,21 @@ namespace MvcTesting.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            // TODO - Filter out titles with the same name so there aren't duplicates when displaying on the main page.
-
             // Gets a list of all films in order of Name, and then by Year and displays it in the view.
+
             List<Film> films = _context.Films.Include(f=>f.User).OrderBy(f => f.Name)
                 .Where(f => (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
                 .OrderByDescending(f => f.Updated)
                 .ToList();
 
+            MovieIndexViewModel movieIndexViewModel = new MovieIndexViewModel(films);
+
             List<ApplicationUser> users = _context.Users.Include(u => u.Films).Where(u => u.IsPrivate == false)
+                .Where(u => u.Films.Count > 0)
                 .OrderByDescending(u => u.Films.Count)
-                .Take(10)
+                .Take(15)
                 .ToList();
 
-            MovieIndexViewModel movieIndexViewModel = new MovieIndexViewModel(films);
             movieIndexViewModel.Users = users;
 
             return View(movieIndexViewModel);
@@ -66,6 +67,7 @@ namespace MvcTesting.Controllers
         public IActionResult WebSearch()
         {
             // Displays view allowing a user to search for a movie (using TMDb) to add to their collection.
+
             return View();
         }
 
@@ -73,6 +75,7 @@ namespace MvcTesting.Controllers
         public IActionResult WebSearch(string query, int page)
         {
             // Accepts a search query and passes it to TMDb.org's API and accepts the search results.
+
             int currentPage = 1;
             int lastPage = 1;
             
