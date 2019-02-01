@@ -1,5 +1,6 @@
 ﻿@model MvcTesting.ViewModels.MovieIndexViewModel
 
+@inject SignInManager<ApplicationUser> SignInManager
 
 <div class="=row home-banner">
     <div class="vertical-center">
@@ -51,23 +52,46 @@
         <div class="row">
             
             <div class="jumbotron" id="site-description-jumbo">
-                <p>Keep track of your entire personal movie collection and all of the important data.</p>
-                <p>Search your collection and others for titles matching your criteria.  Filters for media type, audio format, and genre, etc. make finding the right movie a breeze.</p>
-                <p>Let your friends know what you have and let them pick something out before movie night.  No more waiting for someone to pick something before you get started.</p>
-                <form asp-controller="Movie" asp-action="Search" method="post">
-                    <div class="input-group form-group">
-                        <input type="text" class="form-control" name="SearchValue" placeholder="Search for a film." />
-                        <div class="input-group-btn">
-                            <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
-                        </div>
+                <div class="row">
+                    <p>Keep track of your entire personal movie collection and all of the important data.</p>
+                    <p>Search your collection and others for titles matching your criteria.  Filters for media type, audio format, and genre, etc. make finding the right movie a breeze.</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 search-box">
+                        <form asp-controller="Movie" asp-action="Search" method="post">
+                            <div class="input-group form-group search-input">
+                                <input type="text" class="form-control" name="SearchValue" placeholder="Search User Collections." />
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                    <div class="col-md-6 search-box">
+                        <form asp-controller="Movie" asp-action="WebSearch" method="post">
+                            <div class="input-group form-group search-input">
+                                <input type="text" class="form-control" name="query" placeholder="Search TMDB.org" />
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Let your friends know what you have and let them pick something out before movie night.  No more waiting for someone to pick something before you get started.</p>
+
+                    @if (!SignInManager.IsSignedIn(User))
+                    {
+                        <div>
+                            <a asp-controller="Account" asp-action="Register">Sign Up</a> and start your collection today!<br /><br />
+                            Already a member? <a asp-controller="Account" asp-action="Login"> Login Here </a>
+                        </div>
+                    }
+                </div>
+                
             </div>
-            
-            
         </div>
-        
-        
     </div>
     <div class="col-md-3 main-index-list">
         <div class="row">

@@ -149,8 +149,6 @@ textarea {
 
 .movie-index-background{
     background-color:black;
-    
-    
 }
 
 .movie-index-left-background{
@@ -198,6 +196,12 @@ textarea {
     margin-top:20px;
 }
 
+#site-description-jumbo a{
+    color:dodgerblue;
+    text-decoration:underline;
+    font-weight:bolder;
+}
+
 #TMDB {
     height:75px;
     width:auto;
@@ -205,4 +209,18 @@ textarea {
 
 #copyright {
     vertical-align:top;
+}
+
+.search-input {
+    display:block;
+    max-width:350px;
+}
+
+.search-input .input-group-btn {
+    display:block;
+}
+
+.search-box{
+    padding-right:60px;
+    padding-left:0;
 }
