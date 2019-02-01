@@ -121,11 +121,17 @@ textarea {
 
 .carousel-poster{
     height: 450px;
+    border-radius:30px;
 }
 
-.carousel-poster > .carousel-inner > .item > img{
+.carousel-poster > .carousel-inner > .item img{
     height: 450px;
     width: auto;
+    
+}
+
+.carousel-poster .left, .right{
+    border-radius:30px;
 }
 
 .main-index-list {
@@ -144,6 +150,7 @@ textarea {
 .movie-index-background{
     background-color:black;
     
+    
 }
 
 .movie-index-left-background{
@@ -151,17 +158,12 @@ textarea {
     padding-right:30px;
 }
 
-.movie-index-left-background p{
+.movie-index-left-background .jumbotron{
     background-color:darkslategray;
-    border-radius:5px;
-    padding:10px;
     color:white;
     
 }
 
-.carousel-gap {
-    margin-top:50px;
-}
 
 .home-banner {
     background-repeat: repeat-x;
@@ -189,4 +191,18 @@ textarea {
     margin-right:auto;
     max-height:100%;
     max-width:100%;
+}
+
+#site-description-jumbo {
+    margin-bottom:0px;
+    margin-top:20px;
+}
+
+#TMDB {
+    height:75px;
+    width:auto;
+}
+
+#copyright {
+    vertical-align:top;
 }
