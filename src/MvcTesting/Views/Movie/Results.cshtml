@@ -4,7 +4,6 @@
 <div class="page-header">
     <h1>Search Results</h1>
 </div>
-
 <div class="form-group">
     <div class="col-md-12">
         <table class="table table-striped table-hover">
@@ -22,12 +21,9 @@
                         {
                             <img src="@($"https://image.tmdb.org/t/p/w300_and_h450_bestv2/{movie.Images.Posters[0].FilePath}")" width="54" height="80"/>
                         }
-
                     @:</td>
-        
                         <td>
                         <a asp-controller="Movie" asp-action="ViewSearchedMovie" asp-route-Id="@movie.Id">
-        
                             @if (movie.ReleaseDate != null)
                             {
                                     <H4>@movie.Title  (@movie.ReleaseDate.Value.ToString("yyyy"))</H4>
@@ -37,13 +33,9 @@
                                     <h4>@movie.Title</h4> 
                             }
                                 </a>
-        
-        
                             @if (movie.Credits.Crew.Count > 0)
                             {
                                 List<string> directors = new List<string>();
-
-
                                             foreach (var member in movie.Credits.Crew)
                                             {
                                                 if (member.Job == "Director")
@@ -51,22 +43,17 @@
                                                     directors.Add(member.Name);
                                                 }
                                             }
-
                                         string Directors = String.Join(", ", directors);
-                                    
                                 <em>Directed by @Directors</em>
                              }
                         </td>
                         <td>
-                            
                             <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@movie.Id">Add Movie</a>
                          </td>
                     }
-
                     @:</tr>
                     }
                 </table>
-
          </div>
     <form asp-controller="Movie" asp-action="Search" method="post">
         <input type="hidden" asp-for="Query" />
@@ -86,12 +73,11 @@
 
     </div>
 <br />
-    
 <div class="row">
     <h2>Don't see the movie you're Looking For?</h2>
     <a class=" btn btn-primary" asp-controller="Movie" asp-action="Add">Add Manually</a>
     Or
-    <form asp-controller="Movie" asp-action="Search" method="post">
+    <form asp-controller="Movie" asp-action="WebSearch" method="post">
         <div class="input-group">
             <input type="text" class="form-control" name="query" placeholder="Try Another Search" />
             <div class="input-group-btn">
