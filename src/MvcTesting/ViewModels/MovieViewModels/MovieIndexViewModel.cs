@@ -7,7 +7,7 @@ namespace MvcTesting.ViewModels
     public class MovieIndexViewModel
     {
         public List<Film> Films { get; set; }
-        public List<string> PosterUrls { get; set; } = new List<string>();
+        public List<Film> PosterFilms { get; set; } = new List<Film>();
         public List<ApplicationUser> Users = new List<ApplicationUser>();
 
         public MovieIndexViewModel() { }
@@ -16,15 +16,15 @@ namespace MvcTesting.ViewModels
         {
             Films = new List<Film>();
 
-            for (int i =0; i < films.Count && PosterUrls.Count < 100 && Films.Count < 100; i++)
+            for (int i =0; i < films.Count && PosterFilms.Count < 20 && Films.Count < 20; i++)
             {
                 List<Film> existingFilms = Films.Where(x => x.Name == films[i].Name).ToList();
 
                 if (!existingFilms.Any())
                 {
-                    if (!string.IsNullOrEmpty(films[i].PosterUrl))
+                    if (!string.IsNullOrEmpty(films[i].PosterUrl) && films[i].PosterUrl != "/images/filmposterdefault.jpg")
                     {
-                        PosterUrls.Add(films[i].PosterUrl);
+                        PosterFilms.Add(films[i]);
                     }
 
                     Films.Add(new Film { ID = films[i].ID, Name = films[i].Name, Year = films[i].Year });

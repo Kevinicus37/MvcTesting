@@ -1,41 +1,39 @@
 ﻿@model MvcTesting.ViewModels.MovieIndexViewModel
 
+@inject SignInManager<ApplicationUser> SignInManager
 
-
+<div class="=row home-banner">
+    <div class="vertical-center">
+        <img id="title" src="~/images/MovieLot5.png" />
+    </div>
+</div>
 <div class="row movie-index-background">
     <div class="col-md-9 movie-index-left-background">
-        
-        <div class="row">
-            <h1>Welcome to MovieLot!</h1>
-            <hr />
-            <h4>Track</h4>
-            <p>Keep track of your entire personal movie collection and all of the important data.</p>
-            <h4>Search</h4>
-            <p>Search your collection and others for titles matching your criteria.  Filters for media type, audio format, and genre, etc. make finding the right movie a breeze.</p>
-            <h4>Share</h4>
-            <p>Let your friends know what you have and let them pick something out before movie night.  No more waiting for someone to pick something before you get started.</p>
-        </div>
-        @if (Model.PosterUrls.Count > 0)
+        @if (Model.PosterFilms.Count > 0)
         {
-            <div class="row carousel-gap">
+            <div class="row">
                 <div id="myCarousel" style="background-color: rgba(10,0,10,.8)" class="carousel slide carousel-poster" data-ride="carousel">
                     <!-- Indicators -->
                     <ol class="carousel-indicators">
                         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                        @for (int i = 1; i < Model.PosterUrls.Count; i++)
-                {
+                        @for (int i = 1; i < Model.PosterFilms.Count; i++)
+                        {
                             <li data-target="#myCarousel" data-slide-to="@i"></li>
                         }
                     </ol>
                     <!-- Wrapper for slides -->
                     <div class="carousel-inner">
                         <div class="item active">
-                            <img class="img-responsive center-block" src="@Model.PosterUrls[0]">
+                            <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@Model.PosterFilms[0].ID">
+                                <img class="img-responsive center-block" src="@Model.PosterFilms[0].PosterUrl">
+                            </a>
                         </div>
-                        @for (int i = 1; i < Model.PosterUrls.Count; i++)
-                {
+                        @for (int i = 1; i < Model.PosterFilms.Count; i++)
+                        {
                             <div class="item">
-                                <img class="img-responsive center-block" src="@Model.PosterUrls[i]">
+                                <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@Model.PosterFilms[i].ID">
+                                    <img class="img-responsive center-block" src="@Model.PosterFilms[i].PosterUrl">
+                                </a>
                             </div>
                         }
                     </div>
@@ -51,7 +49,49 @@
                 </div>
             </div>
         }
-        
+        <div class="row">
+            
+            <div class="jumbotron" id="site-description-jumbo">
+                <div class="row">
+                    <p>Keep track of your entire personal movie collection and all of the important data.</p>
+                    <p>Search your collection and others for titles matching your criteria.  Filters for media type, audio format, and genre, etc. make finding the right movie a breeze.</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 search-box">
+                        <form asp-controller="Movie" asp-action="Search" method="post">
+                            <div class="input-group form-group search-input">
+                                <input type="text" class="form-control" name="SearchValue" placeholder="Search User Collections." />
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6 search-box">
+                        <form asp-controller="Movie" asp-action="WebSearch" method="post">
+                            <div class="input-group form-group search-input">
+                                <input type="text" class="form-control" name="query" placeholder="Search TMDB.org" />
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Let your friends know what you have and let them pick something out before movie night.  No more waiting for someone to pick something before you get started.</p>
+
+                    @if (!SignInManager.IsSignedIn(User))
+                    {
+                        <div>
+                            <a asp-controller="Account" asp-action="Register">Sign Up</a> and start your collection today!<br /><br />
+                            Already a member? <a asp-controller="Account" asp-action="Login"> Login Here </a>
+                        </div>
+                    }
+                </div>
+                
+            </div>
+        </div>
     </div>
     <div class="col-md-3 main-index-list">
         <div class="row">

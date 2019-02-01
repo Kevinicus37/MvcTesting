@@ -119,11 +119,16 @@ textarea {
 
 .carousel-poster{
     height: 450px;
+    border-radius:30px;
 }
 
-.carousel-poster > .carousel-inner > .item > img{
+.carousel-poster > .carousel-inner > .item img{
     height: 450px;
     width: auto;
+}
+
+.carousel-poster .left, .right{
+    border-radius:30px;
 }
 
 .carousel-gap {
@@ -148,13 +153,12 @@ textarea {
     padding-right:30px;
 }
 
-.movie-index-left-background p{
+.movie-index-left-background .jumbotron{
     background-color:darkslategray;
-    border-radius:5px;
-    padding:10px;
     color:white;
 }
 
+<<<<<<< HEAD
 .filter-link{
     background-color:black;
     border:0;
@@ -170,6 +174,68 @@ textarea {
     padding-left:10px;
 }
 
-.film-stats > .row h4{
-    margin-bottom:0;
+.film-stats > .row h4 {
+    margin-bottom: 0;
+}
+
+.home-banner {
+    background-repeat: repeat-x;
+    height:200px;
+    min-height: 100%;
+    padding-left:0;
+    padding-right:0;
+    margin-bottom:20px;
+    background-size: auto 100%;
+    background-image:url(/images/filmstrip.png);
+}
+
+.vertical-center {
+    margin:0;
+    position: relative;
+    padding-left:20px;
+    top:50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+#title {
+    display: block;
+    margin-left:auto;
+    margin-right:auto;
+    max-height:100%;
+    max-width:100%;
+}
+
+#site-description-jumbo {
+    margin-bottom:0px;
+    margin-top:20px;
+}
+
+#site-description-jumbo a{
+    color:dodgerblue;
+    text-decoration:underline;
+    font-weight:bolder;
+}
+
+#TMDB {
+    height:75px;
+    width:auto;
+}
+
+#copyright {
+    vertical-align:top;
+}
+
+.search-input {
+    display:block;
+    max-width:350px;
+}
+
+.search-input .input-group-btn {
+    display:block;
+}
+
+.search-box{
+    padding-right:60px;
+    padding-left:0;
 }
