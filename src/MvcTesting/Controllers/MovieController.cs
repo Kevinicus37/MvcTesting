@@ -166,7 +166,9 @@ namespace MvcTesting.Controllers
 
         public IActionResult ViewSearchedMovie(int Id)
         {
-            // TODO - Create View Model to help display movie.  Do proper trailer selection.
+            // TODO - Update View
+            // TODO - Create ViewModel to help display movie.
+
             // This displays a closer look at an individual movie when it is selected.
             Movie movie = GetTMDbMovieInfo(Id);
             if (movie != null)

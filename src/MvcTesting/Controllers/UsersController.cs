@@ -100,7 +100,7 @@ namespace MvcTesting.Controllers
 
             if (!string.IsNullOrEmpty(user.ProfilePicture))
             {
-                vm.ProfilePicturePath = user.ProfilePicture;
+                vm.ProfilePicturePath = GlobalVariables.ImagesBasePath + user.UserName + "/" + user.ProfilePicture;
             }
             else
             {

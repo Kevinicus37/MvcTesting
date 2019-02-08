@@ -1,93 +1,101 @@
 ﻿@model MvcTesting.ViewModels.DisplayUserViewModel
 
-<h1>@(Model.UserName)'@(Model.UserName[Model.UserName.Length-1].Equals('s')? "" : "s") Collection</h1>
-<div class="btn-group">
-    <a class="btn btn-info" asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.UserName">Display All</a>
-    <div class="btn-group">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-            Filter by Genre
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-            <li class="dropdown-header">Display Films of Selected Genre</li>
-            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.UserName">All</a></li>
-            @foreach (var genre in Model.Genres)
-            {
-                <li>
-                    <form asp-controller="Users" asp-action="DisplayUser" method="post">
-                        <input type="hidden" asp-for="UserName" value="@Model.UserName"/>
-                        <input type="hidden" asp-for="GenreFilter" value="@genre.Name" />
-                        <input type="hidden" asp-for="SearchValue" />
-                        <button type="submit" class="btn btn-link">@genre.Name</button>
-                    </form>
-                </li>
-            }
-        </ul>
+<div class="row">
+    <div class="col-md-2">
+        <img class="profilePicture" src="@Model.ProfilePicturePath" />
     </div>
-    <div class="btn-group">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-            Filter by Media Type
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-            <li class="dropdown-header">Display Films of Selected Media Type</li>
-            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.UserName">All</a></li>
-            @foreach (var mediaFormat in Model.MediaFormats)
+    <div class="col-md-10">
+        <h1>@(Model.UserName)'@(Model.UserName[Model.UserName.Length - 1].Equals('s') ? "" : "s") Collection</h1>
+        <div class="btn-group">
+            <a class="btn btn-info" asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.UserName">Display All</a>
+            <div class="btn-group">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    Filter by Genre
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-header">Display Films of Selected Genre</li>
+                    <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.UserName">All</a></li>
+                    @foreach (var genre in Model.Genres)
             {
-                <li>
-                    <form asp-controller="Users" asp-action="DisplayUser" method="post">
-                        <input type="hidden" asp-for="UserName" value="@Model.UserName"/>
-                        <input type="hidden" asp-for="MediaFilter" value="@mediaFormat.Name" />
-                        <input type="hidden" asp-for="SearchValue" />
-                        <button type="submit" class="btn btn-link">@mediaFormat.Name</button>
-                    </form>
-                </li>
-            }
-        </ul>
-    </div>
-    <div class="btn-group">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-            Filter by Audio Format
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-            <li class="dropdown-header">Display Films of Selected Audio Format</li>
-            <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.UserName">All</a></li>
-            @foreach (var audioFormat in Model.AudioFormats)
+                        <li>
+                            <form asp-controller="Users" asp-action="DisplayUser" method="post">
+                                <input type="hidden" asp-for="UserName" value="@Model.UserName" />
+                                <input type="hidden" asp-for="GenreFilter" value="@genre.Name" />
+                                <input type="hidden" asp-for="SearchValue" />
+                                <button type="submit" class="btn btn-link">@genre.Name</button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    Filter by Media Type
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-header">Display Films of Selected Media Type</li>
+                    <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.UserName">All</a></li>
+                    @foreach (var mediaFormat in Model.MediaFormats)
             {
-                <li>
-                    <form asp-controller="Users" asp-action="DisplayUser" method="post">
-                        <input type="hidden" asp-for="UserName" value="@Model.UserName"/>
-                        <input type="hidden" asp-for="AudioFilter" value="@audioFormat.Name" />
-                        <input type="hidden" asp-for="SearchValue" />
-                        <button type="submit" class="btn btn-link">@audioFormat.Name</button>
-                    </form>
-                </li>
-            }
-        </ul>
-    </div>
-    <div class="btn-group">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-            Sort By...
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-            
-            @foreach (var sorter in Model.SortValues)
+                        <li>
+                            <form asp-controller="Users" asp-action="DisplayUser" method="post">
+                                <input type="hidden" asp-for="UserName" value="@Model.UserName" />
+                                <input type="hidden" asp-for="MediaFilter" value="@mediaFormat.Name" />
+                                <input type="hidden" asp-for="SearchValue" />
+                                <button type="submit" class="btn btn-link">@mediaFormat.Name</button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    Filter by Audio Format
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-header">Display Films of Selected Audio Format</li>
+                    <li><a asp-controller="Users" asp-action="DisplayUser" asp-route-UserName="@Model.UserName">All</a></li>
+                    @foreach (var audioFormat in Model.AudioFormats)
             {
-                <li>
-                    <form asp-controller="Users" asp-action="DisplayUser" method="post">
-                        <input type="hidden" asp-for="UserName" value="@Model.UserName" />
-                        <input type="hidden" asp-for="GenreFilter" />
-                        <input type="hidden" asp-for="MediaFilter" />
-                        <input type="hidden" asp-for="AudioFilter" />
-                        <input type="hidden" asp-for="SortValue" value="@sorter" />
-                        <input type="hidden" asp-for="SearchValue" />
-                        <button type="submit" class="btn btn-link">@sorter</button>
-                    </form>
-                </li>
-            }
-        </ul>
+                        <li>
+                            <form asp-controller="Users" asp-action="DisplayUser" method="post">
+                                <input type="hidden" asp-for="UserName" value="@Model.UserName" />
+                                <input type="hidden" asp-for="AudioFilter" value="@audioFormat.Name" />
+                                <input type="hidden" asp-for="SearchValue" />
+                                <button type="submit" class="btn btn-link">@audioFormat.Name</button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    Sort By...
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+
+                    @foreach (var sorter in Model.SortValues)
+            {
+                        <li>
+                            <form asp-controller="Users" asp-action="DisplayUser" method="post">
+                                <input type="hidden" asp-for="UserName" value="@Model.UserName" />
+                                <input type="hidden" asp-for="GenreFilter" />
+                                <input type="hidden" asp-for="MediaFilter" />
+                                <input type="hidden" asp-for="AudioFilter" />
+                                <input type="hidden" asp-for="SortValue" value="@sorter" />
+                                <input type="hidden" asp-for="SearchValue" />
+                                <button type="submit" class="btn btn-link">@sorter</button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
     </div>
 </div>
 <br />
