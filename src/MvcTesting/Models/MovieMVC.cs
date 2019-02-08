@@ -29,11 +29,11 @@ namespace MvcTesting.Models
         {
                 if (movie.Images.Posters.Count > 0)
                 {
-                    PosterUrl = $"https://image.tmdb.org/t/p/w300_and_h450_bestv2/{movie.Images.Posters[0].FilePath}";
+                    PosterUrl = $"{GlobalVariables.TMDBPosterSitePath}{movie.Images.Posters[0].FilePath}";
                 }
                 else
                 {
-                    PosterUrl = "/images/filmposterdefault.jpg";
+                    PosterUrl = GlobalVariables.DefaultPoster;
                 }
         }
 

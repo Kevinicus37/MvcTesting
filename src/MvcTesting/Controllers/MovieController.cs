@@ -433,7 +433,7 @@ namespace MvcTesting.Controllers
             }
             else
             {
-                film.PosterUrl = "/images/filmposterdefault.jpg";
+                film.PosterUrl = GlobalVariables.DefaultPoster;
             }
             
             film.IsPrivate = viewModel.IsPrivate;

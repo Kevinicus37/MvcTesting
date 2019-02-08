@@ -230,6 +230,7 @@
 -r:"C:\Users\Kevinicus\.nuget\packages\System.Xml.XDocument\4.3.0\ref\netstandard1.3\System.Xml.XDocument.dll"
 -r:"C:\Users\Kevinicus\.nuget\packages\TMDbLib\1.0.5-alpha\lib\netstandard1.0\TMDbLib.dll"
 -resource:"C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\obj\Debug\netcoreapp1.0\MvcTestingdotnet-compile.deps.json",MvcTesting.deps.json
+"C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\GlobalVariables.cs"
 "C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Program.cs"
 "C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Startup.cs"
 "C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Controllers\AccountController.cs"

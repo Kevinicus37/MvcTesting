@@ -10,12 +10,13 @@ namespace MvcTesting.ViewModels
         [Display(Name ="Username")]
         public string UserName { get; set; }
 
+        public string ProfilePicturePath { get; set; }
+
         public DisplayUserViewModel() { }
 
         public DisplayUserViewModel(IList<Film> films, string userName) : base(films)
         {
             UserName = userName;
-            
         }
     }
 }

@@ -205,7 +205,7 @@ namespace MvcTesting.ViewModels
                     }
                 }
 
-                TrailerUrl = "https://www.youtube.com/embed/" + key;
+                TrailerUrl = GlobalVariables.BaseTrailerPath + key;
             }
         }
 

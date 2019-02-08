@@ -56,15 +56,12 @@
                 }
             </div>
         </div>
-        <br /><br />
-        @if (!string.IsNullOrEmpty(Model.Film.TrailerUrl)){
-        <div class="row">
-            <h2>Trailer</h2>
-            <br />
-        </div>
-        <div class="row embed-responsive embed-responsive-16by9 margin-right-offset">
-            <iframe class="embed-responsive-item" src="@Model.Film.TrailerUrl" frameborder="0" allowfullscreen></iframe>
-        </div>
+        <br />
+        @if (!string.IsNullOrEmpty(Model.Film.TrailerUrl))
+        {
+            <div class="row embed-responsive embed-responsive-16by9 margin-right-offset">
+                <iframe class="embed-responsive-item" src="@Model.Film.TrailerUrl" frameborder="0" allowfullscreen></iframe>
+            </div>
         }
     </div>
     <div class="col-md-2 extra-film-info">

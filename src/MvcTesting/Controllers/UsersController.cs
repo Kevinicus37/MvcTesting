@@ -98,6 +98,14 @@ namespace MvcTesting.Controllers
             vm.MediaFormats = _context.MediaFormats.ToList();
             vm.AudioFormats = _context.AudioFormats.ToList();
 
+            if (!string.IsNullOrEmpty(user.ProfilePicture))
+            {
+                vm.ProfilePicturePath = user.ProfilePicture;
+            }
+            else
+            {
+                vm.ProfilePicturePath = GlobalVariables.DefaultProfilePicture;
+            }
             
             return View(vm);
         }

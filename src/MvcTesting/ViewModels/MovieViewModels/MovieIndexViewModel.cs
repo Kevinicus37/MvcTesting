@@ -22,7 +22,7 @@ namespace MvcTesting.ViewModels
 
                 if (!existingFilms.Any())
                 {
-                    if (!string.IsNullOrEmpty(films[i].PosterUrl) && films[i].PosterUrl != "/images/filmposterdefault.jpg")
+                    if (!string.IsNullOrEmpty(films[i].PosterUrl) && films[i].PosterUrl != GlobalVariables.DefaultPoster)
                     {
                         PosterFilms.Add(films[i]);
                     }
