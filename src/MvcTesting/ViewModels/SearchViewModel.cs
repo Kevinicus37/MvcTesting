@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using MvcTesting.Models;
+using System.Collections.Generic;
 using TMDbLib.Objects.Movies;
 
 namespace MvcTesting.ViewModels
 {
     public class SearchViewModel
     {
-        public List<Movie> Movies { get; set; }
-        public int Id { get; set; }
+        public List<MovieMVC> Movies { get; set; } = new List<MovieMVC>();
+        //public int Id { get; set; }
         public int CurrentPage { get; set; }
         public int LastPage { get; set; }
         public string Query { get; set; }
@@ -15,7 +16,10 @@ namespace MvcTesting.ViewModels
 
         public SearchViewModel(List<Movie> movies)
         {
-            Movies = movies;
+            foreach (Movie movie in movies)
+            {
+                Movies.Add(new MovieMVC(movie));
+            }
         }
     }
 }

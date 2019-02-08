@@ -10,55 +10,36 @@
             <tr>
                 @{ int count = 0;
 
-                    foreach (var movie in Model.Movies)
-                    {
-                        if (count++ % 2 == 0)
-                        {
-                            @:</tr><tr>
-                        }
-                    @:<td>
-                         if (movie.Images.Posters.Count > 0)
-                        {
-                            <img src="@($"https://image.tmdb.org/t/p/w300_and_h450_bestv2/{movie.Images.Posters[0].FilePath}")" width="54" height="80"/>
-                        }
-                    @:</td>
-                        <td>
-                        <a asp-controller="Movie" asp-action="ViewSearchedMovie" asp-route-Id="@movie.Id">
-                            @if (movie.ReleaseDate != null)
-                            {
-                                    <H4>@movie.Title  (@movie.ReleaseDate.Value.ToString("yyyy"))</H4>
-                            }
-                            else
-                            {
-                                    <h4>@movie.Title</h4> 
-                            }
-                                </a>
-                            @if (movie.Credits.Crew.Count > 0)
-                            {
-                                List<string> directors = new List<string>();
-                                            foreach (var member in movie.Credits.Crew)
-                                            {
-                                                if (member.Job == "Director")
-                                                {
-                                                    directors.Add(member.Name);
-                                                }
-                                            }
-                                        string Directors = String.Join(", ", directors);
-                                <em>Directed by @Directors</em>
-                             }
-                        </td>
-                        <td>
-                            <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@movie.Id">Add Movie</a>
-                         </td>
-                    }
-                    @:</tr>
-                    }
-                </table>
+                   foreach (var movie in Model.Movies)
+                   {
+                       if (count++ % 2 == 0)
+                       {
+                           @:</tr><tr>
+                       }
+
+                   @:<td>
+                       <img class="search-results-poster" src="@(movie.PosterUrl)" onerror="this.src='/images/filmposterdefault.jpg'" alt="No Image" />
+                   @:</td>
+                     <td>
+                     <a asp-controller="Movie" asp-action="ViewSearchedMovie" asp-route-Id="@movie.Id">
+                        <H4>@movie.Title  @movie.ReleaseDate</H4>
+                     </a>
+                         @if (!string.IsNullOrEmpty(movie.Directors))
+                         {
+                             <em>Directed by @movie.Directors</em>
+                         }
+                     </td>
+                     <td>
+                         <a class="btn btn-primary" asp-controller="Movie" asp-action="Add" asp-route-id="@movie.Id">Add Movie</a>
+                     </td>
+                }
+            @:</tr>
+            }
+        </table>
          </div>
     <form asp-controller="Movie" asp-action="Search" method="post">
         <input type="hidden" asp-for="Query" />
         <ul class="pager">
-
             @if (Model.CurrentPage > 1)
             {
                 <li><button class="btn btn-primary" name="page" value="@(Model.CurrentPage -1)">Previous</button></li>
@@ -67,24 +48,35 @@
             {
                 <li><button class="btn btn-primary" name="page" value="@(Model.CurrentPage+1)">Next</button></li>
             }
-
         </ul>
     </form>
-
     </div>
 <br />
 <div class="row">
     <h2>Don't see the movie you're Looking For?</h2>
-    <a class=" btn btn-primary" asp-controller="Movie" asp-action="Add">Add Manually</a>
-    Or
-    <form asp-controller="Movie" asp-action="WebSearch" method="post">
-        <div class="input-group">
-            <input type="text" class="form-control" name="query" placeholder="Try Another Search" />
-            <div class="input-group-btn">
-                <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+    <br />
+    <div class="row">
+        <div class="col-md-2">
+            <div class="row">
+                <div class="col-md-8">
+                    <a class=" btn btn-primary" asp-controller="Movie" asp-action="Add">Add Manually</a>
+                </div>
+                <div class="col-md-4" id="display-or">
+                    <strong>OR</strong>
+                </div>
             </div>
         </div>
-    </form>
+        <div class="col-md-4">
+            <form asp-controller="Movie" asp-action="WebSearch" method="post">
+                <div class="input-group search-input">
+                    <input type="text" class="form-control" name="query" placeholder="Try Another Search" />
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 

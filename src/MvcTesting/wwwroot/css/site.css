@@ -235,7 +235,17 @@ textarea {
     display:block;
 }
 
-.search-box{
+.search-box {
     padding-right:60px;
     padding-left:0;
+}
+
+#display-or {
+    text-align:center;
+    padding-top:10px;
+}
+
+.search-results-poster {
+    width:54px;
+    height:auto;
 }
