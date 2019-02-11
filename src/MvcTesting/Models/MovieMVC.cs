@@ -18,11 +18,26 @@ namespace MvcTesting.Models
 
         public string PosterUrl { get; set; }
 
+        public string TrailerUrl { get; set; }
+
+        public string Overview { get; set; }
+
+        public List<string> CastMembers { get; set; } = new List<string>();
+
+        public int? RunTime { get; set; }
+
+        public List<string> Genres { get; set; } = new List<string>();
+
         public MovieMVC() { }
 
         public MovieMVC(Movie movie)
         {
             ConvertFromMovie(movie);
+        }
+
+        public MovieMVC(Movie movie, List<string> genres) : this(movie)
+        {
+            UpdateGenres(movie, genres);
         }
 
         public void UpdatePosterPath(Movie movie)
@@ -36,6 +51,32 @@ namespace MvcTesting.Models
                     PosterUrl = GlobalVariables.DefaultPoster;
                 }
         }
+
+        public void UpdateTrailerPath(Movie movie)
+        {
+            var videos = movie.Videos.Results;
+            // If there are videos associated with the movie by tmdb.org
+            // the key for the last one listed as type 'Trailer' is added
+            // to the youtube address to get the URL for the trailer.
+            if (videos.Count > 0)
+            {
+                string key = videos[0].Key;
+
+                // Find the last results of type of "Trailer" to get the best choice.
+                for (int i = videos.Count - 1; i >= 0; i--)
+                {
+
+                    if (videos[i].Type == "Trailer")
+                    {
+                        key = videos[i].Key;
+                        break;
+                    }
+                }
+
+                TrailerUrl = GlobalVariables.BaseTrailerPath + key;
+            }
+        }
+    
 
         public void UpdateReleaseDate(Movie movie)
         {
@@ -61,6 +102,14 @@ namespace MvcTesting.Models
             }
         }
 
+        public void UpdateCastMembers(Movie movie)
+        {
+            for (int i = 0; i < movie.Credits.Cast.Count && i <= 8; i++)
+            {
+                CastMembers.Add(movie.Credits.Cast[i].Name);
+            }
+        }
+
         public void ConvertFromMovie(Movie movie)
         {
             Id = movie.Id;
@@ -68,6 +117,28 @@ namespace MvcTesting.Models
             UpdatePosterPath(movie);
             UpdateReleaseDate(movie);
             UpdateDirectors(movie);
+            UpdateTrailerPath(movie);
+            RunTime = movie.Runtime;
+            Overview = movie.Overview;
+            UpdateCastMembers(movie);
+        }
+
+        public void UpdateGenres(Movie movie, List<string> genres)
+        {
+            foreach (var genre in movie.Genres)
+            {
+                if (genres.Contains(genre.Name))
+                {
+                    Genres.Add(genre.Name);
+                }
+                // TODO - Change db Genre to match TMDB
+                if (genre.Name == "Science Fiction")
+                {
+                    Genres.Add("Sci-Fi");
+                }
+            }
         }
     }
+
+   
 }

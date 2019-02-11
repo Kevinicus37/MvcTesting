@@ -95,7 +95,6 @@ namespace MvcTesting.ViewModels
         {
             SetRatings();
         }
-
         
         public AddMovieViewModel(IEnumerable<MediaFormat> mediaFormats, IEnumerable<AudioFormat> audioFormats, Movie movie)
         {
@@ -155,7 +154,8 @@ namespace MvcTesting.ViewModels
 
         public void SetGenres(MovieCollectorContext _context, Movie movie)
         {
-            //Add selected genres from tmdb.org
+            // TODO - Remove usage of dbContext in the view model
+            // Add selected genres from tmdb.org
             foreach (var genre in movie.Genres)
             {
                 if (genre.Name == "Science Fiction")

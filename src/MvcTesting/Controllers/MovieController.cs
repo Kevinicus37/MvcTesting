@@ -170,9 +170,17 @@ namespace MvcTesting.Controllers
             // TODO - Create ViewModel to help display movie.
 
             // This displays a closer look at an individual movie when it is selected.
-            Movie movie = GetTMDbMovieInfo(Id);
-            if (movie != null)
+            Movie searchedMovie = GetTMDbMovieInfo(Id);
+            if (searchedMovie != null)
             {
+                List<string> genres = new List<string>();
+                foreach (var genre in _context.Genres.ToList())
+                {
+                    genres.Add(genre.Name);
+                }
+
+                MovieMVC movie = new MovieMVC(searchedMovie, genres);
+                
                 return View(movie);
             }
             return RedirectToAction("Index");
@@ -185,7 +193,7 @@ namespace MvcTesting.Controllers
             // to generate selection options.
             List<MediaFormat> mediaFormats = _context.MediaFormats.ToList();
             List<AudioFormat> audioFormats = _context.AudioFormats.ToList();
-
+            
             Movie movie = null;
 
             // If id has a value, then try to get a movie object from TMDb (Null if not found).

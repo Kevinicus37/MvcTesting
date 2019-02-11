@@ -22,7 +22,7 @@ namespace MvcTesting.ViewModels
 
         public List<string> CastMembers { get; set; } = new List<string>();
 
-        public string RunTime { get; set; }
+        public int? RunTime { get; set; }
 
         public List<FilmGenre> Genres { get; set; } = new List<FilmGenre>();
 
@@ -34,14 +34,14 @@ namespace MvcTesting.ViewModels
 
         public string AudioFormat { get; set; }
 
-        public string PosterUrl { get; set; } = "/images/filmposterdefault.jpg";
+        public string PosterUrl { get; set; } = GlobalVariables.DefaultProfilePicture;
 
         public ViewMovieViewModel(Film film, List<FilmGenre> genres)
         {
             Film = film;
 
             Directors = film.Directors;
-            RunTime = film.Runtime.ToString();
+            RunTime = film.Runtime;
             Comments = film.Comments;
             MediaFormat = film.Media.Name;
             AudioFormat = film.Audio.Name;
