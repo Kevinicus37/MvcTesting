@@ -3,72 +3,73 @@
     ViewData["Title"] = "Manage your account";
 }
     
-<h2>@ViewData["Title"].</h2>
-<p class="text-success">@ViewData["StatusMessage"]</p>
+<div class="row">
+    <h2>@ViewData["Title"].</h2>
+    <p class="text-success">@ViewData["StatusMessage"]</p>
+</div>
     
-        
-<div>
-    <div class="row">
-        <div class="col-md-6">
-            <h4>Change your account settings</h4>
-        </div>
-        <div class="col-md-6">
-            Your account is currently @(Model.IsPrivate ? "Private" : "Public").
-            <a asp-controller="Manage" asp-action="ChangePrivacy" class="btn btn-primary">Make @(Model.IsPrivate ? "Public" : "Private")</a>
+<div class="row">
+    <div class="col-md-6">
+        <h4>Change your account settings</h4>
+    </div>
+    <div class="col-md-6">
+        Your account is currently @(Model.IsPrivate ? "Private" : "Public").
+        <a asp-controller="Manage" asp-action="ChangePrivacy" class="btn btn-primary">Make @(Model.IsPrivate ? "Public" : "Private")</a>
+    </div>
+</div>
+<hr />
+<div class="form-horizontal">
+    <div class="row form-group">
+        <label for="HasPassword" class="col-sm-2">Password:</label>
+        <div class="col-sm-10">
+            @if (Model.HasPassword)
+            {
+                <a asp-controller="Manage" asp-action="ChangePassword" class="btn-bracketed">Change</a>
+            }
+            else
+            {
+                <a asp-controller="Manage" asp-action="SetPassword" class="btn-bracketed">Create</a>
+            }
         </div>
     </div>
-
-    <hr />
-    <div class="form-horizontal">
-        <div class="row form-group">
-            <label for="HasPassword" class="col-sm-2">Password:</label>
-            <div class="col-sm-10">
-                @if (Model.HasPassword)
-                {
-                    <a asp-controller="Manage" asp-action="ChangePassword" class="btn-bracketed">Change</a>
-                }
-                else
-                {
-                    <a asp-controller="Manage" asp-action="SetPassword" class="btn-bracketed">Create</a>
-                }
-            </div>
+    <div class="row form-group">
+        <label for="ExternalLogins" class="col-sm-2">External Logins(@Model.Logins.Count):</label>
+        <div class="col-sm-10">
+            <a asp-controller="Manage" asp-action="ManageLogins" class="btn-bracketed">Manage</a>
         </div>
-        <div class="row form-group">
-            <label for="ExternalLogins" class="col-sm-2">External Logins(@Model.Logins.Count):</label>
-            <div class="col-sm-10">
-                <a asp-controller="Manage" asp-action="ManageLogins" class="btn-bracketed">Manage</a>        
-            </div>
-        </div>
-        <div class="row form-group">
-            <label for="ProfilePicture" class="col-sm-2">Profile Picture:</label>
-            <div class="col-sm-10">
+    </div>
+    <div class="row form-group">
+        <label for="ProfilePicture" class="col-sm-2">Profile Picture:</label>
+        <div class="col-sm-10">
+            <div class="row shift-up">
                 <form asp-controller="Manage" asp-action="EditProfilePicture" enctype="multipart/form-data">
+
                     @if (!string.IsNullOrEmpty(Model.User.ProfilePicture))
                     {
-                        <div class="form-group">
-                            <label for="ProfilePicture"></label>
-                            <div class="col-md-12">
-                                <img src="~/images/@Model.User.UserName/@Model.User.ProfilePicture" class="profilePicture form-control" />
-                                <input type="hidden" asp-for="ProfilePicture" class="form-control" />
-                            </div>
+                        <div class="col-sm-3">
+                            @*<div class="form-group">*@
+                                <label for="ProfilePicture"></label>
+                                <img src="~/images/@Model.User.UserName/@Model.User.ProfilePicture" id="profile-picture" class="profilePicture" />
+                                <input type="hidden" asp-for="ProfilePicture" />
+                            @*</div>*@
                         </div>
-
                     }
-                    
-                    <div class="form-group">
-                        <label class="control-label"></label>
-                        <div class="col-md-12">
-                            <input type="file" name="ProfilePictureFile" class="form-control" />
+                    <div class="col-sm-9 column-top">
+                        <div class="row">
+                            <input type="file" name="ProfilePictureFile" class="form-control profile-picture-input" />
                             <span asp-validation-for="ProfilePicture" class="text-danger"></span>
                         </div>
+                        <div class="row">
+                            <button class="btn btn-primary " type="submit">Save Profile Picture</button>
+                        </div>
                     </div>
-                    <button class="btn btn-primary " type="submit">Save Profile Picture</button>
                 </form>
             </div>
         </div>
-        
-            
-        
-        
     </div>
 </div>
+
+
+        
+    
+

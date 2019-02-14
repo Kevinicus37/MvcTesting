@@ -120,21 +120,21 @@ textarea {
     color:ghostwhite;
 }
 
-.film-stats ul{
+.film-stats ul {
     padding-left:20px;
 }
 
-.carousel-poster{
+.carousel-poster {
     height: 450px;
     border-radius:30px;
 }
 
-.carousel-poster > .carousel-inner > .item img{
+.carousel-poster > .carousel-inner > .item img {
     height: 450px;
     width: auto;
 }
 
-.carousel-poster .left, .right{
+.carousel-poster .left, .right {
     border-radius:30px;
 }
 
@@ -147,25 +147,25 @@ textarea {
     padding-top:30px;
 }
 
-.main-index-list hr{
+.main-index-list hr {
     border-top:2px solid white;
 }
 
-.movie-index-background{
+.movie-index-background {
     background-color:black;
 }
 
-.movie-index-left-background{
+.movie-index-left-background {
     background-color:#272b30;
     padding-right:30px;
 }
 
-.movie-index-left-background .jumbotron{
+.movie-index-left-background .jumbotron {
     background-color:darkslategray;
     color:white;
 }
 
-.filter-link{
+.filter-link {
     background-color:black;
     border:0;
     padding-left:0;
@@ -176,7 +176,7 @@ textarea {
     margin-top:20px;
 }
 
-.film-stats > .row button, p{
+.film-stats > .row button, p {
     padding-left:10px;
 }
 
@@ -217,7 +217,7 @@ textarea {
     margin-top:20px;
 }
 
-#site-description-jumbo a{
+#site-description-jumbo a {
     color:dodgerblue;
     text-decoration:underline;
     font-weight:bolder;
@@ -254,4 +254,23 @@ textarea {
 .search-results-poster {
     width:54px;
     height:auto;
+}
+
+.column-top {
+    padding-top:10px;
+}
+
+#profile-picture {
+    padding:0;
+    max-width:100%;
+}
+
+.profile-picture-input {
+    margin-top:15px;
+    margin-bottom:15px;
+    max-width:300px;
+}
+
+.shift-up {
+    margin-top: -15px;
 }
