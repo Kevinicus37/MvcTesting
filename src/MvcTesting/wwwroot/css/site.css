@@ -251,9 +251,25 @@ textarea {
     padding-top:10px;
 }
 
+.search-results {
+    color:white;
+}
+
+.table.search-results > tbody > tr > td {
+    border-bottom: solid 1px #1c1e22;
+    vertical-align:middle;
+}
 .search-results-poster {
+    border-left: solid 1px #1c1e22;
+}
+
+.search-results-poster img {
     width:54px;
     height:auto;
+}
+
+.search-results-button {
+    border-right: solid 1px #1c1e22;
 }
 
 .column-top {

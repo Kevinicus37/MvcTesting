@@ -64,12 +64,12 @@ namespace MvcTesting.Controllers
             return View(movieIndexViewModel);
         }
 
-        public IActionResult WebSearch()
-        {
-            // Displays view allowing a user to search for a movie (using TMDb) to add to their collection.
+        //public IActionResult WebSearch()
+        //{
+        //    // Displays view allowing a user to search for a movie (using TMDb) to add to their collection.
 
-            return View();
-        }
+        //    return View();
+        //}
 
         [HttpPost]
         public IActionResult WebSearch(string query, int page)

@@ -11,6 +11,7 @@ namespace MvcTesting.ViewModels
         public int CurrentPage { get; set; }
         public int LastPage { get; set; }
         public string Query { get; set; }
+        public string DefaultPosterPath { get; set; } = GlobalVariables.DefaultPoster;
 
         public SearchViewModel() { }
 
