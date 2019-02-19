@@ -131,7 +131,7 @@ namespace MvcTesting.Models
                 {
                     Genres.Add(genre.Name);
                 }
-                // TODO - Change db Genre to match TMDB
+
                 if (genre.Name == "Science Fiction")
                 {
                     Genres.Add("Sci-Fi");

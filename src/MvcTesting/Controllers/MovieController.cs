@@ -82,7 +82,7 @@ namespace MvcTesting.Controllers
             List<Movie> movies = new List<Movie>();
             
             // This is the request to the TMDb API.  It returns a container of movies.
-            // Null is returned if the site cannot be reached and there is an exception.
+            // Null is returned if the site cannot be reached and/or there is an exception.
             SearchContainer<SearchMovie> results = TMDbSearch(client, query, page);
             
             // Credits, Video, and Image information is pulled for each movie in the search results.
@@ -235,18 +235,17 @@ namespace MvcTesting.Controllers
         [AllowAnonymous]
         public IActionResult ViewMovie(int id)
         {
-            // TODO - Check if this maintains privacy settings.
-
             // Finds and displays a Film based on the ID.  If no Film is found with a matching ID,
             // the User is returned to the Index action.
             Film film = _context.Films.Include(f => f.Media).Include(f => f.Audio).SingleOrDefault(f => f.ID == id);
-            if (film != null)
+
+            if (film != null && IsFilmViewable(film))
             {
-                
+
+                ApplicationUser user = _context.Users.Where(u => u.Id == film.UserID).Include(u => u.Films).FirstOrDefault();
                 List<FilmGenre> genres = _context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
                 ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
 
-                ApplicationUser user = _context.Users.Where(u => u.Id == film.UserID).Include(u=> u.Films).FirstOrDefault();
                 if (user != null)
                 {
                     viewMovieViewModel.FilmOwnerName = user.UserName;
@@ -254,7 +253,7 @@ namespace MvcTesting.Controllers
 
                     if (!string.IsNullOrEmpty(user.ProfilePicture))
                     {
-                        viewMovieViewModel.OwnerProfilePicture = $"/images/{user.UserName}/{user.ProfilePicture}";
+                        viewMovieViewModel.OwnerProfilePicture = $"{GlobalVariables.ImagesBasePath}{user.UserName}/{user.ProfilePicture}";
                     }
                 }
 
@@ -568,5 +567,28 @@ namespace MvcTesting.Controllers
                 return null;
             }
         }
+
+        [NonAction]
+        private bool IsFilmViewable(Film film)
+        {
+            if (!film.IsPrivate && !film.User.IsPrivate)
+            {
+                return true;
+            }
+            else if (_userManager.GetUserId(User) == film.UserID)
+            {
+                return true;
+            }
+            else if (User.IsInRole("Admin"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
+
+
 }
