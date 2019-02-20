@@ -237,23 +237,27 @@ namespace MvcTesting.Controllers
         {
             // Finds and displays a Film based on the ID.  If no Film is found with a matching ID,
             // the User is returned to the Index action.
-            Film film = _context.Films.Include(f => f.Media).Include(f => f.Audio).SingleOrDefault(f => f.ID == id);
+            Film film = _context.Films.Include(f => f.Media)
+                .Include(f => f.Audio)
+                .Include(f => f.User)
+                .ThenInclude(u => u.Films)
+                .SingleOrDefault(f => f.ID == id);
 
             if (film != null && IsFilmViewable(film))
             {
 
-                ApplicationUser user = _context.Users.Where(u => u.Id == film.UserID).Include(u => u.Films).FirstOrDefault();
+                //ApplicationUser user = _context.Users.Where(u => u.Id == film.UserID).Include(u => u.Films).FirstOrDefault();
                 List<FilmGenre> genres = _context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
                 ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
 
-                if (user != null)
+                if (film.User != null)
                 {
-                    viewMovieViewModel.FilmOwnerName = user.UserName;
-                    viewMovieViewModel.OwnerCollectionSize = user.Films.Count;
+                    viewMovieViewModel.FilmOwnerName = film.User.UserName;
+                    viewMovieViewModel.OwnerCollectionSize = film.User.Films.Count;
 
-                    if (!string.IsNullOrEmpty(user.ProfilePicture))
+                    if (!string.IsNullOrEmpty(film.User.ProfilePicture))
                     {
-                        viewMovieViewModel.OwnerProfilePicture = $"{GlobalVariables.ImagesBasePath}{user.UserName}/{user.ProfilePicture}";
+                        viewMovieViewModel.OwnerProfilePicture = $"{GlobalVariables.ImagesBasePath}{film.User.UserName}/{film.User.ProfilePicture}";
                     }
                 }
 
@@ -419,6 +423,7 @@ namespace MvcTesting.Controllers
 
         // Additional Helper Functions
 
+        [NonAction]
         private async Task<int> UpdateMovieAsync(AddMovieViewModel viewModel, Film film)
         {
             // UpdateMovie transfers data from viewModel to the Film object.  The created
@@ -571,7 +576,7 @@ namespace MvcTesting.Controllers
         [NonAction]
         private bool IsFilmViewable(Film film)
         {
-            if (!film.IsPrivate && !film.User.IsPrivate)
+            if (!film.IsPrivate && film.User != null && !film.User.IsPrivate)
             {
                 return true;
             }
