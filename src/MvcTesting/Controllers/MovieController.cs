@@ -166,23 +166,17 @@ namespace MvcTesting.Controllers
 
         public IActionResult ViewSearchedMovie(int Id)
         {
-            // TODO - Update View
-            // TODO - Create ViewModel to help display movie.
-
             // This displays a closer look at an individual movie when it is selected.
             Movie searchedMovie = GetTMDbMovieInfo(Id);
+            
             if (searchedMovie != null)
             {
-                List<string> genres = new List<string>();
-                foreach (var genre in _context.Genres.ToList())
-                {
-                    genres.Add(genre.Name);
-                }
-
-                MovieMVC movie = new MovieMVC(searchedMovie, genres);
+                Film film = searchedMovie.ConvertToFilm(_context.Genres.ToList());
+                ViewMovieViewModel vm = new ViewMovieViewModel(film, film.FilmGenres);
                 
-                return View(movie);
+                return View(vm);
             }
+
             return RedirectToAction("Index");
         }
 
@@ -245,10 +239,8 @@ namespace MvcTesting.Controllers
 
             if (film != null && IsFilmViewable(film))
             {
-
-                //ApplicationUser user = _context.Users.Where(u => u.Id == film.UserID).Include(u => u.Films).FirstOrDefault();
-                List<FilmGenre> genres = _context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
-                ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, genres);
+                List<FilmGenre> filmGenres = _context.FilmGenres.Include(g => g.Genre).Where(f => f.FilmID == id).ToList();
+                ViewMovieViewModel viewMovieViewModel = new ViewMovieViewModel(film, filmGenres);
 
                 if (film.User != null)
                 {
@@ -264,14 +256,12 @@ namespace MvcTesting.Controllers
                 return View(viewMovieViewModel);
             }
             return RedirectToAction("Index");
-            
-
         }
 
         public IActionResult Remove()
         {
             // Display a list of films in the current User's collection that can be removed.
-            // I might want to create a ViewModel instead of passing the List directly to the View.
+            // TODO: I might want to create a ViewModel instead of passing the List directly to the View.
             List<Film> films = _context.Films.OrderBy(f=>f.Name).OrderBy(f=>f.Year).Where(f => f.UserID== _userManager.GetUserId(User)).ToList();
             return View(films);
         }

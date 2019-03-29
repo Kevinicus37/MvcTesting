@@ -131,11 +131,6 @@ namespace MvcTesting.Models
                 {
                     Genres.Add(genre.Name);
                 }
-
-                if (genre.Name == "Science Fiction")
-                {
-                    Genres.Add("Sci-Fi");
-                }
             }
         }
     }

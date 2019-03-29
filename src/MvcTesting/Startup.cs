@@ -102,8 +102,11 @@ namespace MvcTesting
                 AppSecret = Configuration["Authentication:Facebook:AppSecret"]
             });
 
+            
+
             app.UseMvc(routes =>
             {
+                
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Movie}/{action=Index}/{id?}");

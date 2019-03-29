@@ -1,6 +1,5 @@
 ﻿<form class="form-horizontal" asp-antiforgery="true">
     <fieldset>
-
         @if (!@ViewData.ModelState.IsValid)
         {
             var errors = ViewData.ModelState.Values.Select(item => item.Errors.FirstOrDefault()?.ErrorMessage).Where(item => item != null);
@@ -14,7 +13,5 @@
                 </ul>
             </div>
         }
-
-
     </fieldset>
 </form>

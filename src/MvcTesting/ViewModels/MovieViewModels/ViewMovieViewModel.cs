@@ -43,10 +43,21 @@ namespace MvcTesting.ViewModels
             Directors = film.Directors;
             RunTime = film.Runtime;
             Comments = film.Comments;
-            MediaFormat = film.Media.Name;
-            AudioFormat = film.Audio.Name;
-            FilmOwnerId = film.UserID;
-                
+            if (film.Media!= null)
+            {
+                MediaFormat = film.Media.Name;
+            }
+
+            if (film.Audio != null)
+            {
+                AudioFormat = film.Audio.Name; 
+            }
+
+            if (string.IsNullOrEmpty(film.UserID))
+            {
+                FilmOwnerId = film.UserID;
+            }
+
             if (!string.IsNullOrEmpty(film.Cast))
             {
                 CastMembers = film.Cast.Split(',').ToList();

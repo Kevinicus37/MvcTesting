@@ -1,0 +1,10 @@
+﻿@model ViewMovieViewModel
+
+@if (Model.Film.UserID == UserManager.GetUserId(User) || User.IsInRole("Admin"))
+{
+    <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
+}
+@if (User.Identity.IsAuthenticated)
+{
+    <a class="btn btn-primary" asp-controller="Movie" asp-action="Copy" asp-route-id="@Model.Film.ID">Copy this Movie</a>
+}

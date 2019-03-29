@@ -1,6 +1,6 @@
-﻿@model List<MvcTesting.Models.Film>
+﻿@model List<Film>
 
-<h1>Films</h1>
+<h1>Remove Films</h1>
 <hr />
 
 <h3>Check all movies you wish to remove from your collection.</h3>
@@ -8,7 +8,6 @@
 @if (Model.Count == 0)
 {
     <p>No films yet!</p>
-
 }
 
 <form class="form-group" asp-controller="Movie" asp-action="Remove" method="post">
@@ -16,10 +15,10 @@
 {
     
     <input type="checkbox" name="filmIds" value="@film.ID" />
-    <label for="@film.Name"><a asp-controller="Movie" 
-                               asp-action="ViewMovie" 
-                               asp-route-id="@film.ID">
-                               @film.Name @(film.Year != null ? "("+film.Year+")" : "")</a>
+    <label for="@film.Name">
+        <a asp-controller="Movie" asp-action="ViewMovie" asp-route-id="@film.ID">
+            @film.Name @(film.Year != null ? "("+film.Year+")" : "")
+        </a>
     </label>
     <br />
 }

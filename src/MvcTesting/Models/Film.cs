@@ -60,7 +60,7 @@ namespace MvcTesting.Models
         public bool Has3D { get; set; }
 
         // Genres the film belongs to - FilmGenre is a database for a many-to-many relationship.
-        public IList<FilmGenre> FilmGenres { get; set; }
+        public List<FilmGenre> FilmGenres { get; set; } = new List<FilmGenre>();
 
         // When film was created or last updated.  Whichever is most recent.
         public DateTime Updated { get; set; }

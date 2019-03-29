@@ -1,0 +1,59 @@
+﻿@model ViewMovieViewModel
+
+<div class="col-md-10 main-film-top-margin">
+    <div class="row">
+        <div class="col-md-4 poster">
+            <div class="center-block">
+                <img src="@Model.PosterUrl" class="img-responsive" />
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="row main-film-info margin-right-offset" style="border-bottom:3px groove gray">
+                <h1>
+                    <span style="color: ghostwhite;">@Model.Film.Name</span><small> @Model.DisplayYear</small>
+                    @if (Model.Film.ID > 0)
+                    {
+                        Html.Partial("_FilmOptionsPartial");
+                    }
+                </h1>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Film.Overview))
+            {
+                <div class="row main-film-info">
+                    <h2>Synopsis</h2>
+                    @Model.Film.Overview
+                    <br />
+                </div>
+            }
+            @if (Model.CastMembers.Count > 0)
+            {
+                <div class="row main-film-info">
+                    <h2>Top Cast Members</h2>
+                </div>
+                <div class="row">
+                    @foreach (var castMember in Model.CastMembers)
+                    {
+                        <div class="col-md-4 cast-display">
+                            @castMember
+                        </div>
+                    }
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Comments))
+            {
+                <div class="row main-film-info">
+                    <h2>Comments from @Model.FilmOwnerName</h2>
+                    <p>@Model.Comments</p>
+                </div>
+            }
+        </div>
+    </div>
+    <br />
+    @if (!string.IsNullOrEmpty(Model.Film.TrailerUrl))
+    {
+        <div class="row embed-responsive embed-responsive-16by9 margin-right-offset">
+            <iframe class="embed-responsive-item" src="@Model.Film.TrailerUrl" frameborder="0" allowfullscreen></iframe>
+        </div>
+    }
+</div>

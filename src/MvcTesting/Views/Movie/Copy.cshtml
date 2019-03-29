@@ -1,5 +1,4 @@
-﻿@model MvcTesting.ViewModels.EditMovieViewModel
-@using System.Text;
+﻿@model EditMovieViewModel
 
 <h1>Edit Movie</h1>
 
@@ -7,7 +6,6 @@
 
 <form class="form-group" asp-controller="Movie" asp-action="Copy" method="post">
     @Html.Partial("_MovieDataEntryPartial")
-    @*<input type="hidden" asp-for="ID" />*@
     <br />
     <input class="btn btn-primary" type="submit" value="Save Movie" />
 </form>

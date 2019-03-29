@@ -2,6 +2,8 @@
 @using MvcTesting.Models
 @using MvcTesting.Models.AccountViewModels
 @using MvcTesting.Models.ManageViewModels
+@using MvcTesting.ViewModels
 @using Microsoft.AspNetCore.Identity
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @inject Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration TelemetryConfiguration
+@inject UserManager<ApplicationUser> UserManager
