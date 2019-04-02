@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using MvcTesting.ViewModels.MovieViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MvcTesting.Services;
 //using MvcTesting.Data;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
@@ -24,19 +25,23 @@ namespace MvcTesting.Controllers
     public class MovieController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private MovieCollectorContext _context;
+        private readonly MovieCollectorContext _context;
+        private readonly FilmServices _filmServices;
+        private readonly UserServices _userServices;
                 
         TMDbClient client;
 
-        public MovieController(MovieCollectorContext dbContext,  UserManager<ApplicationUser> userManager)
+        public MovieController(MovieCollectorContext dbContext,  UserManager<ApplicationUser> userManager,
+            FilmServices filmServices, UserServices userServices)
         {
             // Initialize items to be used throughout the controller
-
-            
             _userManager = userManager;
             _context = dbContext;
+            _filmServices = filmServices;
+            _userServices = userServices;
             
             // This is the client that is used to work with the TMDb.org API
+            // TODO: Store the TMDB ID elsewhere.
             client = new TMDbClient("9950b6bfd3eef8b5c9b7343ead080098");
         }
 
@@ -46,30 +51,16 @@ namespace MvcTesting.Controllers
         {
             // Gets a list of all films in order of Name, and then by Year and displays it in the view.
 
-            List<Film> films = _context.Films.Include(f=>f.User).OrderBy(f => f.Name)
-                .Where(f => (!f.IsPrivate && !f.User.IsPrivate) || f.UserID == _userManager.GetUserId(User) || User.IsInRole("Admin"))
-                .OrderByDescending(f => f.Updated)
-                .ToList();
+            List<Film> films = _filmServices.GetAllPublicFilmsWithUser(User);
 
             MovieIndexViewModel movieIndexViewModel = new MovieIndexViewModel(films);
 
-            List<ApplicationUser> users = _context.Users.Include(u => u.Films).Where(u => u.IsPrivate == false)
-                .Where(u => u.Films.Count > 0)
-                .OrderByDescending(u => u.Films.Count)
-                .Take(15)
-                .ToList();
+            List<ApplicationUser> users = _userServices.TakeUsers(15);
 
             movieIndexViewModel.Users = users;
 
             return View(movieIndexViewModel);
         }
-
-        //public IActionResult WebSearch()
-        //{
-        //    // Displays view allowing a user to search for a movie (using TMDb) to add to their collection.
-
-        //    return View();
-        //}
 
         [HttpPost]
         public IActionResult WebSearch(string query, int page)
@@ -134,18 +125,12 @@ namespace MvcTesting.Controllers
         {
             // TODO - Show what filters have been applied.
             List<Film> films = new List<Film>();
-            
+
             // TODO - Create a WhereIf() extension method.
             // Gets films matching the search value and filter (if selected).
-            films = _context.Films
-                .Include(f => f.Audio)
-                .Include(f => f.Media)
-                .Include(f => f.FilmGenres).ThenInclude(fg => fg.Genre)
-                .Include(f=>f.User)
-                .ToList();
+            films = _filmServices.GetAllPublicCompleteFilms(User);
                     
             films=films.Where(f=> string.IsNullOrEmpty(vm.SearchValue) || f.Name.ToLower().Contains(vm.SearchValue.ToLower()))
-                .Where(f => (!f.IsPrivate && !f.User.IsPrivate) || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User))
                 .Where(f => string.IsNullOrEmpty(vm.AudioFilter) || f.Audio.Name == vm.AudioFilter)
                 .Where(f => string.IsNullOrEmpty(vm.MediaFilter) || f.Media.Name == vm.MediaFilter)
                 .Where(f => string.IsNullOrEmpty(vm.GenreFilter) || f.FilmGenres.Any(fg => fg.Genre != null && fg.Genre.Name == vm.GenreFilter))
@@ -171,6 +156,7 @@ namespace MvcTesting.Controllers
             
             if (searchedMovie != null)
             {
+                // TODO: Should converter use extension methods?
                 Film film = searchedMovie.ConvertToFilm(_context.Genres.ToList());
                 ViewMovieViewModel vm = new ViewMovieViewModel(film, film.FilmGenres);
                 
@@ -201,7 +187,7 @@ namespace MvcTesting.Controllers
             addMovieViewModel.AvailableGenres = _context.Genres
                 .Select(x => new SelectListItem { Value = x.ID.ToString(), Text = x.Name, Selected = addMovieViewModel.Genres.Contains(x.ID.ToString())})
                 .ToList();
-            
+
             return View(addMovieViewModel);
         }
 

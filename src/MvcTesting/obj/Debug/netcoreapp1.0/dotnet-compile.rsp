@@ -234,6 +234,7 @@
 --reference:C:\Users\Kevinicus\.nuget\packages\System.Xml.XDocument\4.3.0\ref\netstandard1.3\System.Xml.XDocument.dll
 --reference:C:\Users\Kevinicus\.nuget\packages\TMDbLib\1.0.5-alpha\lib\netstandard1.0\TMDbLib.dll
 --resource:"C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\obj\Debug\netcoreapp1.0\MvcTestingdotnet-compile.deps.json",MvcTesting.deps.json
+C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Extensions.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\GlobalVariables.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Program.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Startup.cs
@@ -284,9 +285,11 @@ C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\MovieC
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\MovieConverter.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\MovieMVC.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\UserRoleSeed.cs
+C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Services\FilmServices.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Services\IEmailSender.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Services\ISmsSender.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Services\MessageServices.cs
+C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Services\UserServices.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\SearchAndDisplayViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\SearchViewModel.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\ViewModels\AccountViewModels\ExternalLoginConfirmationViewModel.cs

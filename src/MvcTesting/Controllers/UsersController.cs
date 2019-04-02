@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using MvcTesting.Services;
 
 namespace MvcTesting.Controllers
 {
@@ -19,12 +20,17 @@ namespace MvcTesting.Controllers
         private readonly MovieCollectorContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserServices _userServices;
 
-        public UsersController(MovieCollectorContext dbContext, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UsersController(MovieCollectorContext dbContext, 
+            UserManager<ApplicationUser> userManager, 
+            RoleManager<IdentityRole> roleManager,
+            UserServices userServices)
         {
             _context = dbContext;
             _userManager = userManager;
             _roleManager = roleManager;
+            _userServices = userServices;
         }
 
         [AllowAnonymous]
@@ -35,7 +41,7 @@ namespace MvcTesting.Controllers
             // or descending order based on the value of the descending variable.
             int perPage = 20;
             int skip = (page - 1) * perPage;
-            List<ApplicationUser> users = GetUsers();
+            List<ApplicationUser> users = _userServices.GetAllPublicUsers(User);
             int lastPage = users.Count / perPage;
             if (users.Count % perPage > 0) { lastPage++; }
             users = users.Skip(skip).Take(perPage).ToList();
@@ -92,7 +98,7 @@ namespace MvcTesting.Controllers
                 return RedirectToAction("Index");
             }
 
-            films = GetUserFilms(user).ToList();
+            films = _userServices.GetUserFilms(user, User).ToList();
             DisplayUserViewModel vm = new DisplayUserViewModel(films, user.UserName);
             vm.Genres = _context.Genres.ToList();
             vm.MediaFormats = _context.MediaFormats.ToList();
@@ -125,7 +131,7 @@ namespace MvcTesting.Controllers
 
             List<Film> films = new List<Film>();
 
-            films = GetUserFilms(user).Include(f => f.FilmGenres).ToList();
+            films = _userServices.GetUserFilms(user, User).Include(f => f.FilmGenres).ThenInclude(fg => fg.Genre).ToList();
             films = films
                 .Where(f => string.IsNullOrEmpty(vm.AudioFilter) || f.Audio.Name == vm.AudioFilter)
                 .Where(f => string.IsNullOrEmpty(vm.MediaFilter) || f.Media.Name == vm.MediaFilter)
@@ -133,15 +139,19 @@ namespace MvcTesting.Controllers
                 .Where(f => string.IsNullOrEmpty(vm.SearchValue) || f.Name.ToLower().Contains(vm.SearchValue.ToLower()))
                 .ToList();
 
-            //if (!string.IsNullOrEmpty(vm.SearchValue))
-            //{
-            //    films = films.Where(f => f.Name.ToLower().Contains(vm.SearchValue.ToLower())).ToList();
-            //}
-
-            vm.Films = FilmSortingHelpers.SortByValue(films, vm.SortValue);
+            vm.Films = films.SortByValue(vm.SortValue);
             vm.Genres = _context.Genres.ToList();
             vm.MediaFormats = _context.MediaFormats.ToList();
             vm.AudioFormats = _context.AudioFormats.ToList();
+
+            if (!string.IsNullOrEmpty(user.ProfilePicture))
+            {
+                vm.ProfilePicturePath = GlobalVariables.ImagesBasePath + user.UserName + "/" + user.ProfilePicture;
+            }
+            else
+            {
+                vm.ProfilePicturePath = GlobalVariables.DefaultProfilePicture;
+            }
 
             return View(vm);
         }
@@ -150,30 +160,29 @@ namespace MvcTesting.Controllers
         public async Task<IActionResult> AddRole(string id)
         {
             // Find the User by id and seed the ViewModel
-            ApplicationUser user = await GetUserById(id);
+            ApplicationUser user = await _userServices.GetUserByIdAsync(id);
             if (user != null)
             {
                 var vm = new UsersAddRoleViewModel
                 {
                     UserID = id,
-                    Roles = GetAllRoles(),
+                    Roles = _userServices.GetAllRoles(),
                     Username = user.UserName
 
                 };
 
                 return View(vm);
-
             }
             return RedirectToAction("ViewRoles");
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddRole(UsersAddRoleViewModel rvm)
+        public async Task<IActionResult> AddRole(UsersAddRoleViewModel vm)
         {
             // Allows an Admin to add a Role to another User.  
 
             // Get the user to add a Role to from the ViewModel
-            ApplicationUser user = await GetUserById(rvm.UserID);
+            ApplicationUser user = await _userServices.GetUserByIdAsync(vm.UserID);
 
             // If VM is valid, try to add user to Role.  If successful Redirect to
             // the ViewRoles action.  Otherwise, return to the view with the VM and
@@ -181,7 +190,7 @@ namespace MvcTesting.Controllers
             if (ModelState.IsValid)
             {
                 
-                var result = await _userManager.AddToRoleAsync(user, rvm.NewRole);
+                var result = await _userManager.AddToRoleAsync(user, vm.NewRole);
                 if (result.Succeeded)
                 {
                     return RedirectToAction("ViewRoles");
@@ -192,16 +201,16 @@ namespace MvcTesting.Controllers
                 }
                 
             }
-            rvm.Username = user.UserName;
-            rvm.Roles = GetAllRoles();
-            return View(rvm);
+            vm.Username = user.UserName;
+            vm.Roles = _userServices.GetAllRoles();
+            return View(vm);
         }
 
         [HttpGet]
         public async Task<IActionResult> RemoveRole(string id)
         {
             // Find the User by id and seed the ViewModel
-            ApplicationUser user = await GetUserById(id);
+            ApplicationUser user = await _userServices.GetUserByIdAsync(id);
             if (user != null)
             {
                 IList<string> roles = await _userManager.GetRolesAsync(user);
@@ -221,19 +230,19 @@ namespace MvcTesting.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemoveRole(UsersRemoveRoleViewModel rvm)
+        public async Task<IActionResult> RemoveRole(UsersRemoveRoleViewModel vm)
         {
             // Allows an Admin to Remove a Role from another User.  
 
             // Get the user to add a Role to from the ViewModel
-            ApplicationUser user = await GetUserById(rvm.UserID);
+            ApplicationUser user = await _userServices.GetUserByIdAsync(vm.UserID);
 
             // If VM is valid, try to remove Role from user.  If successful Redirect to
             // the ViewRoles Action.  Otherwise, return to the view with the VM and
             // errors.
             if (ModelState.IsValid)
             {
-                foreach (string role in rvm.Roles)
+                foreach (string role in vm.Roles)
                 {
                     var result = await _userManager.RemoveFromRoleAsync(user, role);
                     if (!result.Succeeded)
@@ -242,18 +251,18 @@ namespace MvcTesting.Controllers
                         {
                             ModelState.AddModelError(error.Code, error.Description);
                         }
-                        rvm.Username = user.UserName;
-                        rvm.Roles = await _userManager.GetRolesAsync(user);
-                        return View(rvm);
+                        vm.Username = user.UserName;
+                        vm.Roles = await _userManager.GetRolesAsync(user);
+                        return View(vm);
                     }
                 }
 
                 return RedirectToAction("ViewRoles");
             }
             
-            rvm.Username = user.UserName;
-            rvm.Roles = await _userManager.GetRolesAsync(user);
-            return View(rvm);
+            vm.Username = user.UserName;
+            vm.Roles = await _userManager.GetRolesAsync(user);
+            return View(vm);
                 
                     
         }
@@ -266,44 +275,9 @@ namespace MvcTesting.Controllers
             {
                 return RedirectToAction("Index");
             }
-            List<ApplicationUser> Users = GetUsers().Where(u => u.UserName.ToLower().Contains(vm.UserQuery.ToLower())).OrderBy(u=>u.UserName).ToList();
+            List<ApplicationUser> Users = _userServices.GetAllPublicUsers(User).Where(u => u.UserName.ToLower().Contains(vm.UserQuery.ToLower())).OrderBy(u=>u.UserName).ToList();
             vm.Users = Users;
             return View(vm);
         }
-
-        // Helper Functions
-
-        [NonAction]
-        private async Task<ApplicationUser> GetUserById(string id)
-        {
-            //Returns a User by the id.
-            return await _userManager.FindByIdAsync(id);
-        }
-
-        [NonAction]
-        private SelectList GetAllRoles()
-        {
-            //Returns all available Roles as a SelectList ordered by Name
-            return new SelectList(_roleManager.Roles.OrderBy(r => r.Name));
-        }
-
-        [NonAction]
-        private IQueryable<Film> GetUserFilms(ApplicationUser user)
-        {
-            // Returns all Films of the user that the current User is authorized to see.  Audio, Media, and User of the film is included.
-            return _context.Films
-                .Where(f => (f.UserID == user.Id) && (!f.IsPrivate || User.IsInRole("Admin") || f.UserID == _userManager.GetUserId(User)))
-                .Include(f => f.Audio)
-                .Include(f => f.Media)
-                .Include(f => f.User);
-        }
-
-        [NonAction]
-        private List<ApplicationUser> GetUsers()
-        {
-            // Returns all users that the current User is authorized to see
-            return _context.Users.Where(u => !u.IsPrivate || User.IsInRole("Admin") || u.Id == _userManager.GetUserId(User)).ToList();
-        }
-        
     }
 }
