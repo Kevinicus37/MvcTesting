@@ -21,16 +21,19 @@ namespace MvcTesting.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserServices _userServices;
+        private readonly FilmServices _filmServices;
 
         public UsersController(MovieCollectorContext dbContext, 
             UserManager<ApplicationUser> userManager, 
             RoleManager<IdentityRole> roleManager,
-            UserServices userServices)
+            UserServices userServices,
+            FilmServices filmServices)
         {
             _context = dbContext;
             _userManager = userManager;
             _roleManager = roleManager;
             _userServices = userServices;
+            _filmServices = filmServices;
         }
 
         [AllowAnonymous]
@@ -139,7 +142,7 @@ namespace MvcTesting.Controllers
                 .Where(f => string.IsNullOrEmpty(vm.SearchValue) || f.Name.ToLower().Contains(vm.SearchValue.ToLower()))
                 .ToList();
 
-            vm.Films = films.SortByValue(vm.SortValue);
+            vm.Films = _filmServices.SortBy(films, vm.SortPriority);
             vm.Genres = _context.Genres.ToList();
             vm.MediaFormats = _context.MediaFormats.ToList();
             vm.AudioFormats = _context.AudioFormats.ToList();

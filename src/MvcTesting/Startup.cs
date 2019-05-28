@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -43,7 +44,8 @@ namespace MvcTesting
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddDbContext<MovieCollectorContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                );
 
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -69,6 +71,7 @@ namespace MvcTesting
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<UserServices>();
             services.AddTransient<FilmServices>();
+            services.AddTransient<MovieConverter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

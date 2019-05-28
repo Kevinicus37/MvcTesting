@@ -1,78 +1,51 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using MvcTesting.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.ComponentModel.DataAnnotations;
 
 namespace MvcTesting
 {
-    public static class Extensions
+    public static class FilmExtensions
     {
-        public static List<Film> SortByValue(this List<Film> films, string sortValue)
+        public static IQueryable<TSource> WhereIf<TSource>(this IQueryable<TSource> source, bool condition, Expression<Func<TSource, bool>> predicate)
         {
-            switch (sortValue)
+            // Performs a Where only when the condition is met
+
+            if (condition)
             {
-                case "Title":
-                    return films.SortByTitle();
-                case "Title Desc.":
-                    return films.SortByTitleDescending();
-                case "Year":
-                    return films.SortByYear();
-                case "Year Desc.":
-                    return films.SortByYearDescending();
-                case "Media Format":
-                    return films.SortByMediaFormat();
-                case "Media Format Desc.":
-                    return films.SortByMediaFormatDescending();
-                case "Audio Format":
-                    return films.SortByAudioFormat();
-                case "Audio Format Desc.":
-                    return films.SortByAudioFormatDescending();
-                default:
-                    return films.SortByTitle();
+                return source.Where(predicate);
             }
+
+            return source;
         }
 
-        public static List<Film> SortByTitle(this List<Film> films)
+        public static IEnumerable<TSource> WhereIf<TSource>(this IEnumerable<TSource> source, bool condition, Func<TSource,bool> predicate)
         {
-            return films.OrderBy(f => f.Name).ToList();
-        }
+            // Performs a Where only when the condition is met
 
-        public static List<Film> SortByTitleDescending(this List<Film> films)
-        {
-            return films.OrderByDescending(f => f.Name).ToList();
-        }
+            if (condition)
+            {
+                return source.Where(predicate);
+            }
 
-        public static List<Film> SortByYear(this List<Film> films)
-        {
-            return films.OrderBy(f => f.Year).ToList();
+            return source;
         }
+    }
 
-        public static List<Film> SortByYearDescending(this List<Film> films)
+    public static class enumExtensions
+    {
+        public static string GetDisplayName(this Enum enumValue)
         {
-            return films.OrderByDescending(f => f.Year).ToList();
-        }
+            var attribute = enumValue.GetType().GetMember(enumValue.ToString()).First().GetCustomAttribute<DisplayAttribute>();
 
-        public static List<Film> SortByAudioFormat(this List<Film> films)
-        {
-            return films.OrderBy(f => f.Audio.Name).ToList();
-        }
+            if (attribute != null)
+            {
+                return attribute.GetName();
+            }
 
-        public static List<Film> SortByAudioFormatDescending(this List<Film> films)
-        {
-            return films.OrderByDescending(f => f.Audio.Name).ToList();
-        }
-
-        public static List<Film> SortByMediaFormat(this List<Film> films)
-        {
-            return films.OrderBy(f => f.Media.Name).ToList();
-        }
-
-        public static List<Film> SortByMediaFormatDescending(this List<Film> films)
-        {
-            return films.OrderByDescending(f => f.Media.Name).ToList();
+            return enumValue.ToString();
         }
     }
 }

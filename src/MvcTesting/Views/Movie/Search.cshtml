@@ -75,7 +75,7 @@
         </button>
         <ul class="dropdown-menu">
 
-            @foreach (var sorter in Model.SortValues)
+            @foreach (SortPriority priority in Enum.GetValues(typeof(SortPriority)))
             {
                 <li>
                     <form asp-controller="Movie" asp-action="Search" method="post">
@@ -83,8 +83,8 @@
                         <input type="hidden" asp-for="GenreFilter" />
                         <input type="hidden" asp-for="AudioFilter" />
                         <input type="hidden" asp-for="MediaFilter" />
-                        <input type="hidden" asp-for="SortValue" value="@sorter" />
-                        <button type="submit" class="btn btn-link">@sorter</button>
+                        <input type="hidden" asp-for="SortPriority" value="@priority" />
+                        <button type="submit" class="btn btn-link">@priority.GetDisplayName()</button>
                     </form>
                 </li>
 

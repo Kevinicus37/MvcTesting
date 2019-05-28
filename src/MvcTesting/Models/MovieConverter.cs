@@ -6,22 +6,22 @@ using TMDbLib.Objects.Movies;
 
 namespace MvcTesting.Models
 {
-    public static class MovieConverter
+    public class MovieConverter
     {
-        public static Film ConvertToFilm(this Movie movie, List<Genre> genres)
+        public Film ConvertToFilm(Movie movie, List<Genre> genres)
         {
             Film convertedFilm = new Film();
 
             convertedFilm.Name = movie.Title;
             convertedFilm.Overview = movie.Overview;
             convertedFilm.Runtime = movie.Runtime;
-            convertedFilm.PosterUrl = movie.GetConvertedPosterPath();
-            convertedFilm.TrailerUrl = movie.GetConvertedTrailerPath();
+            convertedFilm.PosterUrl = GetConvertedPosterPath(movie);
+            convertedFilm.TrailerUrl = GetConvertedTrailerPath(movie);
             convertedFilm.Year = movie.ReleaseDate.Value.Year;
-            convertedFilm.Cast = movie.GetConvertedCastMembers();
-            convertedFilm.Directors = movie.GetConvertedDirectors();
+            convertedFilm.Cast = GetConvertedCastMembers(movie);
+            convertedFilm.Directors = GetConvertedDirectors(movie);
 
-            List<Genre> filmGenres = movie.GetMatchingGenres(genres);
+            List<Genre> filmGenres = GetMatchingGenres(movie, genres);
             foreach (Genre genre in filmGenres)
             {
                 convertedFilm.FilmGenres.Add(new FilmGenre { Genre = genre, GenreID = genre.ID });
@@ -30,7 +30,7 @@ namespace MvcTesting.Models
             return convertedFilm;
         }
 
-        public static string GetConvertedPosterPath(this Movie movie)
+        public string GetConvertedPosterPath(Movie movie)
         {
             string posterUrl = GlobalVariables.DefaultPoster;
 
@@ -42,7 +42,7 @@ namespace MvcTesting.Models
             return posterUrl;
         }
 
-        public static string GetConvertedTrailerPath(this Movie movie)
+        public string GetConvertedTrailerPath(Movie movie)
         {
             string trailerUrl = "";
 
@@ -70,9 +70,8 @@ namespace MvcTesting.Models
 
             return trailerUrl;
         }
-
-
-        public static string GetConvertedReleaseDate(this Movie movie)
+        
+        public string GetConvertedReleaseDate(Movie movie)
         {
             string releaseDate = "";
 
@@ -84,7 +83,7 @@ namespace MvcTesting.Models
             return releaseDate;
         }
 
-        public static string GetConvertedDirectors(this Movie movie)
+        public string GetConvertedDirectors(Movie movie)
         {
             if (movie.Credits.Crew.Count > 0)
             {
@@ -101,7 +100,7 @@ namespace MvcTesting.Models
             return "";
         }
 
-        public static string GetConvertedCastMembers(this Movie movie)
+        public string GetConvertedCastMembers(Movie movie)
         {
             List<string> convertedCastMembers = new List<string>();
 
@@ -113,7 +112,7 @@ namespace MvcTesting.Models
             return String.Join(",", convertedCastMembers);
         }
 
-        public static List<string> GetConvertedCastMembersList(this Movie movie)
+        public List<string> GetConvertedCastMembersList(Movie movie)
         {
             List<string> convertedCastMembers = new List<string>();
 
@@ -126,7 +125,7 @@ namespace MvcTesting.Models
 
         }
 
-        public static List<Genre> GetMatchingGenres(this Movie movie, List<Genre> genres)
+        public List<Genre> GetMatchingGenres(Movie movie, List<Genre> genres)
         {
             List<Genre> movieGenres = new List<Genre>();
             

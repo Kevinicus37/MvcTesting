@@ -1,6 +1,7 @@
 ﻿using MvcTesting.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace MvcTesting.ViewModels
 
         public string SortValue { get; set; }
 
-        public List<string> SortValues = new List<string> { "Title", "Title Desc.", "Year", "Year Desc.", "Audio Format", "Audio Format Desc.", "Media Format", "Media Format Desc." };
+        public SortPriority SortPriority { get; set; }
 
         public string GenreFilter { get; set; } = null;
 

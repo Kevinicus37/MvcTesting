@@ -274,6 +274,7 @@ C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Migrations\20
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Migrations\MovieCollectorContextModelSnapshot.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\ApplicationUser.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\AudioFormat.cs
+C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\EnumHelper.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\Film.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\FilmGenre.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\FilmSortingHelpers.cs
@@ -284,6 +285,7 @@ C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\MediaP
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\MovieCollectorContext.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\MovieConverter.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\MovieMVC.cs
+C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\SortPriority.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Models\UserRoleSeed.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Services\FilmServices.cs
 C:\Users\Kevinicus\Source\Repos\lc101-kc\MvcTesting\src\MvcTesting\Services\IEmailSender.cs
