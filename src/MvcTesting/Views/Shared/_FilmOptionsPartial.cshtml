@@ -1,10 +1,11 @@
-﻿@model ViewMovieViewModel
+﻿@model Film
 
-@if (Model.Film.UserID == UserManager.GetUserId(User) || User.IsInRole("Admin"))
+@if (Model.UserID == UserManager.GetUserId(User) || User.IsInRole("Admin"))
 {
-    <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
+    
+    <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.ID">Edit this Movie</a>
 }
-@if (User.Identity.IsAuthenticated)
+@if (User.Identity.IsAuthenticated && Model.UserID != UserManager.GetUserId(User))
 {
-    <a class="btn btn-primary" asp-controller="Movie" asp-action="Copy" asp-route-id="@Model.Film.ID">Copy this Movie</a>
+    <a class="btn btn-primary" asp-controller="Movie" asp-action="Copy" asp-route-id="@Model.ID">Copy this Movie</a>
 }

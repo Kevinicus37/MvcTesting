@@ -158,14 +158,7 @@ namespace MvcTesting.ViewModels
             // Add selected genres from tmdb.org
             foreach (var genre in movie.Genres)
             {
-                if (genre.Name == "Science Fiction")
-                {
-                    Genres.Add(_context.Genres.Where(x => x.Name == "Sci-Fi").First().ID.ToString());
-                }
-                else
-                {
-                    Genres.Add(_context.Genres.Where(x => x.Name == genre.Name).First().ID.ToString());
-                }
+                Genres.Add(_context.Genres.Where(x => x.Name == genre.Name).First().ID.ToString());
             }
 
             

@@ -13,7 +13,16 @@
                     <span style="color: ghostwhite;">@Model.Film.Name</span><small> @Model.DisplayYear</small>
                     @if (Model.Film.ID > 0)
                     {
-                        Html.Partial("_FilmOptionsPartial");
+                        @if (Model.Film.UserID == UserManager.GetUserId(User) || User.IsInRole("Admin"))
+                        {
+
+                            <a class="btn btn-primary" asp-controller="Movie" asp-action="Edit" asp-route-id="@Model.Film.ID">Edit this Movie</a>
+                        }
+                        @if (User.Identity.IsAuthenticated && Model.Film.UserID != UserManager.GetUserId(User))
+                        {
+                            <a class="btn btn-primary" asp-controller="Movie" asp-action="Copy" asp-route-id="@Model.Film.ID">Copy this Movie</a>
+                        }
+                        //Html.Partial("_FilmOptionsPartial", Model.Film); - Not sure why this wasn't working - Not needed anyway.
                     }
                 </h1>
             </div>
