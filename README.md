@@ -14,3 +14,5 @@ The app also allows for the user to include information about the type of media 
 The app offers various searching, sorting, and filter options.  Users can make individual films in their collection private, or make their entire collection private as well.  
 
 There's still plenty of work that can be done on it, especially on the front-end.  The look has been secondary up to this point in development.
+
+![](Movie%20Info%20-%201.png)
