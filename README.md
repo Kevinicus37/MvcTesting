@@ -16,3 +16,10 @@ The app offers various searching, sorting, and filter options.  Users can make i
 There's still plenty of work that can be done on it, especially on the front-end.  The look has been secondary up to this point in development.
 
 ![](Movie%20Info%20-%201.png)
+![](Movie%20Info%20-%202.png)
+![](TMDB%20Search.png)
+![](Home%20Screen.png)
+![](User%20Page%20-%201.png)
+![](User%20Page%20-%20Search%20Audio.png)
+![](User%20Page%20-%20Search%20Media.png)
+![](User%20Page%20-%20Sort%20By.png)
